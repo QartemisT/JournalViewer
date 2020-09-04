@@ -1,11 +1,22 @@
-whTooltips = {
-	colorLinks:		true,
-	iconizeLinks:	true,
-	renameLinks:	true
-}
-// <a href="#" data-wowhead="item=2828">Item</a>
-
 let latestBuild
+
+function sanityText(text) {
+	text = text.replace(/\$bullet;/g, "<br>"); // New line
+	text = text.replace(/\|cFF([a-z0-9]+)\|Hspell:([0-9]+)\s?\|h([^|]+)\|h\|r/gi, "<a style=\"color: #$1;\" href=\"ptr.wowhead.com/spell=$2\" data-wowhead=\"spell-$2\">$3</a>"); // Spell tooltips
+	return text;
+}
+
+const sectionIcons = {
+	// Tank
+	"Tank":				"tank",
+	"Tanks": 			"tank",
+	// Healer
+	"Healer":			"healer",
+	"Healers":			"healer",
+	// Damage
+	"Damage":			"damage",
+	"Damage Dealers":	"damage"
+}
 
 function initBossSections() {
 	// Parse boss sections
@@ -25,7 +36,6 @@ function initBossSections() {
 				}
 				sections[dat[3]][dat[4]] = dat;
 			}
-			console.log(sections);
 			for(let [encounterID, sectionz] of Object.entries(sections)) {
 				const elem = document.querySelector("#boss-" + encounterID + " + label + div");
 				if(elem == null) {
@@ -34,6 +44,7 @@ function initBossSections() {
 				let contents = "<ul>",
 					prevParent = "0",
 					checking = false;
+				// noinspection JSCheckFunctionSignatures
 				for(let section of Object.values(sectionz)) {
 					if(prevParent !== section[5]) {
 						if(checking) {
@@ -43,12 +54,12 @@ function initBossSections() {
 						}
 						checking = true;
 					}
-					if(section[1] === "Tank" || section[1] === "Healer" || section[1] === "Damage") {
-						contents += "<li class=\"iconsprite " + section[1].toLowerCase() + "\">";
+					if(sectionIcons.indexOf(section[1]) !== -1) {
+						contents += "<li class=\"iconsprite " + sectionIcons[section[1]] + "\">";
 					} else {
 						contents += "<li>";
 					}
-					contents += "<b>" + section[1] + "</b> " + section[2] + "</li>";
+					contents += "<b>" + section[1] + "</b> " + sanityText(section[2]) + "</li>";
 					prevParent = section[5];
 				}
 				contents += "</ul>";
@@ -78,6 +89,7 @@ function initBosses() {
 			}
 			for(let [instanceID, bossz] of Object.entries(bosses)) {
 				const elem = document.querySelector("#instance-" + instanceID + " + label + div");
+				// noinspection JSCheckFunctionSignatures
 				for(let boss of Object.values(bossz)) {
 					elem.innerHTML += "\
 					<input id=\"boss-" + boss[0] + "\" type=\"radio\" name=\"instance-" + boss[5] + "\">\

@@ -3,6 +3,10 @@
 	outline: none;
 }
 
+.wowhead-tooltip-powered {
+	display: none !important;
+}
+
 /* View */
 body {
 	font-family: open sans, Arial, helvetica neue, Helvetica, sans-serif;
