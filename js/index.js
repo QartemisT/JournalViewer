@@ -1,8 +1,8 @@
 let latestBuild
 
 function sanityText(text) {
-	text = text.replace(/\$bullet;/g, "<br>"); // New line
-	text = text.replace(/\|cFF([a-z0-9]+)\|Hspell:([0-9]+)\s?\|h([^|]+)\|h\|r/gi, "<a style=\"color: #$1;\" href=\"https://ptr.wowhead.com/spell=$2\" data-wowhead=\"spell-$2\">$3</a>"); // Spell tooltips
+	text = text.replace(/\$bullet;/g, "<br>&bull;"); // New line
+	text = text.replace(/\|cFF([a-z0-9]+)\|Hspell:([0-9]+)\s?\|h([^|]+)\|h\|r/gi, " <a style=\"color: #$1;\" href=\"https://ptr.wowhead.com/spell=$2\" data-wowhead=\"spell-$2\">$3</a>"); // Spell tooltips
 	return text;
 }
 
@@ -28,7 +28,7 @@ function initBossSections() {
 		complete:		function(data) {
 			for(let i = 1; i < data.data.length; i++) {
 				const dat = data.data[i];
-				if(dat[8] !== "3") {
+				if(dat[8] !== "3" || dat[15] !== "-1") {
 					continue;
 				}
 				if(typeof(sections[dat[3]]) === "undefined") {
