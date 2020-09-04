@@ -85,7 +85,7 @@ function initBosses() {
 				if(typeof(bosses[dat[5]]) === "undefined") {
 					bosses[dat[5]] = [];
 				}
-				bosses[dat[5]][dat[7]] = dat;
+				bosses[dat[5]].splice(dat[7], 0, dat);
 			}
 			for(let [instanceID, bossz] of Object.entries(bosses)) {
 				const elem = document.querySelector("#instance-" + instanceID + " + label + div");
