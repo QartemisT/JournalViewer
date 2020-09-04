@@ -2,7 +2,7 @@ let latestBuild
 
 function sanityText(text) {
 	text = text.replace(/\$bullet;/g, "<br>"); // New line
-	text = text.replace(/\|cFF([a-z0-9]+)\|Hspell:([0-9]+)\s?\|h([^|]+)\|h\|r/gi, "<a style=\"color: #$1;\" href=\"ptr.wowhead.com/spell=$2\" data-wowhead=\"spell-$2\">$3</a>"); // Spell tooltips
+	text = text.replace(/\|cFF([a-z0-9]+)\|Hspell:([0-9]+)\s?\|h([^|]+)\|h\|r/gi, "<a style=\"color: #$1;\" href=\"https://ptr.wowhead.com/spell=$2\" data-wowhead=\"spell-$2\">$3</a>"); // Spell tooltips
 	return text;
 }
 
