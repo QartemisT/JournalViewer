@@ -54,7 +54,7 @@ function initBossSections() {
 						}
 						checking = true;
 					}
-					if(sectionIcons.indexOf(section[1]) !== -1) {
+					if(typeof(sectionIcons[section[1]]) !== "undefined") {
 						contents += "<li class=\"iconsprite " + sectionIcons[section[1]] + "\">";
 					} else {
 						contents += "<li>";
