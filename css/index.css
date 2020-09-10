@@ -110,3 +110,10 @@ ul li {
 .tabbed > div > div > label {
 	margin-top: 10px;
 }
+
+.tabbed > .tabbed > .tabbed > .tabbed > div:first-child { /* Boss summary text */
+	order: 0;
+	display: block;
+	box-shadow: none;
+	padding: 5px;
+}
