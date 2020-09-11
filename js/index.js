@@ -23,16 +23,20 @@ const builds = {
 	}
 }
 
-const sectionIcons = {
-	// Tank
-	"Tank":				"tank",
-	"Tanks": 			"tank",
-	// Healer
-	"Healer":			"healer",
-	"Healers":			"healer",
-	// Damage
-	"Damage":			"damage",
-	"Damage Dealers":	"damage"
+const iconFlags = {
+	1:		"tank",
+	2:		"damage",
+	4:		"healer",
+	8:		"heroic",
+	16:		"deadly",
+	32:		"important",
+	64:		"interruptible",
+	128:	"magic",
+	256:	"curse",
+	512:	"poison",
+	1024:	"disease",
+	2048:	"enrage",
+	4096:	"mythic",
 }
 
 function sanityText(text) {
@@ -55,91 +59,92 @@ function sanityText(text) {
 	return text;
 }
 
+function elementIcons(bit) {
+	bit = parseInt(bit);
+	if(bit === 0) {
+		return "<li>";
+	}
+	let ret = "<li class=\"iconsprite ";
+	for(let bitKey of Object.keys(iconFlags)) {
+		if(bit & bitKey) {
+			ret += iconFlags[bitKey] + " ";
+		}
+	}
+	ret += "\">";
+	return ret;
+}
+
 function initBossSections() {
 	// Parse boss sections
-	const sections	= {},
-		abilities	= {};
 	Papa.parse("https://wow.tools/dbc/api/export/?name=journalencountersection&build=" + latestBuild, {
 		download:		true,
 		delimiter:		",",
 		skipEmptyLines:	true,
 		complete:		function(data) {
+			const store = {
+				Overview:	{},
+				Abilities:	{}
+			}
 			for(let i = 1; i < data.data.length; i++) {
 				const dat = data.data[i];
 				if(dat[8] === "3" && dat[13] !== "3") { // Overview
-					if(typeof(sections[dat[3]]) === "undefined") {
-						sections[dat[3]] = [];
+					if(typeof(store.Overview[dat[3]]) === "undefined") {
+						store.Overview[dat[3]] = [];
 					}
-					sections[dat[3]][dat[4]] = dat;
+					store.Overview[dat[3]][dat[4]] = dat;
 				} else if(dat[9] === "0" || dat[8] === "1" || dat[8] === "2") { // Abilities: Header | Creature | spell
-					if(typeof(abilities[dat[3]]) === "undefined") {
-						abilities[dat[3]] = [];
+					if(typeof(store.Abilities[dat[3]]) === "undefined") {
+						store.Abilities[dat[3]] = [];
 					}
-					abilities[dat[3]][dat[4]] = dat;
+					store.Abilities[dat[3]][dat[4]] = dat;
 				}
 			}
-			let iter = Object.keys(sections).concat(Object.keys(abilities));
+			let iter = Object.keys(store.Overview).concat(Object.keys(store.Abilities));
 			for(let encounterID of iter.filter((value, index) => iter.indexOf(value) === index)) {
 				const elem = document.querySelector("#boss-" + encounterID + " + label + div");
 				if(elem == null) {
 					continue;
 				}
-				if(typeof(sections[encounterID]) !== "undefined") {
-					let contents = "<ul>",
-						prevParent = "0",
-						checking = false;
-					for(let section of Object.values(sections[encounterID])) {
-						if(prevParent !== section[5]) {
-							if(checking) {
-								contents += "</ul>";
+				for(let storeType of Object.keys(store)) {
+					const sectionStore = store[storeType];
+					if(typeof(sectionStore[encounterID]) !== "undefined") {
+						let contents = "<ul>",
+							prevParent = "0",
+							prevIndent = 0,
+							siblings = [];
+						for(let section of Object.values(sectionStore[encounterID])) {
+							if(section[5] === "0") {
+								siblings[section[0]] = 0;
 							} else {
-								contents += "<ul>";
+								siblings[section[0]] = siblings[section[5]] + 1;
 							}
-							checking = true;
-						}
-						if(typeof (sectionIcons[section[1]]) !== "undefined") {
-							contents += "<li class=\"iconsprite " + sectionIcons[section[1]] + "\">";
-						} else {
-							contents += "<li>";
-						}
-						contents += "<b>" + section[1] + "</b> " + sanityText(section[2]) + "</li>";
-						prevParent = section[5];
-					}
-					contents += "</ul>";
-					elem.innerHTML += "\
-						<input id=\"boss-" + encounterID + "-overview\" type=\"radio\" name=\"boss-" + encounterID + "\">\
-						<label for=\"boss-" + encounterID + "-overview\">Overview</label>\
-						<div>\
-							" + contents + "\
-						</div>";
-				}
-				if(typeof(abilities[encounterID]) !== "undefined") {
-					let contents = "<ul>",
-						prevParent = "0",
-						checking = false;
-					for(let ability of Object.values(abilities[encounterID])) {
-						if(prevParent !== ability[5]) {
-							if(checking) {
-								contents += "</ul>";
+							if(prevParent !== section[5]) {
+								if(siblings[section[0]] < prevIndent) {
+									for(let i = 0; i < prevIndent - siblings[section[0]]; i++) {
+										contents += "</ul>";
+									}
+								} else {
+									contents += "<ul>";
+								}
+							}
+							prevParent = section[5];
+							prevIndent = siblings[section[0]];
+							if(storeType === "Overview") {
+								contents += elementIcons(section[14]) + "<b>" + section[1] + "</b> " + sanityText(section[2]) + "</li>";
 							} else {
-								contents += "<ul>";
+								// TODO: SpellID
+								contents += elementIcons(section[14]) + "<b>" + section[1] + "</b> " + sanityText(section[2]) + "</li>";
 							}
-							checking = true;
+							prevParent = section[5];
 						}
-						if(typeof(sectionIcons[ability[1]]) !== "undefined") {
-							contents += "<li class=\"iconsprite " + sectionIcons[ability[1]] + "\">";
-						} else {
-							contents += "<li>";
-						}
-						contents += "<b>" + ability[1] + "</b> " + sanityText(ability[2]) + "</li>";
-						prevParent = ability[5];
+						contents += "</ul>";
+						elem.innerHTML += "\
+							<input id=\"boss-" + encounterID + "-" + storeType + "\" type=\"radio\" name=\"boss-" + encounterID + "\">\
+							<label for=\"boss-" + encounterID + "-" + storeType + "\">" + storeType + "</label>\
+							<div>\
+								" + contents + "\
+							</div>";
 					}
-					elem.innerHTML += "\
-						<input id=\"boss-" + encounterID + "-abilities\" type=\"radio\" name=\"boss-" + encounterID + "\">\
-						<label for=\"boss-" + encounterID + "-abilities\">Abilities</label>\
-						<div>\
-							" + contents + "\
-						</div>";
 				}
 				/*
 				elem.innerHTML += "\
@@ -294,10 +299,8 @@ buildsReq.onreadystatechange = function() {
 				cursor.continue();
 			} else { // Finished
 				if(Object.keys(cache).length !== 0) {
-					console.log("initExpansions");
 					initExpansions();
 				} else {
-					console.log("initSpellEffects");
 					initSpellEffects();
 				}
 			}
