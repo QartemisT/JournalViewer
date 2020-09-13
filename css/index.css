@@ -17,6 +17,11 @@ body {
 	background: #000;
 }
 
+#version {
+	position: absolute;
+	right: 0;
+}
+
 #container {
 	width: 80%;
 	margin: 0 auto;
