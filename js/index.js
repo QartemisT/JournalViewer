@@ -242,6 +242,9 @@ document.addEventListener('DOMContentLoaded', () => {
 	}
 	Object.keys(builds).map(build => {
 		versionDropdown.options[versionDropdown.options.length] = new Option(builds[build].name, build);
+		if(selectedBuild === build) {
+			versionDropdown.value = build;
+		}
 	});
 
 	fetch("https://wow.tools/api.php?type=latestbuilds")
