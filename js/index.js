@@ -70,7 +70,7 @@ function sanityText(text, overrideSpellID) {
 			cacheStore.transaction(latestBuild, "readwrite").objectStore(latestBuild).add(newCache[storeCacheIndex], cacheIndex);
 			cache[cacheIndex] = newCache[storeCacheIndex];
 		}
-		return cache[cacheIndex];
+		return Math.abs(cache[cacheIndex]);
 	});
 	text = text.replace(/\$@spellname(\d+)/g, (_, spellID) => { // SpellName variable
 		const spellNameIndex = "spellname-" + spellID;
