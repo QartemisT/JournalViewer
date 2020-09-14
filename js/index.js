@@ -51,7 +51,7 @@ const newCache = {},
 		4096:	"mythic",
 	};
 
-function sanityText(text) {
+function sanityText(text, overrideSpellID) {
 	if(!text) {
 		return "";
 	}
@@ -59,7 +59,8 @@ function sanityText(text) {
 	text = text.replace(/\|cFF([a-z0-9]+)\|Hspell:([0-9]+)\s?\|h([^|]+)\|h\|r/gi, " <a style=\"color: #$1;\" href=\"https://" + builds[selectedBuild].link + "wowhead.com/spell=$2\" data-wowhead=\"spell-$2\">$3</a>"); // Spell tooltips
 	text = text.replace(/\$\[[0-9,]+(?:[\s\n]+)?(.*?)\$]/g, "$1"); // Ignored difficulty text
 	text = text.replace(/\$\[![0-9,]+(?:[\s\n]+)?(.*?)\$]/g, "<p class=\"iconsprite warning\">$1</p>"); // Difficulty warning text
-	text = text.replace(/\$(\d+)s(\d+)/g, (_, spellID, section) => { // SpellEffect variables
+	text = text.replace(/\$(\d+)?s(\d+)/g, (_, spellID, section) => { // SpellEffect variables
+		spellID = spellID || overrideSpellID
 		let cacheIndex = "spelleffect-" + spellID + "-" + (parseInt(section) - 1);
 		if(!cache[cacheIndex]) {
 			let storeCacheIndex = cacheIndex;
@@ -71,6 +72,19 @@ function sanityText(text) {
 		}
 		return cache[cacheIndex];
 	});
+	text = text.replace(/\$@spellname(\d+)/g, (_, spellID) => { // SpellName variable
+		const spellNameIndex = "spellname-" + spellID;
+		if(!cache[spellNameIndex]) {
+			cacheStore.transaction(latestBuild, "readwrite").objectStore(latestBuild).add(newCache[spellNameIndex], spellNameIndex);
+			cache[spellNameIndex] = newCache[spellNameIndex];
+		}
+		return "<span style=\"color: #FFF;\">" + cache[spellNameIndex] + "</span>";
+	});
+	// TODO: ${$E1*100}
+	// $@spelldesc320646
+	// $<id>?[aA]<section> -> spelleffect-spellID-section.EffectRadiusIndex[a = 0, A = 1] -> spellradius.Radius
+	// $<id>?d -> spellmisc-spellID.DurationIndex -> spellduration.Duration / 1000
+	// $<id>?t<section> -> spelleffect-spellID-section.EffectAuraPeriod / 1000
 	return text;
 }
 
@@ -191,7 +205,7 @@ function load() {
 								cacheStore.transaction(latestBuild, "readwrite").objectStore(latestBuild).add(newCache[spellDescIndex], spellDescIndex);
 								cache[spellDescIndex] = newCache[spellDescIndex];
 							}
-							contents += elementIcons(section[14]) + "<b><a href=\"https://" + builds[selectedBuild].link + "wowhead.com/spell=" + spellID + "\" data-wowhead=\"spell-" + spellID + "\">" + cache[spellNameIndex] + "</a></b> " + sanityText(cache[spellDescIndex]) + "</li>";
+							contents += elementIcons(section[14]) + "<b><a href=\"https://" + builds[selectedBuild].link + "wowhead.com/spell=" + spellID + "\" data-wowhead=\"spell-" + spellID + "\">" + cache[spellNameIndex] + "</a></b> " + sanityText(cache[spellDescIndex], spellID) + "</li>";
 						} else {
 							contents += elementIcons(section[14]) + "<b>" + section[1] + "</b> " + sanityText(section[2]) + "</li>";
 						}
