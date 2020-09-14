@@ -78,7 +78,7 @@ function sanityText(text, overrideSpellID) {
 			cacheStore.transaction(latestBuild, "readwrite").objectStore(latestBuild).add(newCache[spellNameIndex], spellNameIndex);
 			cache[spellNameIndex] = newCache[spellNameIndex];
 		}
-		return "<span style=\"color: #FFF;\">" + cache[spellNameIndex] + "</span>";
+		return "<a href=\"https://" + builds[selectedBuild].link + "wowhead.com/spell=" + spellID + "\" data-wowhead=\"spell-" + spellID + "\">" + cache[spellNameIndex] + "</a>";
 	});
 	// TODO: ${$E1*100}
 	// $@spelldesc320646
