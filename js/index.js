@@ -168,7 +168,7 @@ function sanityText(text, overrideSpellID) {
 			return "until cancelled";
 		}
 		try {
-			return reqCSVResponse.spellduration.find(data => data[0] === cache[cacheIndex].DurationIndex)[1] / 1000;
+			return reqCSVResponse.spellduration.find(data => data[0] === cache[cacheIndex].DurationIndex)[1] / 1000 + " sec";
 		} catch(_) {
 			console.log("Failed Duration", text);
 			return "<err>";
