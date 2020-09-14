@@ -96,7 +96,7 @@ function sanityText(text, overrideSpellID) {
 			cacheStore.transaction(latestBuild, "readwrite").objectStore(latestBuild).add(JSON.stringify(newCache[cacheIndex]), cacheIndex);
 			cache[cacheIndex] = newCache[cacheIndex];
 		}
-		return sanityText(cache[cacheIndex]);
+		return sanityText(cache[cacheIndex], spellID);
 	});
 	text = text.replace(/\$(\d+)([a|A])(\d+)?/g, (_, spellID, type, section) => { // Radius variables
 		if(!spellID) {
