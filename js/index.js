@@ -7,6 +7,7 @@ const newCache = {},
 	reqHeaders = [
 		"spelleffect",
 		"spellmisc",
+		"spellname",
 		"spell"
 	],
 	reqCSVs = [
@@ -51,16 +52,19 @@ const newCache = {},
 	};
 
 function sanityText(text) {
+	if(!text) {
+		return "";
+	}
 	text = text.replace(/\$bullet;/g, "<br>&bull; "); // New line
 	text = text.replace(/\|cFF([a-z0-9]+)\|Hspell:([0-9]+)\s?\|h([^|]+)\|h\|r/gi, " <a style=\"color: #$1;\" href=\"https://" + builds[selectedBuild].link + "wowhead.com/spell=$2\" data-wowhead=\"spell-$2\">$3</a>"); // Spell tooltips
 	text = text.replace(/\$\[[0-9,]+(?:[\s\n]+)?(.*?)\$]/g, "$1"); // Ignored difficulty text
 	text = text.replace(/\$\[![0-9,]+(?:[\s\n]+)?(.*?)\$]/g, "<p class=\"iconsprite warning\">$1</p>"); // Difficulty warning text
 	text = text.replace(/\$(\d+)s(\d+)/g, (_, spellID, section) => { // SpellEffect variables
-		let cacheIndex = spellID + "-" + (parseInt(section) - 1);
+		let cacheIndex = "spelleffect-" + spellID + "-" + (parseInt(section) - 1);
 		if(!cache[cacheIndex]) {
 			let storeCacheIndex = cacheIndex;
 			if(!newCache[cacheIndex]) {
-				storeCacheIndex = spellID + "-0";
+				storeCacheIndex = "spelleffect-" + spellID + "-0";
 			}
 			cacheStore.transaction(latestBuild, "readwrite").objectStore(latestBuild).add(newCache[storeCacheIndex], cacheIndex);
 			cache[cacheIndex] = newCache[storeCacheIndex];
@@ -175,8 +179,20 @@ function load() {
 						prevIndent = siblings[section[0]];
 						if(storeType === "Overview") {
 							contents += elementIcons(section[14]) + "<b>" + section[1] + "</b> " + sanityText(section[2]) + "</li>";
+						} else if(section[11] !== "0") { // Ability: Spell
+							const spellID = section[11],
+								spellNameIndex = "spellname-" + spellID,
+								spellDescIndex = "spelldesc-" + spellID;
+							if(!cache[spellNameIndex]) {
+								cacheStore.transaction(latestBuild, "readwrite").objectStore(latestBuild).add(newCache[spellNameIndex], spellNameIndex);
+								cache[spellNameIndex] = newCache[spellNameIndex];
+							}
+							if(!cache[spellDescIndex]) {
+								cacheStore.transaction(latestBuild, "readwrite").objectStore(latestBuild).add(newCache[spellDescIndex], spellDescIndex);
+								cache[spellDescIndex] = newCache[spellDescIndex];
+							}
+							contents += elementIcons(section[14]) + "<b><a href=\"https://" + builds[selectedBuild].link + "wowhead.com/spell=" + spellID + "\" data-wowhead=\"spell-" + spellID + "\">" + cache[spellNameIndex] + "</a></b> " + sanityText(cache[spellDescIndex]) + "</li>";
 						} else {
-							// TODO: SpellID
 							contents += elementIcons(section[14]) + "<b>" + section[1] + "</b> " + sanityText(section[2]) + "</li>";
 						}
 						prevParent = section[5];
@@ -193,7 +209,7 @@ function load() {
 }
 
 function initCache() {
-	const store = indexedDB.open("CacheDB", 1);
+	const store = indexedDB.open("CacheDB", 2);
 	store.onupgradeneeded = () => {
 		if(store.result.objectStoreNames.contains(latestBuild)) {
 			store.result.deleteObjectStore(latestBuild);
@@ -211,16 +227,62 @@ function initCache() {
 			} else { // Finished
 				if(Object.keys(cache).length === 0) {
 					await new Promise((resolve) => {
-						const spellHeaderSpellID = reqHeaders.spelleffect.indexOf("SpellID"),
-							spellHeaderEffectIndex = reqHeaders.spelleffect.indexOf("EffectIndex"),
-							spellHeaderEffectBasePointsF = reqHeaders.spelleffect.indexOf("EffectBasePointsF");
+						const spellHeaderSpellID = reqHeadersResponse.spelleffect.indexOf("SpellID"),
+							spellHeaderEffectIndex = reqHeadersResponse.spelleffect.indexOf("EffectIndex"),
+							spellHeaderEffectBasePointsF = reqHeadersResponse.spelleffect.indexOf("EffectBasePointsF");
 						Papa.parse("https://wow.tools/dbc/api/export/?name=spelleffect&build=" + latestBuild, {
 							download: true,
 							delimiter: ",",
 							skipEmptyLines: true,
 							complete: (data) => {
 								data.data.shift();
-								data.data.map(data => newCache[data[spellHeaderSpellID] + "-" + data[spellHeaderEffectIndex]] = data[spellHeaderEffectBasePointsF]);
+								data.data.map(data => newCache["spelleffect-" + data[spellHeaderSpellID] + "-" + data[spellHeaderEffectIndex]] = data[spellHeaderEffectBasePointsF]);
+								resolve();
+							}
+						});
+					});
+					await new Promise((resolve) => {
+						const spellHeaderSpellID = reqHeadersResponse.spellmisc.indexOf("SpellID"),
+							spellHeaderDurationIndex = reqHeadersResponse.spellmisc.indexOf("DurationIndex"),
+							spellHeaderRangeIndex = reqHeadersResponse.spellmisc.indexOf("RangeIndex");
+						Papa.parse("https://wow.tools/dbc/api/export/?name=spellmisc&build=" + latestBuild, {
+							download: true,
+							delimiter: ",",
+							skipEmptyLines: true,
+							complete: (data) => {
+								data.data.shift();
+								data.data.map(data => newCache["spellmisc-" + data[spellHeaderSpellID]] = {
+									duration:	data[spellHeaderDurationIndex],
+									range:		data[spellHeaderRangeIndex]
+								});
+								resolve();
+							}
+						});
+					});
+					await new Promise((resolve) => {
+						const spellHeaderID = reqHeadersResponse.spell.indexOf("ID"),
+							spellHeaderDescription_lang = reqHeadersResponse.spell.indexOf("Description_lang");
+						Papa.parse("https://wow.tools/dbc/api/export/?name=spell&build=" + latestBuild, {
+							download: true,
+							delimiter: ",",
+							skipEmptyLines: true,
+							complete: (data) => {
+								data.data.shift();
+								data.data.map(data => newCache["spelldesc-" + data[spellHeaderID]] = data[spellHeaderDescription_lang]);
+								resolve();
+							}
+						});
+					});
+					await new Promise((resolve) => {
+						const spellHeaderID = reqHeadersResponse.spellname.indexOf("ID"),
+							spellHeaderName_lang = reqHeadersResponse.spellname.indexOf("Name_lang");
+						Papa.parse("https://wow.tools/dbc/api/export/?name=spellname&build=" + latestBuild, {
+							download: true,
+							delimiter: ",",
+							skipEmptyLines: true,
+							complete: (data) => {
+								data.data.shift();
+								data.data.map(data => newCache["spellname-" + data[spellHeaderID]] = data[spellHeaderName_lang]);
 								resolve();
 							}
 						});

@@ -17,6 +17,11 @@ body {
 	background: #000;
 }
 
+a {
+	color: #FFD100;
+	text-decoration: none;
+}
+
 #version {
 	position: absolute;
 	right: 0;
