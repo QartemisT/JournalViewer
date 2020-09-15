@@ -98,7 +98,9 @@ function sanityText(text, overrideSpellID) {
 		}
 		return sanityText(cache[cacheIndex], spellID);
 	});
-	text = text.replace(/\$(\d+)([a|A])(\d+)?/g, (_, spellID, type, section) => { // Radius variables
+	text = text.replace(/\$(\d+)?([a|A])(\d+)?/g, (_, spellID, type, section) => { // Radius variables
+		spellID = spellID || overrideSpellID;
+		section = section || 1;
 		if(!spellID) {
 			console.log("Null spellID", "Radius", text);
 			return "<err>";
