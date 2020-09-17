@@ -315,7 +315,7 @@ function load() {
 }
 
 function initCache() {
-	const store = indexedDB.open("CacheDB", 3);
+	const store = indexedDB.open(latestBuild, 1);
 	store.onupgradeneeded = () => {
 		if(store.result.objectStoreNames.contains(latestBuild)) {
 			store.result.deleteObjectStore(latestBuild);
@@ -431,7 +431,8 @@ document.addEventListener('DOMContentLoaded', () => {
 		.then(response => response.json())
 		.then(json => {
 			latestBuild = json[selectedBuild];
-			Promise.all(reqHeaders.map(header => fetch("https://wow.tools/dbc/api/header/" + header + "/?build=" + latestBuild)))
+			document.title = "Journal Viewer - " + latestBuild
+				Promise.all(reqHeaders.map(header => fetch("https://wow.tools/dbc/api/header/" + header + "/?build=" + latestBuild)))
 				.then(responses => Promise.all(responses.map(response => response.json())))
 				.then(headers => headers.map((header, index) => reqHeadersResponse[reqHeaders[index]] = header.headers))
 				//
