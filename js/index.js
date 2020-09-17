@@ -432,7 +432,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		.then(json => {
 			latestBuild = json[selectedBuild];
 			document.title = "Journal Viewer - " + latestBuild
-				Promise.all(reqHeaders.map(header => fetch("https://wow.tools/dbc/api/header/" + header + "/?build=" + latestBuild)))
+			Promise.all(reqHeaders.map(header => fetch("https://wow.tools/dbc/api/header/" + header + "/?build=" + latestBuild)))
 				.then(responses => Promise.all(responses.map(response => response.json())))
 				.then(headers => headers.map((header, index) => reqHeadersResponse[reqHeaders[index]] = header.headers))
 				//
