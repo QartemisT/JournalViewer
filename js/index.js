@@ -174,7 +174,8 @@ function sanityText(text, overrideSpellID, spellMultiplier) {
 		}
 		return reqCSVResponse.spellradius.find(data => data[0] === radiusIndex)[1];
 	});
-	text = text.replace(/\$(\d+)?t(\d+)?/g, (_, spellID, section) => { // Time variables
+	// TODO: Does the case matter here?
+	text = text.replace(/\$(\d+)?[tT](\d+)?/g, (_, spellID, section) => { // Time variables
 		spellID = spellID || overrideSpellID
 		section = section || 1;
 		if(!spellID) {
