@@ -66,8 +66,9 @@ function sanityText(text, overrideSpellID, spellMultiplier) {
 	text = text.replace(/\|cFF([a-z0-9]+)\|Hspell:([0-9]+)\s?\|h([^|]+)\|h\|r/gi, " <a style=\"color: #$1;\" href=\"https://" + builds[selectedBuild].link + "wowhead.com/spell=$2\" data-wowhead=\"spell-$2\">$3</a>"); // Spell tooltips
 	text = text.replace(/\$\[[0-9,]+(?:[\s\n]+)?(.*?)\$]/g, "$1"); // Ignored difficulty text
 	text = text.replace(/\$\[![0-9,]+(?:[\s\n]+)?(.*?)\$]/g, "<p class=\"iconsprite warning\">$1</p>"); // Difficulty warning text
-	text = text.replace(/\$(\d+)?s(\d+)/g, (_, spellID, section) => { // SpellEffect variables
+	text = text.replace(/\$(\d+)?s(\d+)?/g, (_, spellID, section) => { // SpellEffect variables
 		spellID = spellID || overrideSpellID;
+		section = section || 1;
 		if(!spellID) {
 			console.log("Null spellID", "SpellEffect", text);
 			return "<err>";
@@ -85,11 +86,46 @@ function sanityText(text, overrideSpellID, spellMultiplier) {
 			console.log("Failed SpellEffect", text);
 			return "<err>";
 		}
-		console.warn(cache[cacheIndex].Effect);
 		if(cache[cacheIndex].Effect === "2") {
 			return Math.round(Math.abs(spellMultiplier * cache[cacheIndex].EffectBasePointsF / 100));
 		}
 		return Math.abs(cache[cacheIndex].EffectBasePointsF);
+	});
+	text = text.replace(/\$(\d+)?o(\d+)?/g, (_, spellID, section) => { // AuraDamage variable
+		spellID = spellID || overrideSpellID;
+		section = section || 1;
+		if(!spellID) {
+			console.log("Null spellID", "AuraDamage", text);
+			return "<err>";
+		}
+		const cacheIndex = "spelleffect-" + spellID + "-" + (parseInt(section) - 1);
+		if(!cache[cacheIndex]) {
+			let storeCacheIndex = cacheIndex;
+			if(!newCache[cacheIndex]) {
+				storeCacheIndex = "spelleffect-" + spellID + "-0";
+			}
+			cacheStore.transaction(latestBuild, "readwrite").objectStore(latestBuild).add(JSON.stringify(newCache[storeCacheIndex]), cacheIndex);
+			cache[cacheIndex] = newCache[storeCacheIndex];
+		}
+		if(!cache[cacheIndex]) {
+			console.log("Failed AuraDamage (SpellEffect)", text);
+			return "<err>";
+		}
+		const cache2Index = "spellmisc-" + spellID;
+		if(!cache[cache2Index]) {
+			cacheStore.transaction(latestBuild, "readwrite").objectStore(latestBuild).add(JSON.stringify(newCache[cache2Index]), cache2Index);
+			cache[cache2Index] = newCache[cache2Index];
+		}
+		if(!cache[cache2Index]) {
+			console.log("Failed AuraDamage2 (SpellMisc)", text);
+			return "<err>";
+		}
+		try {
+			return Math.round(Math.abs(spellMultiplier * cache[cacheIndex].EffectBasePointsF / 100) * ((reqCSVResponse.spellduration.find(data => data[0] === cache[cache2Index].DurationIndex)[1] / 1000) / (cache[cacheIndex].EffectAuraPeriod / 1000)));
+		} catch(_) {
+			console.log("Failed AuraDamage (SpellDuration)", text);
+			return "<err>";
+		}
 	});
 	text = text.replace(/\$@spellname(\d+)/g, (_, spellID) => { // SpellName variable
 		const cacheIndex = "spellname-" + spellID;
@@ -305,7 +341,6 @@ function load() {
 	Object.keys(store.Overview).concat(Object.keys(store.Abilities))
 		.filter((encounterID, index, self) => self.indexOf(encounterID) === index && document.querySelector("#boss-" + encounterID + " + label + div"))
 		.map(encounterID => {
-			console.warn(encounterID, statModsXtuningID[mapXcontentTuning[instanceXmapID[bossXinstance[encounterID]]]]);
 			const elem = document.querySelector("#boss-" + encounterID + " + label + div");
 			Object.keys(store)
 				.filter(storeType => store[storeType][encounterID])
@@ -503,3 +538,7 @@ document.addEventListener('DOMContentLoaded', () => {
 				.then(() => initCache());
 		});
 });
+
+function purgeCache() {
+	cacheStore.transaction(latestBuild, "readwrite").objectStore(latestBuild).clear();
+}

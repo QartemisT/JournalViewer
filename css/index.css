@@ -143,6 +143,7 @@ ul li {
 	order: 1;
 	flex-grow: 1;
 	padding: 10px;
+	cursor: pointer;
 }
 
 .tabbed > div {
