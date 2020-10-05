@@ -91,6 +91,29 @@ function sanityText(text, overrideSpellID, spellMultiplier) {
 		}
 		return Math.abs(cache[cacheIndex].EffectBasePointsF);
 	});
+	// TODO: Does the case matter here?
+	text = text.replace(/\$(\d+)?[eE](\d+)?/g, (_, spellID, section) => { // EffectAmplitude variables
+		spellID = spellID || overrideSpellID;
+		section = section || 1;
+		if(!spellID) {
+			console.log("Null spellID", "EffectAmplitude", text);
+			return "<err>";
+		}
+		const cacheIndex = "spelleffect-" + spellID + "-" + (parseInt(section) - 1);
+		if(!cache[cacheIndex]) {
+			let storeCacheIndex = cacheIndex;
+			if(!newCache[cacheIndex]) {
+				storeCacheIndex = "spelleffect-" + spellID + "-0";
+			}
+			cacheStore.transaction(latestBuild, "readwrite").objectStore(latestBuild).add(JSON.stringify(newCache[storeCacheIndex]), cacheIndex);
+			cache[cacheIndex] = newCache[storeCacheIndex];
+		}
+		if(!cache[cacheIndex]) {
+			console.log("Failed EffectAmplitude", text);
+			return "<err>";
+		}
+		return cache[cacheIndex].EffectAmplitude;
+	});
 	text = text.replace(/\$(\d+)?o(\d+)?/g, (_, spellID, section) => { // AuraDamage variable
 		spellID = spellID || overrideSpellID;
 		section = section || 1;
@@ -425,8 +448,9 @@ function initCache() {
 						const spellHeaderSpellID = reqHeadersResponse.spelleffect.indexOf("SpellID"),
 							spellHeaderEffectIndex = reqHeadersResponse.spelleffect.indexOf("EffectIndex"),
 							spellHeaderEffect = reqHeadersResponse.spelleffect.indexOf("Effect"),
-							spellHeaderEffectBasePointsF = reqHeadersResponse.spelleffect.indexOf("EffectBasePointsF"),
+							spellHeaderEffectAmplitude = reqHeadersResponse.spelleffect.indexOf("EffectAmplitude"),
 							spellHeaderEffectAuraPeriod = reqHeadersResponse.spelleffect.indexOf("EffectAuraPeriod"),
+							spellHeaderEffectBasePointsF = reqHeadersResponse.spelleffect.indexOf("EffectBasePointsF"),
 							spellHeaderEffectRadiusIndex0 = reqHeadersResponse.spelleffect.indexOf("EffectRadiusIndex[0]"),
 							spellHeaderEffectRadiusIndex1 = reqHeadersResponse.spelleffect.indexOf("EffectRadiusIndex[1]");
 						Papa.parse("https://wow.tools/dbc/api/export/?name=spelleffect&build=" + latestBuild, {
@@ -437,8 +461,9 @@ function initCache() {
 								data.data.shift();
 								data.data.map(data => newCache["spelleffect-" + data[spellHeaderSpellID] + "-" + data[spellHeaderEffectIndex]] = {
 									Effect:				data[spellHeaderEffect],
-									EffectBasePointsF:	data[spellHeaderEffectBasePointsF],
+									EffectAmplitude:	data[spellHeaderEffectAmplitude],
 									EffectAuraPeriod:	data[spellHeaderEffectAuraPeriod],
+									EffectBasePointsF:	data[spellHeaderEffectBasePointsF],
 									EffectRadiusIndex0:	data[spellHeaderEffectRadiusIndex0],
 									EffectRadiusIndex1:	data[spellHeaderEffectRadiusIndex1]
 								});
