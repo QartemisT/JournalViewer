@@ -1,3 +1,8 @@
+const difficulty = { // TODO: This is mythic only. Normal: 1,14. Heroic: 2,15. Mythic: 16, 23
+	"16": true,
+	"23": true
+}
+
 let latestBuild, cacheStore,
 	selectedBuild = "wow_beta";
 const newCache = {},
@@ -65,7 +70,14 @@ function sanityText(text, overrideSpellID, spellMultiplier) {
 	text = text.replace(/\$bullet;/g, "<br>&bull; "); // New line
 	text = text.replace(/\|cFF([a-z0-9]+)\|Hspell:([0-9]+)\s?\|h([^|]+)\|h\|r/gi, " <a style=\"color: #$1;\" href=\"https://" + builds[selectedBuild].link + "wowhead.com/spell=$2\" data-wowhead=\"spell-$2\">$3</a>"); // Spell tooltips
 	text = text.replace(/\$\[[0-9,]+(?:[\s\n]+)?(.*?)\$]/g, "$1"); // Ignored difficulty text
-	text = text.replace(/\$\[![0-9,]+(?:[\s\n]+)?(.*?)\$]/g, "<p class=\"iconsprite warning\">$1</p>"); // Difficulty warning text
+	text = text.replace(/\$\[!([0-9,]+)(?:[\s\n]+)?(.*?)\$]/g, (_, difficulties, txt) => {
+		for(const diff of difficulties.split(",")) {
+			if(difficulty[diff]) {
+				return "<p class=\"iconsprite warning\">" + txt + "</p>";
+			}
+		}
+		return "";
+	});
 	text = text.replace(/\$(\d+)?s(\d+)?/g, (_, spellID, section) => { // SpellEffect variables
 		spellID = spellID || overrideSpellID;
 		section = section || 1;
@@ -312,7 +324,7 @@ function load() {
 	// Prepare spell stuff
 	const mapXcontentTuning = [];
 	reqCSVResponse.mapdifficulty
-		.filter((data) => data[2] === "1" || data[2] === "14") // TODO: This is mythic only. Normal: 1,14. Heroic: 2,15. Mythic: 16, 23
+		.filter((data) => difficulty[data[2]])
 		.map(data => {
 			mapXcontentTuning[data[10]] = data[9];
 		});
