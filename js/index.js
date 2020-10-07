@@ -82,10 +82,10 @@ function sanityText(text, overrideSpellID, spellMultiplier) {
 	}
 	text = text.replace(/\$bullet;/g, "<br>&bull; "); // New line
 	text = text.replace(/\|cFF([a-z0-9]+)\|Hspell:([0-9]+)\s?\|h([^|]+)\|h\|r/gi, " <a style=\"color: #$1;\" href=\"https://" + builds[selectedBuild].link + "wowhead.com/spell=$2\" data-wowhead=\"spell-$2\">$3</a>"); // Spell tooltips
-	text = text.replace(/\$\[[0-9,]+(?:[\s\n]+)?(.*?)\$]/g, "$1"); // Ignored difficulty text
-	text = text.replace(/\$\[!([0-9,]+)(?:[\s\n]+)?(.*?)\$]/g, (_, diffs, txt) => {
+	text = text.replace(/\$\[[0-9, ]+(?:[\s\n]+)?(.*?)\$]/g, "$1"); // Ignored difficulty text
+	text = text.replace(/\$\[!([0-9, ]+)(?:[\s\n]+)?(.*?)\$]/g, (_, diffs, txt) => {
 		for(const diff of diffs.split(",")) {
-			if(difficulties[selectedDifficulty][diff]) {
+			if(difficulties[selectedDifficulty][diff.trim()]) {
 				return "<p class=\"iconsprite warning\">" + txt + "</p>";
 			}
 		}
