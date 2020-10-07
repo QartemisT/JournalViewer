@@ -376,14 +376,17 @@ function sanityText(text, overrideSpellID, spellMultiplier) {
 			return "<err>";
 		}
 	});
-	text = text.replace(/\${([^}]+)}/g, (_, math) => {
+	text = text.replace(/\${([^}]+)}/g, (repl, math) => { // Math
 		if(math.match(/^[\d.]+[*/+-][\d.]+\s?$/g)) {
 			// Good math, lets parse
 			return eval(math);
 		}
 		// Still needs variable support
 		console.error("Invalid math: ", math, text);
-		return text;
+		return repl;
+	});
+	text = text.replace(/\${(\d+)} \$[lL]([^:]+):([^;]+);/g, (_, amount, singular, plural) => { // Pluralization
+		return amount + " " + (parseInt(amount) < 2 ? singular : plural);
 	});
 	return text;
 }
