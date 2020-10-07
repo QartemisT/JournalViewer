@@ -360,15 +360,15 @@ function load() {
 		});
 	// Bosses
 	const bossXinstance = {},
-		bosses = {};
-	reqCSVResponse.journalencounter
-		.filter((data) => data[5] !== "0")
-		.map(data => {
-			if(!bosses[data[5]]) {
-				bosses[data[5]] = [];
-			}
-			bosses[data[5]].splice(data[7], 0, data);
-		});
+		bosses = {},
+		journalEncounter = reqCSVResponse.journalencounter.filter((data) => data[5] !== "0");
+	journalEncounter.sort((a, b) => a[7] - b[7]);
+	journalEncounter.map(data => {
+		if(!bosses[data[5]]) {
+			bosses[data[5]] = [];
+		}
+		bosses[data[5]].splice(data[7], 0, data);
+	});
 	Object.keys(bosses).map(instanceID => {
 		const elem = document.querySelector("#instance-" + instanceID + " + label + div");
 		Object.values(bosses[instanceID]).map(boss => {
