@@ -91,6 +91,7 @@ function sanityText(text, overrideSpellID, spellMultiplier) {
 		}
 		return "";
 	});
+	text = text.replace(/\$@spellicon(\d+)/g, ""); // SpellIcon variable - remove it.
 	text = text.replace(/\$@spellname(\d+)/g, (_, spellID) => { // SpellName variable
 		const cacheIndex = "spellname-" + spellID;
 		if(!cache[cacheIndex]) {
