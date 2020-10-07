@@ -475,7 +475,7 @@ function load() {
 						let shouldParse = false;
 						const diffs = sectionsXDifficulty[section[0]];
 						if(diffs) {
-							for(const diff in diffs) {
+							for(const diff of diffs) {
 								if(difficulties[selectedDifficulty][diff]) {
 									shouldParse = true;
 								}
