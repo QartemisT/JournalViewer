@@ -73,6 +73,7 @@ const newCache = {},
 		1024:	"disease",
 		2048:	"enrage",
 		4096:	"mythic",
+		8192:	"bleed"
 	};
 
 function sanityText(text, overrideSpellID, spellMultiplier) {
