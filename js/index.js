@@ -1,10 +1,6 @@
-const difficulty = { // TODO: This is mythic only. Normal: 1,14. Heroic: 2,15. Mythic: 16, 23
-	"16": true,
-	"23": true
-}
-
 let latestBuild, cacheStore,
-	selectedBuild = "wow_beta";
+	selectedBuild = "wow_beta",
+	selectedDifficulty = "mythic";
 const newCache = {},
 	cache = {},
 	reqHeadersResponse = {},
@@ -49,6 +45,20 @@ const newCache = {},
 			name: "Alpha"
 		}
 	},
+	difficulties = {
+		"normal": {
+			"1":	true,
+			"14":	true
+		},
+		"heroic": {
+			"2":	true,
+			"15":	true
+		},
+		"mythic": {
+			"16":	true,
+			"23":	true
+		}
+	},
 	iconFlags = {
 		1:		"tank",
 		2:		"damage",
@@ -72,9 +82,9 @@ function sanityText(text, overrideSpellID, spellMultiplier) {
 	text = text.replace(/\$bullet;/g, "<br>&bull; "); // New line
 	text = text.replace(/\|cFF([a-z0-9]+)\|Hspell:([0-9]+)\s?\|h([^|]+)\|h\|r/gi, " <a style=\"color: #$1;\" href=\"https://" + builds[selectedBuild].link + "wowhead.com/spell=$2\" data-wowhead=\"spell-$2\">$3</a>"); // Spell tooltips
 	text = text.replace(/\$\[[0-9,]+(?:[\s\n]+)?(.*?)\$]/g, "$1"); // Ignored difficulty text
-	text = text.replace(/\$\[!([0-9,]+)(?:[\s\n]+)?(.*?)\$]/g, (_, difficulties, txt) => {
-		for(const diff of difficulties.split(",")) {
-			if(difficulty[diff]) {
+	text = text.replace(/\$\[!([0-9,]+)(?:[\s\n]+)?(.*?)\$]/g, (_, diffs, txt) => {
+		for(const diff of diffs.split(",")) {
+			if(difficulties[selectedDifficulty][diff]) {
 				return "<p class=\"iconsprite warning\">" + txt + "</p>";
 			}
 		}
@@ -288,7 +298,7 @@ function sanityText(text, overrideSpellID, spellMultiplier) {
 		try {
 			let ret = "<err>";
 			for(const data of reqCSVResponse.spelltargetrestrictions.filter(data => data[8] === spellID).sort((a, b) => a[1] - b[1])) {
-				if(data[1] === "0" || difficulty[data[1]]) {
+				if(data[1] === "0" || difficulties[selectedDifficulty][data[1]]) {
 					ret = data[3];
 				}
 			}
@@ -380,11 +390,10 @@ function load() {
 			}
 			sectionsXDifficulty[data[2]].push(data[1]);
 		});
-	console.warn(sectionsXDifficulty[2018]);
 	// Prepare spell stuff
 	const mapXcontentTuning = [];
 	reqCSVResponse.mapdifficulty
-		.filter((data) => difficulty[data[2]])
+		.filter((data) => difficulties[selectedDifficulty][data[2]])
 		.map(data => {
 			mapXcontentTuning[data[10]] = data[9];
 		});
@@ -464,10 +473,10 @@ function load() {
 						prevParent = section[5];
 						prevIndent = siblings[section[0]];
 						let shouldParse = false;
-						const difficulties = sectionsXDifficulty[section[0]];
-						if(difficulties) {
-							for(const diff in difficulties) {
-								if(difficulty[diff]) {
+						const diffs = sectionsXDifficulty[section[0]];
+						if(diffs) {
+							for(const diff in diffs) {
+								if(difficulties[selectedDifficulty][diff]) {
 									shouldParse = true;
 								}
 							}
@@ -611,17 +620,40 @@ function initCache() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-	selectedBuild = location.hash.substr(1) || selectedBuild;
-
-	const versionDropdown = document.getElementById("version");
-	versionDropdown.onchange = () => {
-		location.hash = "#" + versionDropdown.value;
-		location.reload();
+	if(location.hash === "" && localStorage.hash) {
+		location.hash = localStorage.hash;
 	}
+
+	const hashData = {};
+	for(const hashDat of location.hash.substr(1).split("&")) {
+		const values = hashDat.split("=");
+		hashData[values[0]] = values[1];
+	}
+
+	selectedBuild = hashData["build"] || selectedBuild;
+	selectedDifficulty = hashData["difficulty"] || selectedDifficulty;
+
+	const versionDropdown = document.getElementById("version"),
+		difficultyDropdown = document.getElementById("difficulty"),
+		setHash = () => {
+			location.hash = "#build=" + versionDropdown.value + "&difficulty=" + difficultyDropdown.value;
+			localStorage.hash = location.hash;
+			location.reload();
+		}
+
+	versionDropdown.onchange = setHash;
 	Object.keys(builds).map(build => {
 		versionDropdown.options[versionDropdown.options.length] = new Option(builds[build].name, build);
 		if(selectedBuild === build) {
 			versionDropdown.value = build;
+		}
+	});
+
+	difficultyDropdown.onchange = setHash;
+	Object.keys(difficulties).map(difficulty => {
+		difficultyDropdown.options[difficultyDropdown.options.length] = new Option(difficulty.charAt(0).toUpperCase() + difficulty.slice(1), difficulty);
+		if(selectedDifficulty === difficulty) {
+			difficultyDropdown.value = difficulty;
 		}
 	});
 

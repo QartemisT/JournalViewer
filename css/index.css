@@ -27,6 +27,11 @@ a {
 	right: 0;
 }
 
+#difficulty {
+	position: absolute;
+	left: 0;
+}
+
 #container {
 	width: 80%;
 	margin: 0 auto;
