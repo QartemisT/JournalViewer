@@ -374,11 +374,11 @@ function load() {
 		Object.values(bosses[instanceID]).map(boss => {
 			bossXinstance[boss[0]] = instanceID;
 			elem.innerHTML += "\
-					<input id=\"boss-" + boss[0] + "\" type=\"radio\" name=\"instance-" + boss[5] + "\">\
-					<label for=\"boss-" + boss[0] + "\">" + boss[1] + "</label>\
-					<div class=\"tabbed\">\
-						<div>" + boss[2] + "</div>\
-					</div>";
+				<input id=\"boss-" + boss[0] + "\" type=\"radio\" name=\"instance-" + boss[5] + "\">\
+				<label for=\"boss-" + boss[0] + "\">" + boss[1] + "</label>\
+				<div class=\"tabbed\">\
+					<div>" + boss[2] + "</div>\
+				</div>";
 		});
 	});
 	// Sections x Difficulty
@@ -508,11 +508,11 @@ function load() {
 					});
 					contents += "</ul>";
 					elem.innerHTML += "\
-								<input id=\"boss-" + encounterID + "-" + storeType + "\" type=\"radio\" name=\"boss-" + encounterID + "\">\
-								<label for=\"boss-" + encounterID + "-" + storeType + "\">" + storeType + "</label>\
-								<div>\
-									" + contents + "\
-								</div>";
+						<input id=\"boss-" + encounterID + "-" + storeType + "\" type=\"radio\" name=\"boss-" + encounterID + "\">\
+						<label for=\"boss-" + encounterID + "-" + storeType + "\">" + storeType + "</label>\
+						<div>\
+							" + contents + "\
+						</div>";
 				});
 		});
 }
