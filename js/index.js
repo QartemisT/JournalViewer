@@ -247,7 +247,7 @@ function sanityText(text, overrideSpellID, spellMultiplier) {
 		spellID = spellID || overrideSpellID
 		section = section || 1;
 		if(!spellID) {
-			console.log("Null spellID", "Time", text);
+			console.log("Null spellID", "EffectChainTargets", text);
 			return "<err>";
 		}
 		const cacheIndex = "spelleffect-" + spellID + "-" + ((parseInt(section) - 1) || 0);
@@ -264,6 +264,72 @@ function sanityText(text, overrideSpellID, spellMultiplier) {
 			return "<err>";
 		}
 		return cache[cacheIndex].EffectChainTargets;
+	});
+	text = text.replace(/\$(\d+)?[fF](\d+)?/g, (_, spellID, section) => { // EffectChainAmplitude variables
+		spellID = spellID || overrideSpellID
+		section = section || 1;
+		if(!spellID) {
+			console.log("Null spellID", "EffectChainAmplitude", text);
+			return "<err>";
+		}
+		const cacheIndex = "spelleffect-" + spellID + "-" + ((parseInt(section) - 1) || 0);
+		if(!cache[cacheIndex]) {
+			let storeCacheIndex = cacheIndex;
+			if(!newCache[cacheIndex]) {
+				storeCacheIndex = "spelleffect-" + spellID + "-0";
+			}
+			cacheStore.transaction(latestBuild, "readwrite").objectStore(latestBuild).add(JSON.stringify(newCache[storeCacheIndex]), cacheIndex);
+			cache[cacheIndex] = newCache[storeCacheIndex];
+		}
+		if(!cache[cacheIndex]) {
+			console.warn("Failed EffectChainAmplitude", text);
+			return "<err>";
+		}
+		return cache[cacheIndex].EffectChainAmplitude;
+	});
+	text = text.replace(/\$(\d+)?[bB](\d+)?/g, (_, spellID, section) => { // EffectPointsPerResource variables
+		spellID = spellID || overrideSpellID
+		section = section || 1;
+		if(!spellID) {
+			console.log("Null spellID", "EffectPointsPerResource", text);
+			return "<err>";
+		}
+		const cacheIndex = "spelleffect-" + spellID + "-" + ((parseInt(section) - 1) || 0);
+		if(!cache[cacheIndex]) {
+			let storeCacheIndex = cacheIndex;
+			if(!newCache[cacheIndex]) {
+				storeCacheIndex = "spelleffect-" + spellID + "-0";
+			}
+			cacheStore.transaction(latestBuild, "readwrite").objectStore(latestBuild).add(JSON.stringify(newCache[storeCacheIndex]), cacheIndex);
+			cache[cacheIndex] = newCache[storeCacheIndex];
+		}
+		if(!cache[cacheIndex]) {
+			console.warn("Failed EffectPointsPerResource", text);
+			return "<err>";
+		}
+		return cache[cacheIndex].EffectPointsPerResource;
+	});
+	text = text.replace(/\$(\d+)?q(\d+)?/g, (_, spellID, section) => { // EffectMiscValue variables
+		spellID = spellID || overrideSpellID
+		section = section || 1;
+		if(!spellID) {
+			console.log("Null spellID", "EffectMiscValue", text);
+			return "<err>";
+		}
+		const cacheIndex = "spelleffect-" + spellID + "-" + ((parseInt(section) - 1) || 0);
+		if(!cache[cacheIndex]) {
+			let storeCacheIndex = cacheIndex;
+			if(!newCache[cacheIndex]) {
+				storeCacheIndex = "spelleffect-" + spellID + "-0";
+			}
+			cacheStore.transaction(latestBuild, "readwrite").objectStore(latestBuild).add(JSON.stringify(newCache[storeCacheIndex]), cacheIndex);
+			cache[cacheIndex] = newCache[storeCacheIndex];
+		}
+		if(!cache[cacheIndex]) {
+			console.warn("Failed EffectMiscValue", text);
+			return "<err>";
+		}
+		return cache[cacheIndex].EffectMiscValue0;
 	});
 	text = text.replace(/\$(\d+)?[dD]/g, (_, spellID) => { // Duration variables
 		spellID = spellID || overrideSpellID
@@ -318,7 +384,6 @@ function sanityText(text, overrideSpellID, spellMultiplier) {
 		console.error("Invalid math: ", math, text);
 		return text;
 	});
-	// TODO: $f
 	return text;
 }
 
@@ -544,8 +609,11 @@ function initCache() {
 							spellHeaderEffect = reqHeadersResponse.spelleffect.indexOf("Effect"),
 							spellHeaderEffectAmplitude = reqHeadersResponse.spelleffect.indexOf("EffectAmplitude"),
 							spellHeaderEffectAuraPeriod = reqHeadersResponse.spelleffect.indexOf("EffectAuraPeriod"),
+							spellHeaderEffectChainAmplitude = reqHeadersResponse.spelleffect.indexOf("EffectChainAmplitude"),
 							spellHeaderEffectChainTargets = reqHeadersResponse.spelleffect.indexOf("EffectChainTargets"),
+							spellHeaderEffectPointsPerResource = reqHeadersResponse.spelleffect.indexOf("EffectPointsPerResource"),
 							spellHeaderEffectBasePointsF = reqHeadersResponse.spelleffect.indexOf("EffectBasePointsF"),
+							spellHeaderEffectMiscValue0 = reqHeadersResponse.spelleffect.indexOf("EffectMiscValue[0]"),
 							spellHeaderEffectRadiusIndex0 = reqHeadersResponse.spelleffect.indexOf("EffectRadiusIndex[0]"),
 							spellHeaderEffectRadiusIndex1 = reqHeadersResponse.spelleffect.indexOf("EffectRadiusIndex[1]");
 						Papa.parse("https://wow.tools/dbc/api/export/?name=spelleffect&build=" + latestBuild, {
@@ -555,13 +623,16 @@ function initCache() {
 							complete: (data) => {
 								data.data.shift();
 								data.data.map(data => newCache["spelleffect-" + data[spellHeaderSpellID] + "-" + data[spellHeaderEffectIndex]] = {
-									Effect:				data[spellHeaderEffect],
-									EffectAmplitude:	data[spellHeaderEffectAmplitude],
-									EffectAuraPeriod:	data[spellHeaderEffectAuraPeriod],
-									EffectChainTargets: data[spellHeaderEffectChainTargets],
-									EffectBasePointsF:	data[spellHeaderEffectBasePointsF],
-									EffectRadiusIndex0:	data[spellHeaderEffectRadiusIndex0],
-									EffectRadiusIndex1:	data[spellHeaderEffectRadiusIndex1]
+									Effect:					data[spellHeaderEffect],
+									EffectAmplitude:		data[spellHeaderEffectAmplitude],
+									EffectAuraPeriod:		data[spellHeaderEffectAuraPeriod],
+									EffectChainAmplitude:	data[spellHeaderEffectChainAmplitude],
+									EffectChainTargets:		data[spellHeaderEffectChainTargets],
+									EffectPointsPerResource:data[spellHeaderEffectPointsPerResource],
+									EffectBasePointsF:		data[spellHeaderEffectBasePointsF],
+									EffectMiscValue0:		data[spellHeaderEffectMiscValue0],
+									EffectRadiusIndex0:		data[spellHeaderEffectRadiusIndex0],
+									EffectRadiusIndex1:		data[spellHeaderEffectRadiusIndex1]
 								});
 								resolve();
 							}
