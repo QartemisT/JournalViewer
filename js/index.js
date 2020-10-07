@@ -25,6 +25,7 @@ const newCache = {},
 		"journalinstance",
 		"journalencounter",
 		"journalencountersection",
+		"journalsectionxdifficulty",
 		"mapdifficulty",
 		"spellradius",
 		"spellduration",
@@ -370,6 +371,16 @@ function load() {
 					</div>";
 		});
 	});
+	// Sections x Difficulty
+	const sectionsXDifficulty = {};
+	reqCSVResponse.journalsectionxdifficulty
+		.map(data => {
+			if(!sectionsXDifficulty[data[2]]) {
+				sectionsXDifficulty[data[2]] = [];
+			}
+			sectionsXDifficulty[data[2]].push(data[1]);
+		});
+	console.warn(sectionsXDifficulty[2018]);
 	// Prepare spell stuff
 	const mapXcontentTuning = [];
 	reqCSVResponse.mapdifficulty
@@ -452,6 +463,20 @@ function load() {
 						}
 						prevParent = section[5];
 						prevIndent = siblings[section[0]];
+						let shouldParse = false;
+						const difficulties = sectionsXDifficulty[section[0]];
+						if(difficulties) {
+							for(const diff in difficulties) {
+								if(difficulty[diff]) {
+									shouldParse = true;
+								}
+							}
+						} else {
+							shouldParse = true;
+						}
+						if(!shouldParse) {
+							return;
+						}
 						if(storeType === "Overview") {
 							contents += elementIcons(section[14]) + "<b>" + section[1] + "</b> " + sanityText(section[2]) + "</li>";
 						} else if(section[11] !== "0") { // Ability: Spell

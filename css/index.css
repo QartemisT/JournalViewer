@@ -37,6 +37,10 @@ ul {
 	margin: 0;
 }
 
+ul ul {
+	padding: 10px 15px 0;
+}
+
 ul li {
 	margin-left: 15px;
 	line-height: 1.6;
