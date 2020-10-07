@@ -28,6 +28,7 @@ const newCache = {},
 		"mapdifficulty",
 		"spellradius",
 		"spellduration",
+		"spelltargetrestrictions"
 	],
 	builds = {
 		"wow":		{
@@ -77,6 +78,22 @@ function sanityText(text, overrideSpellID, spellMultiplier) {
 			}
 		}
 		return "";
+	});
+	text = text.replace(/\$@spellname(\d+)/g, (_, spellID) => { // SpellName variable
+		const cacheIndex = "spellname-" + spellID;
+		if(!cache[cacheIndex]) {
+			cacheStore.transaction(latestBuild, "readwrite").objectStore(latestBuild).add(JSON.stringify(newCache[cacheIndex]), cacheIndex);
+			cache[cacheIndex] = newCache[cacheIndex];
+		}
+		return "<a href=\"https://" + builds[selectedBuild].link + "wowhead.com/spell=" + spellID + "\" data-wowhead=\"spell-" + spellID + "\">" + cache[cacheIndex] + "</a>";
+	});
+	text = text.replace(/\$@spelldesc(\d+)/g, (_, spellID) => { // SpellDesc variable
+		const cacheIndex = "spelldesc-" + spellID;
+		if(!cache[cacheIndex]) {
+			cacheStore.transaction(latestBuild, "readwrite").objectStore(latestBuild).add(JSON.stringify(newCache[cacheIndex]), cacheIndex);
+			cache[cacheIndex] = newCache[cacheIndex];
+		}
+		return sanityText(cache[cacheIndex], spellID, spellMultiplier);
 	});
 	text = text.replace(/\$(\d+)?[mMsSwW](\d+)?/g, (_, spellID, section) => { // SpellEffect variables
 		spellID = spellID || overrideSpellID;
@@ -161,22 +178,6 @@ function sanityText(text, overrideSpellID, spellMultiplier) {
 			return "<err>";
 		}
 	});
-	text = text.replace(/\$@spellname(\d+)/g, (_, spellID) => { // SpellName variable
-		const cacheIndex = "spellname-" + spellID;
-		if(!cache[cacheIndex]) {
-			cacheStore.transaction(latestBuild, "readwrite").objectStore(latestBuild).add(JSON.stringify(newCache[cacheIndex]), cacheIndex);
-			cache[cacheIndex] = newCache[cacheIndex];
-		}
-		return "<a href=\"https://" + builds[selectedBuild].link + "wowhead.com/spell=" + spellID + "\" data-wowhead=\"spell-" + spellID + "\">" + cache[cacheIndex] + "</a>";
-	});
-	text = text.replace(/\$@spelldesc(\d+)/g, (_, spellID) => { // SpellDesc variable
-		const cacheIndex = "spelldesc-" + spellID;
-		if(!cache[cacheIndex]) {
-			cacheStore.transaction(latestBuild, "readwrite").objectStore(latestBuild).add(JSON.stringify(newCache[cacheIndex]), cacheIndex);
-			cache[cacheIndex] = newCache[cacheIndex];
-		}
-		return sanityText(cache[cacheIndex], spellID, spellMultiplier);
-	});
 	text = text.replace(/\$(\d+)?([a|A])(\d+)?/g, (_, spellID, type, section) => { // Radius variables
 		spellID = spellID || overrideSpellID;
 		section = section || 1;
@@ -230,6 +231,28 @@ function sanityText(text, overrideSpellID, spellMultiplier) {
 		}
 		return cache[cacheIndex].EffectAuraPeriod / 1000;
 	});
+	text = text.replace(/\$(\d+)?[xX](\d+)?/g, (_, spellID, section) => { // EffectChainTargets variables
+		spellID = spellID || overrideSpellID
+		section = section || 1;
+		if(!spellID) {
+			console.log("Null spellID", "Time", text);
+			return "<err>";
+		}
+		const cacheIndex = "spelleffect-" + spellID + "-" + ((parseInt(section) - 1) || 0);
+		if(!cache[cacheIndex]) {
+			let storeCacheIndex = cacheIndex;
+			if(!newCache[cacheIndex]) {
+				storeCacheIndex = "spelleffect-" + spellID + "-0";
+			}
+			cacheStore.transaction(latestBuild, "readwrite").objectStore(latestBuild).add(JSON.stringify(newCache[storeCacheIndex]), cacheIndex);
+			cache[cacheIndex] = newCache[storeCacheIndex];
+		}
+		if(!cache[cacheIndex]) {
+			console.warn("Failed EffectChainTargets", text);
+			return "<err>";
+		}
+		return cache[cacheIndex].EffectChainTargets;
+	});
 	text = text.replace(/\$(\d+)?[dD]/g, (_, spellID) => { // Duration variables
 		spellID = spellID || overrideSpellID
 		if(!spellID) {
@@ -255,16 +278,35 @@ function sanityText(text, overrideSpellID, spellMultiplier) {
 			return "<err>";
 		}
 	});
-	text = text.replace(/\${([^}]+)}/g, (_, math) => {
-		if(math.match(/^[\d.]+[*/][\d.]+$/g)) {
-			// Good math, lets parse
-			console.warn(math, text);
-		} else {
-			// Still needs variable support
-			console.error(math, text);
+	text = text.replace(/\$(\d+)?[iI]/g, (_, spellID) => { // SpellTargetRestrictions variables
+		spellID = spellID || overrideSpellID
+		if(!spellID) {
+			console.log("Null spellID", "SpellTargetRestrictions", text);
+			return "<err>";
+		}
+		try {
+			let ret = "<err>";
+			for(const data of reqCSVResponse.spelltargetrestrictions.filter(data => data[8] === spellID).sort((a, b) => a[1] - b[1])) {
+				if(data[1] === "0" || difficulty[data[1]]) {
+					ret = data[3];
+				}
+			}
+			return ret;
+		} catch(_) {
+			console.log("Failed SpellTargetRestrictions", text);
+			return "<err>";
 		}
 	});
-	// TODO: $f, $[xX]
+	text = text.replace(/\${([^}]+)}/g, (_, math) => {
+		if(math.match(/^[\d.]+[*/+-][\d.]+\s?$/g)) {
+			// Good math, lets parse
+			return eval(math);
+		}
+		// Still needs variable support
+		console.error("Invalid math: ", math, text);
+		return text;
+	});
+	// TODO: $f
 	return text;
 }
 
@@ -457,9 +499,7 @@ function initCache() {
 			if(cursor) { // Getting results
 				try {
 					cache[cursor.primaryKey] = JSON.parse(cursor.value);
-				} catch(_) {
-					console.log(cursor.primaryKey, cursor.value);
-				}
+				} catch(_) {}
 				cursor.continue();
 			} else { // Finished
 				if(Object.keys(cache).length === 0) {
@@ -469,6 +509,7 @@ function initCache() {
 							spellHeaderEffect = reqHeadersResponse.spelleffect.indexOf("Effect"),
 							spellHeaderEffectAmplitude = reqHeadersResponse.spelleffect.indexOf("EffectAmplitude"),
 							spellHeaderEffectAuraPeriod = reqHeadersResponse.spelleffect.indexOf("EffectAuraPeriod"),
+							spellHeaderEffectChainTargets = reqHeadersResponse.spelleffect.indexOf("EffectChainTargets"),
 							spellHeaderEffectBasePointsF = reqHeadersResponse.spelleffect.indexOf("EffectBasePointsF"),
 							spellHeaderEffectRadiusIndex0 = reqHeadersResponse.spelleffect.indexOf("EffectRadiusIndex[0]"),
 							spellHeaderEffectRadiusIndex1 = reqHeadersResponse.spelleffect.indexOf("EffectRadiusIndex[1]");
@@ -482,6 +523,7 @@ function initCache() {
 									Effect:				data[spellHeaderEffect],
 									EffectAmplitude:	data[spellHeaderEffectAmplitude],
 									EffectAuraPeriod:	data[spellHeaderEffectAuraPeriod],
+									EffectChainTargets: data[spellHeaderEffectChainTargets],
 									EffectBasePointsF:	data[spellHeaderEffectBasePointsF],
 									EffectRadiusIndex0:	data[spellHeaderEffectRadiusIndex0],
 									EffectRadiusIndex1:	data[spellHeaderEffectRadiusIndex1]
@@ -586,4 +628,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function purgeCache() {
 	cacheStore.transaction(latestBuild, "readwrite").objectStore(latestBuild).clear();
+	console.warn("CACHE PURGED!");
 }
