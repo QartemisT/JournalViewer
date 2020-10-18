@@ -402,8 +402,8 @@ function sanityText(text, overrideSpellID, spellMultiplier) {
 		}
 	});
 	text = text.replace(/\${([^}]+)}/g, (repl, math) => { // Math
-		if(math.match(/^[\d.]+[*/+-][\d.]+\s?$/g)) {
-			// Good math, lets parse
+		math = math.replace(" sec", ""); // e.g. "30 sec*20"
+		if(math.match(/^[\s\d().*/+-]+$/g)) { // Matches: Spaces, numbers, brackets, math operations
 			return eval(math);
 		}
 		// Still needs variable support
