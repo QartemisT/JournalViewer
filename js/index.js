@@ -413,9 +413,6 @@ function sanityText(text, overrideSpellID, spellMultiplier) {
 	text = text.replace(/\${(\d+)} \$[lL]([^:]+):([^;]+);/g, (_, amount, singular, plural) => { // Pluralization
 		return amount + " " + (parseInt(amount) < 2 ? singular : plural);
 	});
-	text = text.replace(/\${([\d.]+)}\.\d/g, (_, num) => { // Unknown? ${2.5}.1 -> 2.5
-		return num;
-	});
 	return text;
 }
 
