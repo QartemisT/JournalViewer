@@ -1,6 +1,7 @@
 let latestBuild, cacheStore,
 	selectedBuild = "wow_beta",
-	selectedDifficulty = "mythic";
+	selectedDifficulty = "mythic",
+	selectedTab = "";
 const newCache = {},
 	cache = {},
 	reqHeadersResponse = {},
@@ -75,6 +76,30 @@ const newCache = {},
 		4096:	"mythic",
 		8192:	"bleed"
 	};
+
+function setHash() {
+	let hash = "#";
+	if(selectedBuild !== "wow_beta") {
+		hash += "build=" + selectedBuild;
+	}
+	if(selectedDifficulty !== "mythic") {
+		if(hash !== "#") {
+			hash += "&";
+		}
+		hash += "difficulty=" + selectedDifficulty;
+	}
+	if(selectedTab !== "") {
+		if(hash !== "#") {
+			hash += "&";
+		}
+		hash += "tab=" + selectedTab;
+	}
+	if(hash === "#") {
+		return;
+	}
+	location.hash = hash;
+	localStorage.hash = location.hash;
+}
 
 function sanityText(text, overrideSpellID, spellMultiplier) {
 	if(!text) {
@@ -588,6 +613,28 @@ function load() {
 						</div>";
 				});
 		});
+	Array.from(document.querySelectorAll("input")).map(element => {
+		element.onclick = (event) => {
+			const elem = event.target;
+			if(elem.checked && elem.getAttribute("id") !== selectedTab) {
+				selectedTab = elem.getAttribute("id");
+				setHash();
+			}
+		}
+	});
+	// Render the cached tab
+	if(selectedTab !== "") {
+		let selector = selectedTab;
+		while(true) {
+			let target = document.querySelector("#" + selector);
+			target.checked = true;
+			const name = target.getAttribute("name");
+			if(name === "expansion") { // Top level
+				break;
+			}
+			selector = name;
+		}
+	}
 }
 
 function initCache() {
@@ -698,7 +745,7 @@ function initCache() {
 	};
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener("DOMContentLoaded", () => {
 	if(location.hash === "" && localStorage.hash) {
 		location.hash = localStorage.hash;
 	}
@@ -711,16 +758,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	selectedBuild = hashData["build"] || selectedBuild;
 	selectedDifficulty = hashData["difficulty"] || selectedDifficulty;
+	selectedTab = hashData["tab"] || selectedTab;
 
 	const versionDropdown = document.getElementById("version"),
-		difficultyDropdown = document.getElementById("difficulty"),
-		setHash = () => {
-			location.hash = "#build=" + versionDropdown.value + "&difficulty=" + difficultyDropdown.value;
-			localStorage.hash = location.hash;
-			location.reload();
-		}
+		difficultyDropdown = document.getElementById("difficulty");
 
-	versionDropdown.onchange = setHash;
+	versionDropdown.onchange = () => {
+		selectedBuild = versionDropdown.value;
+		setHash();
+		location.reload();
+	};
 	Object.keys(builds).map(build => {
 		versionDropdown.options[versionDropdown.options.length] = new Option(builds[build].name, build);
 		if(selectedBuild === build) {
@@ -728,7 +775,11 @@ document.addEventListener('DOMContentLoaded', () => {
 		}
 	});
 
-	difficultyDropdown.onchange = setHash;
+	difficultyDropdown.onchange = () => {
+		selectedDifficulty = difficultyDropdown.value;
+		setHash();
+		location.reload();
+	};
 	Object.keys(difficulties).map(difficulty => {
 		difficultyDropdown.options[difficultyDropdown.options.length] = new Option(difficulty.charAt(0).toUpperCase() + difficulty.slice(1), difficulty);
 		if(selectedDifficulty === difficulty) {
