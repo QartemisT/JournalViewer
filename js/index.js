@@ -435,7 +435,7 @@ function load() {
 	reqCSVResponse.journaltier.reverse().map((data, index) => {
 		expansionsElem.innerHTML += "\
 			<input id=\"expansion-" + data[0] + "\" type=\"radio\" name=\"expansion\"" + (index === 0 ? "checked" : "") + ">\
-			<label for=\"expansion-" + data[0] + "\">" + data[1] + "</label>\
+			<label for=\"expansion-" + data[0] + "\" title=\"Expansion ID: " + data[0] + "\">" + data[1] + "</label>\
 			<div class=\"tabbed\"></div>";
 	});
 	// Instances
@@ -443,7 +443,7 @@ function load() {
 	reqCSVResponse.journaltierxinstance.map(data => {
 		document.querySelector("#expansion-" + data[1] + " + label + div").innerHTML += "\
 			<input id=\"instance-" + data[2] + "\" type=\"radio\" name=\"expansion-" + data[1] + "\">\
-			<label for=\"instance-" + data[2] + "\"></label>\
+			<label for=\"instance-" + data[2] + "\" title=\"Instance ID: " + data[2] + "\"></label>\
 			<div class=\"tabbed\"></div>";
 	});
 	reqCSVResponse.journalinstance
@@ -470,7 +470,7 @@ function load() {
 			bossXinstance[boss[0]] = instanceID;
 			elem.innerHTML += "\
 				<input id=\"boss-" + boss[0] + "\" type=\"radio\" name=\"instance-" + boss[5] + "\">\
-				<label for=\"boss-" + boss[0] + "\">" + boss[1] + "</label>\
+				<label for=\"boss-" + boss[0] + "\" title=\"Boss ID: " + boss[0] + "\">" + boss[1] + "</label>\
 				<div class=\"tabbed\">\
 					<div>" + boss[2] + "</div>\
 				</div>";
