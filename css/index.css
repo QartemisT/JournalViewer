@@ -275,7 +275,7 @@ ul li {
 }
 
 .tabbed > div > div {
-	box-shadow: inset 6px 6px var(--tabbed-subcontent-border-color), inset -6px -6px var(--tabbed-subcontent-border-color);
+	box-shadow: inset 6px 6px var(--tabbed-checked-background-color), inset -6px -6px var(--tabbed-checked-background-color);
 }
 
 .tabbed > div > div > label {
