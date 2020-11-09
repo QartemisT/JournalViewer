@@ -744,12 +744,17 @@ function initCache() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-	if(localStorage.lightMode === "true") {
-		document.head.insertAdjacentHTML('beforeend', '<link rel="stylesheet" type="text/css" href="css/light.css">');
-	}
+	const lightCSS = document.querySelector("link[title=lightMode]");
+	lightCSS.disabled = localStorage.lightMode !== "true";
 
 	if(location.hash === "" && localStorage.hash) {
 		location.hash = localStorage.hash;
+	}
+
+	const themeSwitch = document.getElementById("themeMode");
+	themeSwitch.onchange = () => {
+		lightCSS.disabled = themeSwitch.checked;
+		localStorage.lightMode = themeSwitch.checked;
 	}
 
 	const hashData = {};
