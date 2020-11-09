@@ -623,7 +623,7 @@ function load() {
 	if(selectedTab !== "") {
 		let selector = selectedTab;
 		while(true) {
-			let target = document.querySelector("#" + selector);
+			let target = document.getElementById(selector);
 			target.checked = true;
 			const name = target.getAttribute("name");
 			if(name === "expansion") { // Top level
@@ -632,6 +632,7 @@ function load() {
 			selector = name;
 		}
 	}
+	document.getElementById("loading").style.display = "none";
 }
 
 function initCache() {
