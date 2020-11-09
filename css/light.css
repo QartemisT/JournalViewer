@@ -1,6 +1,10 @@
-/* TODO */
-
 :root {
-	--text-color: #BBB;
-	--background-color: #ccc;
+	--text-color: #67717D;
+	--background-color: #F5F6FA;
+	--link-color: #FFD100;
+	--loading-color: rgba(0, 0, 0, 0.75);
+	--tabbed-background-color: #F1F1F1;
+	--tabbed-checked-text-color: #000000;
+	--tabbed-checked-background-color: #D8D8D8;
+	--tabbed-content-background-color: #F9F9F9;
 }

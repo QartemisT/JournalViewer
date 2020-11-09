@@ -258,7 +258,7 @@ ul li {
 
 .tabbed > label {
 	background-color: var(--tabbed-background-color);
-	color: var(--tabbed-text-color);
+	color: var(--text-color);
 	order: 1;
 	flex-grow: 1;
 	padding: 10px;
@@ -270,7 +270,7 @@ ul li {
 	flex-basis: 100%;
 	display: none;
 	background: var(--tabbed-content-background-color);
-	box-shadow: inset 2px 2px var(--tabbed-content-border-color), inset -2px -2px var(--tabbed-content-border-color);
+	box-shadow: inset 2px 2px var(--tabbed-checked-background-color), inset -2px -2px var(--tabbed-checked-background-color);
 	padding: 15px;
 }
 
