@@ -610,7 +610,7 @@ function load() {
 						</div>";
 				});
 		});
-	Array.from(document.querySelectorAll("input")).map(element => {
+	Array.from(document.querySelectorAll("input:not([id=themeMode])")).map(element => {
 		element.onclick = (event) => {
 			const elem = event.target;
 			if(elem.checked && elem.getAttribute("id") !== selectedTab) {
@@ -623,7 +623,10 @@ function load() {
 	if(selectedTab !== "") {
 		let selector = selectedTab;
 		while(true) {
-			let target = document.getElementById(selector);
+			let target = document.querySelector("#" + selector);
+			if(!target) {
+				break;
+			}
 			target.checked = true;
 			const name = target.getAttribute("name");
 			if(name === "expansion") { // Top level
@@ -752,9 +755,10 @@ document.addEventListener("DOMContentLoaded", () => {
 	}
 
 	const themeSwitch = document.getElementById("themeMode");
+	themeSwitch.checked = localStorage.lightMode !== "true";
 	themeSwitch.onchange = () => {
 		lightCSS.disabled = themeSwitch.checked;
-		localStorage.lightMode = themeSwitch.checked;
+		localStorage.lightMode = !themeSwitch.checked;
 	}
 
 	const hashData = {};
