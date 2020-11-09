@@ -1,0 +1,13 @@
+:root {
+	--text-color: #BBBBBB;
+	--background-color: #000000;
+	--link-color: #FFD100;
+	--loading-color: rgba(255, 255, 255, 0.75);
+	--tabbed-text-color: #AAAAAA;
+	--tabbed-background-color: #141414;
+	--tabbed-checked-text-color: #FFFFFF;
+	--tabbed-checked-background-color: #262626;
+	--tabbed-content-background-color: #1B1B1B;
+	--tabbed-content-border-color: #333333;
+	--tabbed-subcontent-border-color: #262626;
+}

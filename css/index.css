@@ -13,12 +13,12 @@ body {
 	font-size: 14px;
 	margin: 0;
 	padding: 0;
-	color: #BBB;
-	background: #000;
+	color: var(--text-color);
+	background: var(--background-color);
 }
 
 a {
-	color: #FFD100;
+	color: var(--link-color);
 	text-decoration: none;
 }
 
@@ -89,8 +89,8 @@ ul li {
 	-o-animation: spinner 1500ms infinite linear;
 	animation: spinner 1500ms infinite linear;
 	border-radius: 0.5em;
-	-webkit-box-shadow: rgba(255, 255, 255, 0.75) 1.5em 0 0 0, rgba(255, 255, 255, 0.75) 1.1em 1.1em 0 0, rgba(255, 255, 255, 0.75) 0 1.5em 0 0, rgba(255, 255, 255, 0.75) -1.1em 1.1em 0 0, rgba(255, 255, 255, 0.5) -1.5em 0 0 0, rgba(255, 255, 255, 0.5) -1.1em -1.1em 0 0, rgba(255, 255, 255, 0.75) 0 -1.5em 0 0, rgba(255, 255, 255, 0.75) 1.1em -1.1em 0 0;
-	box-shadow: rgba(255, 255, 255, 0.75) 1.5em 0 0 0, rgba(255, 255, 255, 0.75) 1.1em 1.1em 0 0, rgba(255, 255, 255, 0.75) 0 1.5em 0 0, rgba(255, 255, 255, 0.75) -1.1em 1.1em 0 0, rgba(255, 255, 255, 0.75) -1.5em 0 0 0, rgba(255, 255, 255, 0.75) -1.1em -1.1em 0 0, rgba(255, 255, 255, 0.75) 0 -1.5em 0 0, rgba(255, 255, 255, 0.75) 1.1em -1.1em 0 0;
+	-webkit-box-shadow: var(--loading-color) 1.5em 0 0 0, var(--loading-color) 1.1em 1.1em 0 0, var(--loading-color) 0 1.5em 0 0, var(--loading-color) -1.1em 1.1em 0 0, var(--loading-color) -1.5em 0 0 0, var(--loading-color) -1.1em -1.1em 0 0, var(--loading-color) 0 -1.5em 0 0, var(--loading-color) 1.1em -1.1em 0 0;
+	box-shadow: var(--loading-color) 1.5em 0 0 0, var(--loading-color) 1.1em 1.1em 0 0, var(--loading-color) 0 1.5em 0 0, var(--loading-color) -1.1em 1.1em 0 0, var(--loading-color) -1.5em 0 0 0, var(--loading-color) -1.1em -1.1em 0 0, var(--loading-color) 0 -1.5em 0 0, var(--loading-color) 1.1em -1.1em 0 0;
 }
 
 @-webkit-keyframes spinner {
@@ -244,8 +244,8 @@ ul li {
 }
 
 .tabbed > input:checked + label {
-	background-color: #262626;
-	color: #FFF;
+	background-color: var(--tabbed-checked-background-color);
+	color: var(--tabbed-checked-text-color);
 }
 
 .tabbed > input:checked + label + div {
@@ -257,8 +257,8 @@ ul li {
 }
 
 .tabbed > label {
-	background-color: #141414;
-	color: #AAA;
+	background-color: var(--tabbed-background-color);
+	color: var(--tabbed-text-color);
 	order: 1;
 	flex-grow: 1;
 	padding: 10px;
@@ -269,13 +269,13 @@ ul li {
 	order: 2;
 	flex-basis: 100%;
 	display: none;
-	background: #1b1b1b;
-	box-shadow: inset 2px 2px #333, inset -2px -2px #333;
+	background: var(--tabbed-content-background-color);
+	box-shadow: inset 2px 2px var(--tabbed-content-border-color), inset -2px -2px var(--tabbed-content-border-color);
 	padding: 15px;
 }
 
 .tabbed > div > div {
-	box-shadow: inset 6px 6px #262626, inset -6px -6px #262626;
+	box-shadow: inset 6px 6px var(--tabbed-subcontent-border-color), inset -6px -6px var(--tabbed-subcontent-border-color);
 }
 
 .tabbed > div > div > label {

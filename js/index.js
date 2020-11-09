@@ -744,6 +744,10 @@ function initCache() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+	if(localStorage.lightMode === "true") {
+		document.head.insertAdjacentHTML('beforeend', '<link rel="stylesheet" type="text/css" href="css/light.css">');
+	}
+
 	if(location.hash === "" && localStorage.hash) {
 		location.hash = localStorage.hash;
 	}
