@@ -1,10 +1,10 @@
 :root {
-	--text-color: #67717D;
-	--background-color: #F5F6FA;
-	--link-color: #FFD100;
+	--text-color: #67717d;
+	--background-color: #F5F6Fa;
+	--link-color: #ffd100;
 	--loading-color: rgba(0, 0, 0, 0.75);
-	--tabbed-background-color: #F1F1F1;
-	--tabbed-checked-text-color: #000000;
-	--tabbed-checked-background-color: #D8D8D8;
-	--tabbed-content-background-color: #F9F9F9;
+	--tabbed-background-color: #f1f1f1;
+	--tabbed-checked-text-color: #000;
+	--tabbed-checked-background-color: #d8d8d8;
+	--tabbed-content-background-color: #f9f9f9;
 }

@@ -1,10 +1,10 @@
 :root {
-	--text-color: #AAAAAA;
-	--background-color: #000000;
+	--text-color: #aaa;
+	--background-color: #000;
 	--link-color: #FFD100;
 	--loading-color: rgba(255, 255, 255, 0.75);
 	--tabbed-background-color: #141414;
-	--tabbed-checked-text-color: #FFFFFF;
+	--tabbed-checked-text-color: #fff;
 	--tabbed-checked-background-color: #262626;
-	--tabbed-content-background-color: #1B1B1B;
+	--tabbed-content-background-color: #1b1b1b;
 }
