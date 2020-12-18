@@ -14,8 +14,8 @@ jobs:
       - name: Install modules
         run: yarn
 
-      - name: Runs ESLint
-        run: eslint . --cache --max-warnings=0
+      - name: Run ESLint
+        run: yarn lint
 
       - name: Runs StyleLint
         uses: actions-hub/stylelint@master
