@@ -24,11 +24,7 @@
     "lint:js": "eslint . --cache --max-warnings=0",
     "test": "npm-run-all --parallel lint:*"
   },
-  "eslintConfig": {
-    "extends": [
-      "es3"
-    ]
-  },
+  "eslintConfig": {},
   "eslintIgnore": [
     "**/*.min.js"
   ],
