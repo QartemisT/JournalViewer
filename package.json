@@ -43,6 +43,7 @@
       "selector-max-compound-selectors": null,
       "selector-max-specificity": null,
       "selector-max-type": null,
+	  "selector-max-id": null,
       "max-nesting-depth": null,
       "order/properties-order": null
     }
