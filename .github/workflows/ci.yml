@@ -11,13 +11,14 @@ jobs:
         with:
           fetch-depth: 100
 
-      - name: Install modules
-        run: yarn
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 14
 
-      - name: Run ESLint
-        run: yarn lint
+      - uses: pnpm/action-setup@v1.2.1
+        with:
+          version: 5.11.1
+      - run: pnpm install
 
-      - name: Runs StyleLint
-        uses: actions-hub/stylelint@master
-        env:
-          INDENT_SPACES: "tab"
+      - name: Run list
+        run: pnpm test
