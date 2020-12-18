@@ -13,7 +13,6 @@
   ],
   "devDependencies": {
     "eslint": "^7.13.0",
-    "eslint-config-es3": "~1.0.0",
     "stylelint": "^13.8.0",
     "stylelint-config-primer": "~8.0.0",
     "@primer/css": "^12.7.0",
@@ -25,9 +24,10 @@
     "test": "npm-run-all --parallel lint:*"
   },
   "eslintConfig": {
-    "extends": [
-      "eslint:recommended"
-    ]
+    "env": {
+      "es6": true
+	},
+    "extends": "eslint:recommended"
   },
   "eslintIgnore": [
     "**/*.min.js"
