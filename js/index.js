@@ -824,7 +824,7 @@ document.addEventListener("DOMContentLoaded", () => {
 		});
 });
 
-function purgeCache() {
+function purgeCache() { // eslint-disable-line no-unused-vars
 	cacheStore.transaction(latestBuild, "readwrite").objectStore(latestBuild).clear();
 	console.warn("CACHE PURGED!");
 }
