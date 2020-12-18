@@ -12,9 +12,9 @@
     "QartemisT"
   ],
   "devDependencies": {
-    "eslint": "~6.3.0",
+    "eslint": "^7.13.0",
     "eslint-config-es3": "~1.0.0",
-    "stylelint": "~11.0.0",
+    "stylelint": "^13.8.0",
     "stylelint-config-primer": "~8.0.0",
     "@primer/css": "^12.7.0",
     "npm-run-all": "^4.1.5"
