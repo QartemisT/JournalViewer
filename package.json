@@ -30,7 +30,7 @@
 	},
 	"globals": {
 	  "Papa": true
-	}
+	},
     "extends": "eslint:recommended"
   },
   "eslintIgnore": [
