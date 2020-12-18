@@ -622,7 +622,7 @@ function load() {
 	// Render the cached tab
 	if(selectedTab !== "") {
 		let selector = selectedTab;
-		while(true) {
+		while(true) { // eslint-disable-line no-constant-condition
 			let target = document.querySelector("#" + selector);
 			if(!target) {
 				break;
@@ -654,7 +654,7 @@ function initCache() {
 			if(cursor) { // Getting results
 				try {
 					cache[cursor.primaryKey] = JSON.parse(cursor.value);
-				} catch(_) {}
+				} catch(_) {} // eslint-disable-line no-empty
 				cursor.continue();
 			} else { // Finished
 				if(Object.keys(cache).length === 0) {
