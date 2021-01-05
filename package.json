@@ -1,0 +1,51 @@
+{
+  "name": "JournalViewer",
+  "version": "0.0.1",
+  "description": "Journal Viewer for WoW",
+  "repository": {
+    "type": "git",
+	"url": "QartemisT/JournalViewer"
+  },
+  "license": "MIT",
+  "bugs": "https://github.com/QartemisT/JournalViewer/issues",
+  "authors": [
+    "QartemisT"
+  ],
+  "devDependencies": {
+    "eslint": "^7.13.0",
+    "stylelint": "^13.8.0",
+    "stylelint-config-primer": "~8.0.0",
+    "@primer/css": "^12.7.0",
+    "npm-run-all": "^4.1.5"
+  },
+  "scripts": {
+    "lint:css": "stylelint '**/*.css'",
+    "lint:js": "eslint . --cache --max-warnings=0",
+    "test": "npm-run-all --parallel lint:*"
+  },
+  "eslintConfig": {
+    "env": {
+	  "browser": true,
+      "es2020": true
+	},
+	"globals": {
+	  "Papa": true
+	},
+    "extends": "eslint:recommended"
+  },
+  "eslintIgnore": [
+    "**/*.min.js"
+  ],
+  "stylelint": {
+    "extends": "stylelint-config-primer",
+    "rules": {
+      "indentation": "tab",
+      "selector-max-compound-selectors": null,
+      "selector-max-specificity": null,
+      "selector-max-type": null,
+	  "selector-max-id": null,
+      "max-nesting-depth": null,
+      "order/properties-order": null
+    }
+  }
+}
