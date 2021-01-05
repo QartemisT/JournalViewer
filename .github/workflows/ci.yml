@@ -28,5 +28,5 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          exclude_assets: 'node_modules,.eslintcache,package.json,pnpm-lock.yaml'
+          exclude_assets: '.github,node_modules,.eslintcache,package.json,pnpm-lock.yaml'
           publish_dir: .
