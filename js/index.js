@@ -747,7 +747,8 @@ function initCache() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-	const lightCSS = document.querySelector("link[title=lightMode]");
+	const lightCSSselector = document.querySelector("link[title=lightMode]"),
+	      lightCSS = lightCSSselector.sheet || lightCSSselector.styleSheet;
 	lightCSS.disabled = localStorage.lightMode !== "true";
 
 	if(location.hash === "" && localStorage.hash) {
