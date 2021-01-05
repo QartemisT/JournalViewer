@@ -18,10 +18,10 @@ jobs:
       - uses: pnpm/action-setup@v1.2.1
         with:
           version: 5.11.1
+
       - run: pnpm install
 
-      - name: Run list
-        run: pnpm test
+      - run: pnpm test
 
       - name: Deploy
         if: ${{ github.event_name == 'push' && success() }}
