@@ -751,7 +751,7 @@ function initCache() {
 	};
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+function loadJournalViewer() {
 	const lightCSSselector = document.querySelector("link[title=lightMode]"),
 		lightCSS = lightCSSselector.sheet || lightCSSselector.styleSheet;
 	lightCSS.disabled = localStorage.lightMode !== "true";
@@ -828,7 +828,9 @@ document.addEventListener("DOMContentLoaded", () => {
 				//
 				.then(() => initCache());
 		});
-});
+}
+
+document.addEventListener("DOMContentLoaded", () => loadJournalViewer());
 
 function purgeCache() { // eslint-disable-line no-unused-vars
 	cacheStore.transaction(latestBuild, "readwrite").objectStore(latestBuild).clear();

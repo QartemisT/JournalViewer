@@ -17,6 +17,7 @@ function login() {
 				newScript.appendChild(document.createTextNode(oldScript.innerHTML));
 				oldScript.parentNode.replaceChild(newScript, oldScript);
 			});
+			loadJournalViewer();
 		})
 		.catch(() => {
 			document.getElementById('login-alert').style.display = 'block'
