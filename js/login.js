@@ -1,7 +1,7 @@
 const password = document.getElementById('login-password')
 
-const login = () => {
-	fetch(sha1(password.value) + "/index.html")
+const login = (pass) => {
+	fetch((pass || sha1(password.value)) + "/index.html")
 		.then(response => {
 			if(!response.ok) {
 				throw new Error();
@@ -10,6 +10,9 @@ const login = () => {
 		})
 		.then(blob => blob.text())
 		.then(text => {
+			if(!pass) {
+				localStorage.password = sha1(password.value);
+			}
 			document.body.innerHTML = text;
 			Array.from(document.querySelectorAll("script")).forEach(oldScript => {
 				const newScript = document.createElement("script");
@@ -30,4 +33,7 @@ document.onkeydown = e => {
 	if((e || window.event).keyCode === 13) {
 		login();
 	}
+}
+if(localStorage.password) {
+	login(localStorage.password);
 }
