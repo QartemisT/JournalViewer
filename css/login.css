@@ -1,0 +1,70 @@
+body,
+html {
+	font-family: "open sans", Arial, "helvetica neue", Helvetica, sans-serif;
+	font-weight: 300;
+	font-size: 16px;
+	background: #f2f2f2;
+	color: #2d3737;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 100%;
+}
+
+#login {
+	background: #fff;
+	box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.1);
+	border-radius: 3px;
+	min-width: 500px;
+}
+
+#login-alert {
+	display: none;
+	border-bottom: 1px solid #ebccd1;
+	border-radius: 3px 3px 0 0;
+	padding: 12px 14px;
+	color: #a94442;
+	background-color: #f2dede;
+}
+
+#login #login-content {
+	padding: 24px 28px;
+}
+
+#login #login-content h1 {
+	font-size: 16px;
+	font-weight: 500;
+	margin: 0 0 12px;
+	line-height: 1;
+}
+
+#login #login-content #login-password {
+	display: block;
+	border: solid 1px #ccc;
+	padding: 12px 14px;
+	box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.1);
+	font-size: 16px;
+	width: calc(100% - 28px);
+	border-radius: 3px;
+	margin-bottom: 12px;
+}
+
+#login #login-content #login-password:focus {
+	outline: none;
+	border-color: #228843;
+}
+
+#login #login-content #login-button {
+	background-color: #228843;
+	border-radius: 3px;
+	cursor: pointer;
+	border: 0;
+	color: #fff;
+	padding: 12px 14px;
+	font-weight: 500;
+	font-size: 16px;
+}
+
+#login #login-content #login-button:hover {
+	background-color: #1c6d36;
+}

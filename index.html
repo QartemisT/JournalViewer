@@ -2,22 +2,18 @@
 <html>
 	<head>
 		<title>Journal Viewer</title>
-		<link rel="stylesheet" type="text/css" href="css/dark.css">
-		<link rel="stylesheet" title="lightMode" type="text/css" href="css/light.css">
-		<link rel="stylesheet" type="text/css" href="css/index.css">
-		<script src="//unpkg.com/papaparse@5.2.0/papaparse.min.js"></script>
-		<script src="js/index.js"></script>
-		<script src="//wow.zamimg.com/widgets/power.js"></script>
 	</head>
 	<body>
-		<select id="difficulty"></select>
-		<select id="version"></select>
-		<input type="checkbox" id="themeMode"><label for="themeMode"></label>
-		<div id="container">
-			<div class="tabbed"></div>
+		<div id="login">
+			<div id="login-alert">You entered the wrong password</div>
+			<div id="login-content">
+				<h1>You need a password to continue</h1>
+				<input id="login-password" type="password" placeholder="password">
+				<button id="login-button" type="button">Continue</button>
+			</div>
 		</div>
-		<div id="loading">
-			Loading...
-		</div>
+		<link rel="stylesheet" type="text/css" href="css/login.css">
+		<script src="//cdnjs.cloudflare.com/ajax/libs/js-sha1/0.6.0/sha1.min.js"></script>
+		<script src="js/login.js"></script>
 	</body>
 </html>
