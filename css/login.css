@@ -58,7 +58,7 @@ html {
 	background-color: #228843;
 	border-radius: 3px;
 	cursor: pointer;
-	border: none;
+	border: 0;
 	color: #fff;
 	padding: 12px 14px;
 	font-weight: 500;
