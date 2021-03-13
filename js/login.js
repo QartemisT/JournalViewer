@@ -11,7 +11,7 @@ function login() {
 		.then(blob => blob.text())
 		.then(text => {
 			document.body.innerHTML = text;
-			Array.from(elm.querySelectorAll("script")).forEach(oldScript => {
+			Array.from(document.querySelectorAll("script")).forEach(oldScript => {
 				const newScript = document.createElement("script");
 				Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
 				newScript.appendChild(document.createTextNode(oldScript.innerHTML));
