@@ -3,7 +3,7 @@
 const password = document.getElementById('login-password')
 
 function login() {
-	fetch(sha1(document.getElementById('login-password').value) + "/index.html")
+	fetch(sha1(password.value) + "/index.html")
 		.then(response => {
 			if(response.ok) {
 				return response;
