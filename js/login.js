@@ -1,3 +1,5 @@
+/* global loadJournalViewer */
+
 const password = document.getElementById('login-password')
 
 function login() {
@@ -17,6 +19,7 @@ function login() {
 				newScript.appendChild(document.createTextNode(oldScript.innerHTML));
 				oldScript.parentNode.replaceChild(newScript, oldScript);
 			});
+			loadJournalViewer();
 		})
 		.catch(() => {
 			document.getElementById('login-alert').style.display = 'block'
