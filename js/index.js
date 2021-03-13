@@ -7,6 +7,7 @@ const newCache = {},
 	reqHeadersResponse = {},
 	reqCSVResponse = {},
 	reqHeaders = [
+		"journalencounter",
 		"spelleffect",
 		"spellmisc",
 		"spellname",
@@ -464,6 +465,10 @@ function load() {
 		}
 		bosses[data[5]].splice(data[7], 0, data);
 	});
+	const encounterName		= reqHeadersResponse.journalencounter.indexOf("Name_lang"),
+		encounterDesc		= reqHeadersResponse.journalencounter.indexOf("Description_lang"),
+		encounterID			= reqHeadersResponse.journalencounter.indexOf("ID"),
+		encounterInstance	= reqHeadersResponse.journalencounter.indexOf("JournalInstanceID")
 	Object.keys(bosses).map(instanceID => {
 		const elem = document.querySelector("#instance-" + instanceID + " + label + div");
 		Object.values(bosses[instanceID]).map(boss => {
