@@ -1,3 +1,5 @@
+/* global loadJournalViewer */
+
 const password = document.getElementById('login-password')
 
 function login() {
