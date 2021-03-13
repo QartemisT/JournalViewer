@@ -29,7 +29,6 @@
 			"es2020": true
 		},
 		"globals": {
-			"loadJournalViewer": true,
 			"Papa": true,
 			"sha1": true
 		},
