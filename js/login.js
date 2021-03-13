@@ -9,7 +9,15 @@ function login() {
 		})
 		.then(response => response.blob())
 		.then(blob => blob.text())
-		.then(text => document.body.innerHTML = text)
+		.then(text => {
+			document.body.innerHTML = text;
+			Array.from(document.querySelectorAll("script")).forEach(oldScript => {
+				const newScript = document.createElement("script");
+				Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+				newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+				oldScript.parentNode.replaceChild(newScript, oldScript);
+			});
+		})
 		.catch(() => {
 			document.getElementById('login-alert').style.display = 'block'
 			password.setAttribute('placeholder', 'Incorrect password')
