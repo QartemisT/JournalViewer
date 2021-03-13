@@ -643,7 +643,7 @@ function load() {
 	document.getElementById("loading").style.display = "none";
 }
 
-function initCache() {
+const initCache = () => {
 	const store = indexedDB.open(latestBuild, 2);
 	store.onupgradeneeded = () => {
 		if(store.result.objectStoreNames.contains(latestBuild)) {
@@ -751,7 +751,7 @@ function initCache() {
 	};
 }
 
-function loadJournalViewer() {
+(() => {
 	const lightCSSselector = document.querySelector("link[title=lightMode]"),
 		lightCSS = lightCSSselector.sheet || lightCSSselector.styleSheet;
 	lightCSS.disabled = localStorage.lightMode !== "true";
@@ -828,11 +828,9 @@ function loadJournalViewer() {
 				//
 				.then(() => initCache());
 		});
-}
+})();
 
-document.addEventListener("DOMContentLoaded", () => loadJournalViewer());
-
-function purgeCache() { // eslint-disable-line no-unused-vars
+const purgeCache = () => { // eslint-disable-line no-unused-vars
 	cacheStore.transaction(latestBuild, "readwrite").objectStore(latestBuild).clear();
 	console.warn("CACHE PURGED!");
 }

@@ -1,15 +1,13 @@
-/* global loadJournalViewer */
-
 const password = document.getElementById('login-password')
 
-function login() {
+const login = () => {
 	fetch(sha1(password.value) + "/index.html")
 		.then(response => {
-			if(response.ok) {
-				return response;
+			if(!response.ok) {
+				throw new Error();
 			}
+			return response.blob();
 		})
-		.then(response => response.blob())
 		.then(blob => blob.text())
 		.then(text => {
 			document.body.innerHTML = text;
@@ -19,7 +17,6 @@ function login() {
 				newScript.appendChild(document.createTextNode(oldScript.innerHTML));
 				oldScript.parentNode.replaceChild(newScript, oldScript);
 			});
-			loadJournalViewer();
 		})
 		.catch(() => {
 			document.getElementById('login-alert').style.display = 'block'
