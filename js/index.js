@@ -474,10 +474,10 @@ function load() {
 		Object.values(bosses[instanceID]).map(boss => {
 			bossXinstance[boss[0]] = instanceID;
 			elem.innerHTML += "\
-				<input id=\"boss-" + boss[4] + "\" type=\"radio\" name=\"instance-" + boss[5] + "\">\
-				<label for=\"boss-" + boss[4] + "\" title=\"Boss ID: " + boss[4] + "\">" + boss[0] + "</label>\
+				<input id=\"boss-" + boss[encounterID] + "\" type=\"radio\" name=\"instance-" + boss[encounterInstance] + "\">\
+				<label for=\"boss-" + boss[encounterID] + "\" title=\"Boss ID: " + boss[encounterID] + "\">" + boss[encounterName] + "</label>\
 				<div class=\"tabbed\">\
-					<div>" + boss[1] + "</div>\
+					<div>" + boss[encounterDesc] + "</div>\
 				</div>";
 		});
 	});
