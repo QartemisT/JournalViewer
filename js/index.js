@@ -48,6 +48,7 @@ const newCache = {},
 		}
 	},
 	difficulties = {
+		"all": {},
 		"normal": {
 			"1":	true,
 			"14":	true
@@ -111,7 +112,7 @@ function sanityText(text, overrideSpellID, spellMultiplier) {
 	text = text.replace(/\$\[[0-9, ]+(?:[\s\n]+)?(.*?)\$]/g, "$1"); // Ignored difficulty text
 	text = text.replace(/\$\[!([0-9, ]+)(?:[\s\n]+)?(.*?)\$]/g, (_, diffs, txt) => {
 		for(const diff of diffs.split(",")) {
-			if(difficulties[selectedDifficulty][diff.trim()]) {
+			if(selectedDifficulty === "all" || difficulties[selectedDifficulty][diff.trim()]) {
 				return "<p class=\"iconsprite warning\">" + txt + "</p>";
 			}
 		}
@@ -392,7 +393,7 @@ function sanityText(text, overrideSpellID, spellMultiplier) {
 		try {
 			let ret = "<err>";
 			for(const data of reqCSVResponse.spelltargetrestrictions.filter(data => data[8] === spellID).sort((a, b) => a[1] - b[1])) {
-				if(data[1] === "0" || difficulties[selectedDifficulty][data[1]]) {
+				if(data[1] === "0" || selectedDifficulty === "all" || difficulties[selectedDifficulty][data[1]]) {
 					ret = data[3];
 				}
 			}
@@ -493,7 +494,7 @@ function load() {
 	// Prepare spell stuff
 	const mapXcontentTuning = [];
 	reqCSVResponse.mapdifficulty
-		.filter((data) => difficulties[selectedDifficulty][data[2]])
+		.filter((data) => selectedDifficulty === "all" || difficulties[selectedDifficulty][data[2]])
 		.map(data => {
 			mapXcontentTuning[data[10]] = data[9];
 		});
@@ -576,7 +577,7 @@ function load() {
 						const diffs = sectionsXDifficulty[section[0]];
 						if(diffs) {
 							for(const diff of diffs) {
-								if(difficulties[selectedDifficulty][diff]) {
+								if(selectedDifficulty === "all" || difficulties[selectedDifficulty][diff]) {
 									shouldParse = true;
 								}
 							}
