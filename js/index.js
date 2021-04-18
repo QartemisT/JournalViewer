@@ -584,11 +584,12 @@ function load() {
 						} else {
 							shouldParse = true;
 						}
-						if(!shouldParse) {
+						const overviewParsed = sanityText(section[2]);
+						if(!shouldParse && (storeType === "Overview" || section[11] === "0")) {
 							return;
 						}
 						if(storeType === "Overview") {
-							contents += elementIcons(section[14]) + "<b>" + section[1] + "</b> " + sanityText(section[2]) + "</li>";
+							contents += elementIcons(section[14]) + "<b>" + section[1] + "</b> " + overviewParsed + "</li>";
 						} else if(section[11] !== "0") { // Ability: Spell
 							const spellID = section[11],
 								spellNameIndex = "spellname-" + spellID,
@@ -601,9 +602,13 @@ function load() {
 								cacheStore.transaction(latestBuild, "readwrite").objectStore(latestBuild).add(JSON.stringify(newCache[spellDescIndex]), spellDescIndex);
 								cache[spellDescIndex] = newCache[spellDescIndex];
 							}
-							contents += elementIcons(section[14]) + "<b><a href=\"https://" + builds[selectedBuild].link + "wowhead.com/spell=" + spellID + "\" data-wowhead=\"spell-" + spellID + "\">" + cache[spellNameIndex] + "</a></b> " + sanityText(cache[spellDescIndex], spellID, 22025.363 * (statModsXtuningID[mapXcontentTuning[instanceXmapID[bossXinstance[encounterID]]]] || {CreatureSpellDamageMod: 1}).CreatureSpellDamageMod) + sanityText(section[2]) + "</li>";
+							const spellParsed = sanityText(cache[spellDescIndex], spellID, 22025.363 * (statModsXtuningID[mapXcontentTuning[instanceXmapID[bossXinstance[encounterID]]]] || {CreatureSpellDamageMod: 1}).CreatureSpellDamageMod);
+							if(!shouldParse) {
+								return;
+							}
+							contents += elementIcons(section[14]) + "<b><a href=\"https://" + builds[selectedBuild].link + "wowhead.com/spell=" + spellID + "\" data-wowhead=\"spell-" + spellID + "\">" + cache[spellNameIndex] + "</a></b> " + spellParsed + overviewParsed + "</li>";
 						} else {
-							contents += elementIcons(section[14]) + "<b>" + section[1] + "</b> " + sanityText(section[2]) + "</li>";
+							contents += elementIcons(section[14]) + "<b>" + section[1] + "</b> " + overviewParsed + "</li>";
 						}
 						prevParent = section[5];
 					});
