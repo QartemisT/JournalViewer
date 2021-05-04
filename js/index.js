@@ -449,11 +449,11 @@ function load() {
 			<div class=\"tabbed\"></div>";
 	});
 	reqCSVResponse.journalinstance
-		.filter(data => document.querySelector("#instance-" + data[2] + " + label"))
+		.filter(data => document.querySelector("#instance-" + data[0] + " + label"))
 		.map(data => {
-			instanceXmapID[data[2]] = data[3];
-			document.querySelector("#instance-" + data[2] + " + label").innerHTML = data[0];
-			document.querySelector("#instance-" + data[2] + " + label + div").innerHTML += data[1];
+			instanceXmapID[data[0]] = data[3];
+			document.querySelector("#instance-" + data[0] + " + label").innerHTML = data[1];
+			document.querySelector("#instance-" + data[0] + " + label + div").innerHTML += data[2];
 		});
 	// Bosses
 	const bossXinstance = {},
@@ -466,19 +466,15 @@ function load() {
 		}
 		bosses[data[5]].splice(data[7], 0, data);
 	});
-	const encounterName		= reqHeadersResponse.journalencounter.indexOf("Name_lang"),
-		encounterDesc		= reqHeadersResponse.journalencounter.indexOf("Description_lang"),
-		encounterID			= reqHeadersResponse.journalencounter.indexOf("ID"),
-		encounterInstance	= reqHeadersResponse.journalencounter.indexOf("JournalInstanceID")
 	Object.keys(bosses).map(instanceID => {
 		const elem = document.querySelector("#instance-" + instanceID + " + label + div");
 		Object.values(bosses[instanceID]).map(boss => {
 			bossXinstance[boss[0]] = instanceID;
 			elem.innerHTML += "\
-				<input id=\"boss-" + boss[encounterID] + "\" type=\"radio\" name=\"instance-" + boss[encounterInstance] + "\">\
-				<label for=\"boss-" + boss[encounterID] + "\" title=\"Boss ID: " + boss[encounterID] + "\">" + boss[encounterName] + "</label>\
+				<input id=\"boss-" + boss[4] + "\" type=\"radio\" name=\"instance-" + boss[5] + "\">\
+				<label for=\"boss-" + boss[4] + "\" title=\"Boss ID: " + boss[4] + "\">" + boss[0] + "</label>\
 				<div class=\"tabbed\">\
-					<div>" + boss[encounterDesc] + "</div>\
+					<div>" + boss[1] + "</div>\
 				</div>";
 		});
 	});
