@@ -1,7 +1,7 @@
 const password = document.getElementById('login-password')
 
 const login = (pass) => {
-	fetch((pass || sha1(password.value)) + "/index.html")
+	fetch(sha1(pass || password.value) + "/index.html")
 		.then(response => {
 			if(!response.ok) {
 				throw new Error();
@@ -11,7 +11,7 @@ const login = (pass) => {
 		.then(blob => blob.text())
 		.then(text => {
 			if(!pass) {
-				localStorage.password = sha1(password.value);
+				localStorage.password = password.value;
 			}
 			document.body.innerHTML = text;
 			Array.from(document.querySelectorAll("script")).forEach(oldScript => {
