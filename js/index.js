@@ -398,7 +398,14 @@ function load() {
 				mapXcontentTuning[mapID] = tuneValue;
 			}
 		});
-	const statModsXtuningID = Object.fromEntries(Object.entries(cacheData.contenttuningxexpected).map(([k, v]) => ([k, v * cacheData.expectedstatmod[v]])));
+	const statModsXtuningID = [];
+	Object.entries(cacheData.contenttuningxexpected)
+		.map(([k, v]) => {
+			if(!statModsXtuningID[k]) {
+				statModsXtuningID[k] = 1;
+			}
+			v.map(data => statModsXtuningID[k] *= cacheData.expectedstatmod[data]);
+		});
 	// Sections
 	const store = {
 		Overview:	{},
@@ -466,6 +473,7 @@ function load() {
 							contents += elementIcons(section.IconFlags) + "<b>" + section.Title_lang + "</b> " + overviewParsed + "</li>";
 						} else if(section.SpellID !== 0) { // Ability: Spell
 							const spellID = section.SpellID;
+							// 22025.363 = ExpectedStat.CreatureSpellDamage
 							contents += elementIcons(section.IconFlags) + "<b><a href=\"https://" + builds[selectedBuild].link + "wowhead.com/spell=" + spellID + "\" data-wowhead=\"spell-" + spellID + "\">" + cacheData.spellname[spellID] + "</a></b> " + sanityText(cacheData.spell[spellID], spellID, 22025.363 * (statModsXtuningID[mapXcontentTuning[instanceXmapID[bossXinstance[encounterID]]]] || 1)) + overviewParsed + "</li>";
 						} else {
 							contents += elementIcons(section.IconFlags) + "<b>" + section.Title_lang + "</b> " + overviewParsed + "</li>";
