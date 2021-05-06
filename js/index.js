@@ -253,7 +253,7 @@ function sanityText(text, overrideSpellID, spellMultiplier) {
 		}
 		return data.EffectMiscValue0;
 	});
-	text = text.replace(/\$(\d+)?[dD]/g, (_, spellID) => { // Duration variables
+	text = text.replace(/\$(\d+)?[dD](\d+)?/g, (_, spellID) => { // Duration variables
 		spellID = spellID || overrideSpellID
 		if(!spellID) {
 			console.log("Null spellID", "Duration", text);
@@ -292,6 +292,19 @@ function sanityText(text, overrideSpellID, spellMultiplier) {
 			console.log("Failed SpellTargetRestrictions", text);
 			return "<err>";
 		}
+	});
+	text = text.replace(/\$(\d+)?[uU]/g, (_, spellID) => { // SpellAuraOptions variables
+		spellID = spellID || overrideSpellID
+		if(!spellID) {
+			console.log("Null spellID", "SpellAuraOptions", text);
+			return "<err>";
+		}
+		const data = cacheData.spellauraoptions[spellID]
+		if(!data) {
+			console.log("Failed SpellAuraOptions", text);
+			return "<err>";
+		}
+		return data;
 	});
 	text = text.replace(/\${([^}]+)}/g, (repl, math) => { // Math
 		math = math.replace(" sec", ""); // e.g. "30 sec*20"
@@ -363,7 +376,7 @@ function load() {
 		Object.values(bosses[instanceID]).map(boss => {
 			bossXinstance[boss.ID] = instanceID;
 			elem.innerHTML += "\
-				<input id=\"boss-" + boss.ID + "\" type=\"radio\" name=\"instance-" + boss.JoruanlInstanceID + "\">\
+				<input id=\"boss-" + boss.ID + "\" type=\"radio\" name=\"instance-" + boss.JournalInstanceID + "\">\
 				<label for=\"boss-" + boss.ID + "\" title=\"Boss ID: " + boss.ID + "\">" + boss.Name_lang + "</label>\
 				<div class=\"tabbed\">\
 					<div>" + (boss.Description_lang || "") + "</div>\
