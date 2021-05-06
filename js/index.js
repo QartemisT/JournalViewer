@@ -1,4 +1,4 @@
-let latestBuild, cacheStore, cacheData,
+let cacheData,
 	selectedBuild = "wow_beta",
 	selectedDifficulty = "mythic",
 	selectedTab = "";
