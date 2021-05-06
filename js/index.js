@@ -253,7 +253,7 @@ function sanityText(text, overrideSpellID, spellMultiplier) {
 		}
 		return data.EffectMiscValue0;
 	});
-	text = text.replace(/\$(\d+)?[dD](\d+)?/g, (_, spellID, __) => { // Duration variables
+	text = text.replace(/\$(\d+)?[dD](\d+)?/g, (_, spellID) => { // Duration variables
 		spellID = spellID || overrideSpellID
 		if(!spellID) {
 			console.log("Null spellID", "Duration", text);
