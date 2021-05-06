@@ -1,35 +1,8 @@
-let latestBuild, cacheStore,
+let latestBuild, cacheStore, cacheData,
 	selectedBuild = "wow_beta",
 	selectedDifficulty = "mythic",
 	selectedTab = "";
-const newCache = {},
-	cache = {},
-	reqHeadersResponse = {},
-	reqCSVResponse = {},
-	reqHeaders = [
-		"journalencounter",
-		"spelleffect",
-		"spellmisc",
-		"spellname",
-		"spell"
-	],
-	reqCSVs = [
-		"conditionalcontenttuning",
-		"contenttuningxexpected",
-		"expectedstat",
-		"expectedstatmod",
-		"journaltier",
-		"journaltierxinstance",
-		"journalinstance",
-		"journalencounter",
-		"journalencountersection",
-		"journalsectionxdifficulty",
-		"mapdifficulty",
-		"spellradius",
-		"spellduration",
-		"spelltargetrestrictions"
-	],
-	builds = {
+const builds = {
 		"wow":		{
 			link: "",
 			name: "Live"
@@ -42,10 +15,10 @@ const newCache = {},
 			link: "shadowlands.",
 			name: "Beta"
 		},
-		"wowdev":	{
-			link: "",
-			name: "Alpha"
-		}
+		//"wowdev":	{
+		//	link: "",
+		//	name: "Alpha"
+		//}
 	},
 	difficulties = {
 		"all": {},
@@ -103,6 +76,14 @@ function setHash() {
 	localStorage.hash = location.hash;
 }
 
+function getSpellEffect(spellID, section) {
+	const data = cacheData.spelleffect[spellID + "-" + (parseInt(section) - 1)];
+	if(data) {
+		return data;
+	}
+	return cacheData.spelleffect[spellID + "-0"];
+}
+
 function sanityText(text, overrideSpellID, spellMultiplier) {
 	if(!text) {
 		return "";
@@ -120,20 +101,10 @@ function sanityText(text, overrideSpellID, spellMultiplier) {
 	});
 	text = text.replace(/\$@spellicon(\d+)/g, ""); // SpellIcon variable - remove it.
 	text = text.replace(/\$@spellname(\d+)/g, (_, spellID) => { // SpellName variable
-		const cacheIndex = "spellname-" + spellID;
-		if(!cache[cacheIndex]) {
-			cacheStore.transaction(latestBuild, "readwrite").objectStore(latestBuild).add(JSON.stringify(newCache[cacheIndex]), cacheIndex);
-			cache[cacheIndex] = newCache[cacheIndex];
-		}
-		return "<a href=\"https://" + builds[selectedBuild].link + "wowhead.com/spell=" + spellID + "\" data-wowhead=\"spell-" + spellID + "\">" + cache[cacheIndex] + "</a>";
+		return "<a href=\"https://" + builds[selectedBuild].link + "wowhead.com/spell=" + spellID + "\" data-wowhead=\"spell-" + spellID + "\">" + cacheData.spellname[spellID] + "</a>";
 	});
 	text = text.replace(/\$@spelldesc(\d+)/g, (_, spellID) => { // SpellDesc variable
-		const cacheIndex = "spelldesc-" + spellID;
-		if(!cache[cacheIndex]) {
-			cacheStore.transaction(latestBuild, "readwrite").objectStore(latestBuild).add(JSON.stringify(newCache[cacheIndex]), cacheIndex);
-			cache[cacheIndex] = newCache[cacheIndex];
-		}
-		return sanityText(cache[cacheIndex], spellID, spellMultiplier);
+		return sanityText(cacheData.spell[spellID], spellID, spellMultiplier);
 	});
 	text = text.replace(/\$(\d+)?[mMsSwW](\d+)?/g, (_, spellID, section) => { // SpellEffect variables
 		spellID = spellID || overrideSpellID;
@@ -142,23 +113,15 @@ function sanityText(text, overrideSpellID, spellMultiplier) {
 			console.log("Null spellID", "SpellEffect", text);
 			return "<err>";
 		}
-		const cacheIndex = "spelleffect-" + spellID + "-" + (parseInt(section) - 1);
-		if(!cache[cacheIndex]) {
-			let storeCacheIndex = cacheIndex;
-			if(!newCache[cacheIndex]) {
-				storeCacheIndex = "spelleffect-" + spellID + "-0";
-			}
-			cacheStore.transaction(latestBuild, "readwrite").objectStore(latestBuild).add(JSON.stringify(newCache[storeCacheIndex]), cacheIndex);
-			cache[cacheIndex] = newCache[storeCacheIndex];
-		}
-		if(!cache[cacheIndex]) {
+		const data = getSpellEffect(spellID, section);
+		if(!data) {
 			console.log("Failed SpellEffect", text);
 			return "<err>";
 		}
-		if(cache[cacheIndex].Effect === "2") {
-			return Math.round(Math.abs(spellMultiplier * cache[cacheIndex].EffectBasePointsF / 100));
+		if(data.Effect === 2) {
+			return Math.round(Math.abs(spellMultiplier * data.EffectBasePointsF / 100));
 		}
-		return Math.abs(cache[cacheIndex].EffectBasePointsF);
+		return Math.abs(data.EffectBasePointsF);
 	});
 	text = text.replace(/\$(\d+)?[eE](\d+)?/g, (_, spellID, section) => { // EffectAmplitude variables
 		spellID = spellID || overrideSpellID;
@@ -167,20 +130,12 @@ function sanityText(text, overrideSpellID, spellMultiplier) {
 			console.log("Null spellID", "EffectAmplitude", text);
 			return "<err>";
 		}
-		const cacheIndex = "spelleffect-" + spellID + "-" + (parseInt(section) - 1);
-		if(!cache[cacheIndex]) {
-			let storeCacheIndex = cacheIndex;
-			if(!newCache[cacheIndex]) {
-				storeCacheIndex = "spelleffect-" + spellID + "-0";
-			}
-			cacheStore.transaction(latestBuild, "readwrite").objectStore(latestBuild).add(JSON.stringify(newCache[storeCacheIndex]), cacheIndex);
-			cache[cacheIndex] = newCache[storeCacheIndex];
-		}
-		if(!cache[cacheIndex]) {
+		const data = getSpellEffect(spellID, section);
+		if(!data) {
 			console.log("Failed EffectAmplitude", text);
 			return "<err>";
 		}
-		return cache[cacheIndex].EffectAmplitude;
+		return data.EffectAmplitude;
 	});
 	text = text.replace(/\$(\d+)?o(\d+)?/g, (_, spellID, section) => { // AuraDamage variable
 		spellID = spellID || overrideSpellID;
@@ -189,30 +144,18 @@ function sanityText(text, overrideSpellID, spellMultiplier) {
 			console.log("Null spellID", "AuraDamage", text);
 			return "<err>";
 		}
-		const cacheIndex = "spelleffect-" + spellID + "-" + (parseInt(section) - 1);
-		if(!cache[cacheIndex]) {
-			let storeCacheIndex = cacheIndex;
-			if(!newCache[cacheIndex]) {
-				storeCacheIndex = "spelleffect-" + spellID + "-0";
-			}
-			cacheStore.transaction(latestBuild, "readwrite").objectStore(latestBuild).add(JSON.stringify(newCache[storeCacheIndex]), cacheIndex);
-			cache[cacheIndex] = newCache[storeCacheIndex];
-		}
-		if(!cache[cacheIndex]) {
+		const data = getSpellEffect(spellID, section);
+		if(!data) {
 			console.log("Failed AuraDamage (SpellEffect)", text);
 			return "<err>";
 		}
-		const cache2Index = "spellmisc-" + spellID;
-		if(!cache[cache2Index]) {
-			cacheStore.transaction(latestBuild, "readwrite").objectStore(latestBuild).add(JSON.stringify(newCache[cache2Index]), cache2Index);
-			cache[cache2Index] = newCache[cache2Index];
-		}
-		if(!cache[cache2Index]) {
+		const data2 = cacheData.spellmisc[spellID]
+		if(!data2) {
 			console.log("Failed AuraDamage2 (SpellMisc)", text);
 			return "<err>";
 		}
 		try {
-			return Math.round(Math.abs(spellMultiplier * cache[cacheIndex].EffectBasePointsF / 100) * ((reqCSVResponse.spellduration.find(data => data[0] === cache[cache2Index].DurationIndex)[1] / 1000) / (cache[cacheIndex].EffectAuraPeriod / 1000)));
+			return Math.round(Math.abs(spellMultiplier * data.EffectBasePointsF / 100) * ((cacheData.spellduration[data2.DurationIndex] / 1000) / (data.EffectAuraPeriod / 1000)));
 		} catch(_) {
 			console.log("Failed AuraDamage (SpellDuration)", text);
 			return "<err>";
@@ -225,29 +168,20 @@ function sanityText(text, overrideSpellID, spellMultiplier) {
 			console.log("Null spellID", "Radius", text);
 			return "<err>";
 		}
-		let cacheIndex = "spelleffect-" + spellID + "-" + (parseInt(section) - 1);
-		if(!cache[cacheIndex]) {
-			let storeCacheIndex = cacheIndex;
-			if(!newCache[cacheIndex]) {
-				storeCacheIndex = "spelleffect-" + spellID + "-0";
-			}
-			cacheStore.transaction(latestBuild, "readwrite").objectStore(latestBuild).add(JSON.stringify(newCache[storeCacheIndex]), cacheIndex);
-			cache[cacheIndex] = newCache[storeCacheIndex];
-		}
-		const indexType = type === "a" ? 0 : 1;
-		if(!cache[cacheIndex]) {
+		const data = getSpellEffect(spellID, section);
+		if(!data) {
 			console.log("Failed EffectRadiusIndex", text);
 			return "<err>";
 		}
-		let radiusIndex = cache[cacheIndex]["EffectRadiusIndex" + indexType];
-		if(radiusIndex === "0") {
-			radiusIndex = cache[cacheIndex]["EffectRadiusIndex" + (indexType === 0 ? 1 : 0)]
+		let radiusIndex = data["EffectRadiusIndex" + type === "a" ? 0 : 1];
+		if(radiusIndex === 0) {
+			radiusIndex = data["EffectRadiusIndex" + (type === "a" ? 1 : 0)]
 		}
-		if(radiusIndex === "0") {
+		if(radiusIndex === 0) {
 			console.log("Failed EffectRadiusIndex (both radius indexes returned 0)", text);
 			return "<err>";
 		}
-		return reqCSVResponse.spellradius.find(data => data[0] === radiusIndex)[1];
+		return cacheData.spellradius[radiusIndex];
 	});
 	text = text.replace(/\$(\d+)?[tT](\d+)?/g, (_, spellID, section) => { // Time variables
 		spellID = spellID || overrideSpellID
@@ -256,20 +190,12 @@ function sanityText(text, overrideSpellID, spellMultiplier) {
 			console.log("Null spellID", "Time", text);
 			return "<err>";
 		}
-		const cacheIndex = "spelleffect-" + spellID + "-" + ((parseInt(section) - 1) || 0);
-		if(!cache[cacheIndex]) {
-			let storeCacheIndex = cacheIndex;
-			if(!newCache[cacheIndex]) {
-				storeCacheIndex = "spelleffect-" + spellID + "-0";
-			}
-			cacheStore.transaction(latestBuild, "readwrite").objectStore(latestBuild).add(JSON.stringify(newCache[storeCacheIndex]), cacheIndex);
-			cache[cacheIndex] = newCache[storeCacheIndex];
-		}
-		if(!cache[cacheIndex]) {
+		const data = getSpellEffect(spellID, section);
+		if(!data) {
 			console.log("Failed EffectAuraPeriod", text);
 			return "<err>";
 		}
-		return cache[cacheIndex].EffectAuraPeriod / 1000;
+		return data.EffectAuraPeriod / 1000;
 	});
 	text = text.replace(/\$(\d+)?[xX](\d+)?/g, (_, spellID, section) => { // EffectChainTargets variables
 		spellID = spellID || overrideSpellID
@@ -278,20 +204,12 @@ function sanityText(text, overrideSpellID, spellMultiplier) {
 			console.log("Null spellID", "EffectChainTargets", text);
 			return "<err>";
 		}
-		const cacheIndex = "spelleffect-" + spellID + "-" + ((parseInt(section) - 1) || 0);
-		if(!cache[cacheIndex]) {
-			let storeCacheIndex = cacheIndex;
-			if(!newCache[cacheIndex]) {
-				storeCacheIndex = "spelleffect-" + spellID + "-0";
-			}
-			cacheStore.transaction(latestBuild, "readwrite").objectStore(latestBuild).add(JSON.stringify(newCache[storeCacheIndex]), cacheIndex);
-			cache[cacheIndex] = newCache[storeCacheIndex];
-		}
-		if(!cache[cacheIndex]) {
+		const data = getSpellEffect(spellID, section);
+		if(!data) {
 			console.warn("Failed EffectChainTargets", text);
 			return "<err>";
 		}
-		return cache[cacheIndex].EffectChainTargets;
+		return data.EffectChainTargets;
 	});
 	text = text.replace(/\$(\d+)?[fF](\d+)?/g, (_, spellID, section) => { // EffectChainAmplitude variables
 		spellID = spellID || overrideSpellID
@@ -300,20 +218,12 @@ function sanityText(text, overrideSpellID, spellMultiplier) {
 			console.log("Null spellID", "EffectChainAmplitude", text);
 			return "<err>";
 		}
-		const cacheIndex = "spelleffect-" + spellID + "-" + ((parseInt(section) - 1) || 0);
-		if(!cache[cacheIndex]) {
-			let storeCacheIndex = cacheIndex;
-			if(!newCache[cacheIndex]) {
-				storeCacheIndex = "spelleffect-" + spellID + "-0";
-			}
-			cacheStore.transaction(latestBuild, "readwrite").objectStore(latestBuild).add(JSON.stringify(newCache[storeCacheIndex]), cacheIndex);
-			cache[cacheIndex] = newCache[storeCacheIndex];
-		}
-		if(!cache[cacheIndex]) {
+		const data = getSpellEffect(spellID, section);
+		if(!data) {
 			console.warn("Failed EffectChainAmplitude", text);
 			return "<err>";
 		}
-		return cache[cacheIndex].EffectChainAmplitude;
+		return data.EffectChainAmplitude;
 	});
 	text = text.replace(/\$(\d+)?[bB](\d+)?/g, (_, spellID, section) => { // EffectPointsPerResource variables
 		spellID = spellID || overrideSpellID
@@ -322,20 +232,12 @@ function sanityText(text, overrideSpellID, spellMultiplier) {
 			console.log("Null spellID", "EffectPointsPerResource", text);
 			return "<err>";
 		}
-		const cacheIndex = "spelleffect-" + spellID + "-" + ((parseInt(section) - 1) || 0);
-		if(!cache[cacheIndex]) {
-			let storeCacheIndex = cacheIndex;
-			if(!newCache[cacheIndex]) {
-				storeCacheIndex = "spelleffect-" + spellID + "-0";
-			}
-			cacheStore.transaction(latestBuild, "readwrite").objectStore(latestBuild).add(JSON.stringify(newCache[storeCacheIndex]), cacheIndex);
-			cache[cacheIndex] = newCache[storeCacheIndex];
-		}
-		if(!cache[cacheIndex]) {
+		const data = getSpellEffect(spellID, section);
+		if(!data) {
 			console.warn("Failed EffectPointsPerResource", text);
 			return "<err>";
 		}
-		return cache[cacheIndex].EffectPointsPerResource;
+		return data.EffectPointsPerResource;
 	});
 	text = text.replace(/\$(\d+)?q(\d+)?/g, (_, spellID, section) => { // EffectMiscValue variables
 		spellID = spellID || overrideSpellID
@@ -344,20 +246,12 @@ function sanityText(text, overrideSpellID, spellMultiplier) {
 			console.log("Null spellID", "EffectMiscValue", text);
 			return "<err>";
 		}
-		const cacheIndex = "spelleffect-" + spellID + "-" + ((parseInt(section) - 1) || 0);
-		if(!cache[cacheIndex]) {
-			let storeCacheIndex = cacheIndex;
-			if(!newCache[cacheIndex]) {
-				storeCacheIndex = "spelleffect-" + spellID + "-0";
-			}
-			cacheStore.transaction(latestBuild, "readwrite").objectStore(latestBuild).add(JSON.stringify(newCache[storeCacheIndex]), cacheIndex);
-			cache[cacheIndex] = newCache[storeCacheIndex];
-		}
-		if(!cache[cacheIndex]) {
+		const data = getSpellEffect(spellID, section);
+		if(!data) {
 			console.warn("Failed EffectMiscValue", text);
 			return "<err>";
 		}
-		return cache[cacheIndex].EffectMiscValue0;
+		return data.EffectMiscValue0;
 	});
 	text = text.replace(/\$(\d+)?[dD]/g, (_, spellID) => { // Duration variables
 		spellID = spellID || overrideSpellID
@@ -365,20 +259,16 @@ function sanityText(text, overrideSpellID, spellMultiplier) {
 			console.log("Null spellID", "Duration", text);
 			return "<err>";
 		}
-		const cacheIndex = "spellmisc-" + spellID;
-		if(!cache[cacheIndex]) {
-			cacheStore.transaction(latestBuild, "readwrite").objectStore(latestBuild).add(JSON.stringify(newCache[cacheIndex]), cacheIndex);
-			cache[cacheIndex] = newCache[cacheIndex];
-		}
-		if(!cache[cacheIndex]) {
+		const data = cacheData.spellmisc[spellID]
+		if(!data) {
 			console.log("Failed Duration", text);
 			return "<err>";
 		}
-		if(cache[cacheIndex].DurationIndex === "0") { // Special edge case
+		if(data.DurationIndex === 0) { // Special edge case
 			return "until cancelled";
 		}
 		try {
-			return reqCSVResponse.spellduration.find(data => data[0] === cache[cacheIndex].DurationIndex)[1] / 1000 + " sec";
+			return cacheData.spellduration[data.DurationIndex] / 1000 + " sec";
 		} catch(_) {
 			console.log("Failed Duration", text);
 			return "<err>";
@@ -392,9 +282,9 @@ function sanityText(text, overrideSpellID, spellMultiplier) {
 		}
 		try {
 			let ret = "<err>";
-			for(const data of reqCSVResponse.spelltargetrestrictions.filter(data => data[8] === spellID).sort((a, b) => a[1] - b[1])) {
-				if(data[1] === "0" || selectedDifficulty === "all" || difficulties[selectedDifficulty][data[1]]) {
-					ret = data[3];
+			for(const data of cacheData.spelltargetrestrictions.filter(data => data.SpellID === spellID).sort((a, b) => a.DifficultyID - b.DifficultyID)) {
+				if(data.DifficultyID === 0 || selectedDifficulty === "all" || difficulties[selectedDifficulty][data.DifficultyID]) {
+					ret = data.MaxTargets;
 				}
 			}
 			return ret;
@@ -433,71 +323,73 @@ function elementIcons(bit) {
 
 function load() {
 	// Expansions
-	const expansionsElem = document.getElementsByClassName("tabbed")[0];
-	reqCSVResponse.journaltier.reverse().map((data, index) => {
+	const expansionsElem = document.querySelector("#container div");
+	cacheData.journaltier.reverse().map((data, index) => {
 		expansionsElem.innerHTML += "\
-			<input id=\"expansion-" + data[0] + "\" type=\"radio\" name=\"expansion\"" + (index === 0 ? "checked" : "") + ">\
-			<label for=\"expansion-" + data[0] + "\" title=\"Expansion ID: " + data[0] + "\">" + data[1] + "</label>\
+			<input id=\"expansion-" + data.ID + "\" type=\"radio\" name=\"expansion\"" + (index === 0 ? "checked" : "") + ">\
+			<label for=\"expansion-" + data.ID + "\" title=\"Expansion ID: " + data.ID + "\">" + data.Name_lang + "</label>\
 			<div class=\"tabbed\"></div>";
 	});
 	// Instances
-	const instanceXmapID = {};
-	reqCSVResponse.journaltierxinstance.map(data => {
-		document.querySelector("#expansion-" + data[1] + " + label + div").innerHTML += "\
-			<input id=\"instance-" + data[2] + "\" type=\"radio\" name=\"expansion-" + data[1] + "\">\
-			<label for=\"instance-" + data[2] + "\" title=\"Instance ID: " + data[2] + "\"></label>\
+	cacheData.journaltierxinstance.map(data => {
+		document.querySelector("#expansion-" + data.JournalTierID + " + label + div").innerHTML += "\
+			<input id=\"instance-" + data.JournalInstanceID + "\" type=\"radio\" name=\"expansion-" + data.JournalTierID + "\">\
+			<label for=\"instance-" + data.JournalInstanceID + "\" title=\"Instance ID: " + data.JournalInstanceID + "\"></label>\
 			<div class=\"tabbed\"></div>";
 	});
-	reqCSVResponse.journalinstance
-		.filter(data => document.querySelector("#instance-" + data[0] + " + label"))
+	const instanceXmapID = {};
+	cacheData.journalinstance
+		.filter(data => document.querySelector("#instance-" + data.ID + " + label"))
 		.map(data => {
-			instanceXmapID[data[0]] = data[3];
-			document.querySelector("#instance-" + data[0] + " + label").innerHTML = data[1];
-			document.querySelector("#instance-" + data[0] + " + label + div").innerHTML += data[2];
+			instanceXmapID[data.ID] = data.MapID;
+			document.querySelector("#instance-" + data.ID + " + label").innerHTML = data.Name_lang;
+			if(data.Description_lang) {
+				document.querySelector("#instance-" + data.ID + " + label + div").innerHTML += data.Description_lang;
+			}
 		});
 	// Bosses
-	const bossXinstance = {},
-		bosses = {},
-		journalEncounter = reqCSVResponse.journalencounter.filter((data) => data[5] !== "0");
-	journalEncounter.sort((a, b) => a[7] - b[7]);
+	const bosses = {},
+		journalEncounter = cacheData.journalencounter.filter(data => data.JournalInstanceID !== 0);
+	journalEncounter.sort((a, b) => a.OrderIndex - b.OrderIndex);
 	journalEncounter.map(data => {
-		if(!bosses[data[5]]) {
-			bosses[data[5]] = [];
+		if(!bosses[data.JournalInstanceID]) {
+			bosses[data.JournalInstanceID] = [];
 		}
-		bosses[data[5]].splice(data[7], 0, data);
+		bosses[data.JournalInstanceID].splice(data.OrderIndex, 0, data);
 	});
+	const bossXinstance = {};
 	Object.keys(bosses).map(instanceID => {
 		const elem = document.querySelector("#instance-" + instanceID + " + label + div");
 		Object.values(bosses[instanceID]).map(boss => {
-			bossXinstance[boss[0]] = instanceID;
+			bossXinstance[boss.ID] = instanceID;
 			elem.innerHTML += "\
-				<input id=\"boss-" + boss[4] + "\" type=\"radio\" name=\"instance-" + boss[5] + "\">\
-				<label for=\"boss-" + boss[4] + "\" title=\"Boss ID: " + boss[4] + "\">" + boss[0] + "</label>\
+				<input id=\"boss-" + boss.ID + "\" type=\"radio\" name=\"instance-" + boss.JoruanlInstanceID + "\">\
+				<label for=\"boss-" + boss.ID + "\" title=\"Boss ID: " + boss.ID + "\">" + boss.Name_lang + "</label>\
 				<div class=\"tabbed\">\
-					<div>" + boss[1] + "</div>\
+					<div>" + (boss.Description_lang || "") + "</div>\
 				</div>";
 		});
 	});
 	// Sections x Difficulty
 	const sectionsXDifficulty = {};
-	reqCSVResponse.journalsectionxdifficulty
+	cacheData.journalsectionxdifficulty
 		.map(data => {
-			if(!sectionsXDifficulty[data[2]]) {
-				sectionsXDifficulty[data[2]] = [];
+			if(!sectionsXDifficulty[data.JournalEncounterSectionID]) {
+				sectionsXDifficulty[data.JournalEncounterSectionID] = [];
 			}
-			sectionsXDifficulty[data[2]].push(data[1]);
+			sectionsXDifficulty[data.JournalEncounterSectionID].push(data.DifficultyID);
 		});
 	// Prepare spell stuff
 	const mapXcontentTuning = [];
-	reqCSVResponse.mapdifficulty
-		.filter((data) => selectedDifficulty === "all" || difficulties[selectedDifficulty][data[2]])
+	cacheData.mapdifficulty
+		.filter((data) => selectedDifficulty === "all" || difficulties[selectedDifficulty][data.DifficultyID])
 		.map(data => {
-			mapXcontentTuning[data[10]] = data[9];
+			mapXcontentTuning[data.MapID] = data.ContentTuningID;
 		});
 	const conditionalTuning = [];
-	reqCSVResponse.conditionalcontenttuning
+	cacheData.conditionalcontenttuning
 		.map(data => {
-			conditionalTuning[data[4]] = data[2];
+			conditionalTuning[data.NormalTuning] = data.ReplacementTuning;
 		});
 	Object.keys(mapXcontentTuning)
 		.map(mapID => {
@@ -506,38 +398,24 @@ function load() {
 				mapXcontentTuning[mapID] = tuneValue;
 			}
 		});
-	const statMods = {};
-	reqCSVResponse.expectedstatmod
-		.map(data => {
-			statMods[data[0]] = data;
-		});
-	const statModsXtuningID = [];
-	reqCSVResponse.contenttuningxexpected
-		.map(data => {
-			if(!statModsXtuningID[data[3]]) {
-				statModsXtuningID[data[3]] = {
-					CreatureSpellDamageMod: 1
-				};
-			}
-			statModsXtuningID[data[3]].CreatureSpellDamageMod *= statMods[data[1]][9];
-		});
+	const statModsXtuningID = Object.fromEntries(Object.entries(cacheData.contenttuningxexpected).map(([k, v]) => ([k, v * cacheData.expectedstatmod[v]])));
 	// Sections
 	const store = {
 		Overview:	{},
 		Abilities:	{}
 	}
-	reqCSVResponse.journalencountersection
+	cacheData.journalencountersection
 		.map(data => {
-			if(data[8] === "3" && data[13] !== "3") { // Overview
-				if(!store.Overview[data[3]]) {
-					store.Overview[data[3]] = [];
+			if(data.Type === 3 && data.Flags !== 3) { // Overview
+				if(!store.Overview[data.JournalEncounterID]) {
+					store.Overview[data.JournalEncounterID] = [];
 				}
-				store.Overview[data[3]][data[4]] = data;
-			} else if(data[9] === "0" || data[8] === "1" || data[8] === "2") { // Abilities: Header | Creature | spell
-				if(!store.Abilities[data[3]]) {
-					store.Abilities[data[3]] = [];
+				store.Overview[data.JournalEncounterID][data.OrderIndex] = data;
+			} else if(data.IconCreatureDisplayInfoID === 0 || data.Type === 1 || data.Type === 2) { // Abilities: Header | Creature | spell
+				if(!store.Abilities[data.JournalEncounterID]) {
+					store.Abilities[data.JournalEncounterID] = [];
 				}
-				store.Abilities[data[3]][data[4]] = data;
+				store.Abilities[data.JournalEncounterID][data.OrderIndex] = data;
 			}
 		});
 	Object.keys(store.Overview).concat(Object.keys(store.Abilities))
@@ -549,28 +427,28 @@ function load() {
 				.map(storeType => {
 					const sectionStore = store[storeType];
 					let contents = "<ul>",
-						prevParent = "0",
+						prevParent = 0,
 						prevIndent = 0,
 						siblings = [];
 					Object.values(sectionStore[encounterID]).map(section => {
-						if(section[5] === "0") {
-							siblings[section[0]] = 0;
+						if(section.ParentSectionID === 0) {
+							siblings[section.ID] = 0;
 						} else {
-							siblings[section[0]] = siblings[section[5]] + 1;
+							siblings[section.ID] = siblings[section.ParentSectionID] + 1;
 						}
-						if(prevParent !== section[5]) {
-							if(siblings[section[0]] < prevIndent) {
-								for(let i = 0; i < prevIndent - siblings[section[0]]; i++) {
+						if(prevParent !== section.ParentSectionID) {
+							if(siblings[section.ID] < prevIndent) {
+								for(let i = 0; i < prevIndent - siblings[section.ID]; i++) {
 									contents += "</ul>";
 								}
 							} else {
 								contents += "<ul>";
 							}
 						}
-						prevParent = section[5];
-						prevIndent = siblings[section[0]];
+						prevParent = section.ParentSectionID;
+						prevIndent = siblings[section.ID];
 						let shouldParse = false;
-						const diffs = sectionsXDifficulty[section[0]];
+						const diffs = sectionsXDifficulty[section.ID];
 						if(diffs) {
 							for(const diff of diffs) {
 								if(selectedDifficulty === "all" || difficulties[selectedDifficulty][diff]) {
@@ -580,33 +458,19 @@ function load() {
 						} else {
 							shouldParse = true;
 						}
-						const overviewParsed = sanityText(section[2]);
-						if(!shouldParse && (storeType === "Overview" || section[11] === "0")) {
+						if(!shouldParse) {
 							return;
 						}
+						const overviewParsed = sanityText(section.BodyText_lang);
 						if(storeType === "Overview") {
-							contents += elementIcons(section[14]) + "<b>" + section[1] + "</b> " + overviewParsed + "</li>";
-						} else if(section[11] !== "0") { // Ability: Spell
-							const spellID = section[11],
-								spellNameIndex = "spellname-" + spellID,
-								spellDescIndex = "spelldesc-" + spellID;
-							if(!cache[spellNameIndex]) {
-								cacheStore.transaction(latestBuild, "readwrite").objectStore(latestBuild).add(JSON.stringify(newCache[spellNameIndex]), spellNameIndex);
-								cache[spellNameIndex] = newCache[spellNameIndex];
-							}
-							if(!cache[spellDescIndex]) {
-								cacheStore.transaction(latestBuild, "readwrite").objectStore(latestBuild).add(JSON.stringify(newCache[spellDescIndex]), spellDescIndex);
-								cache[spellDescIndex] = newCache[spellDescIndex];
-							}
-							const spellParsed = sanityText(cache[spellDescIndex], spellID, 22025.363 * (statModsXtuningID[mapXcontentTuning[instanceXmapID[bossXinstance[encounterID]]]] || {CreatureSpellDamageMod: 1}).CreatureSpellDamageMod);
-							if(!shouldParse) {
-								return;
-							}
-							contents += elementIcons(section[14]) + "<b><a href=\"https://" + builds[selectedBuild].link + "wowhead.com/spell=" + spellID + "\" data-wowhead=\"spell-" + spellID + "\">" + cache[spellNameIndex] + "</a></b> " + spellParsed + overviewParsed + "</li>";
+							contents += elementIcons(section.IconFlags) + "<b>" + section.Title_lang + "</b> " + overviewParsed + "</li>";
+						} else if(section.SpellID !== 0) { // Ability: Spell
+							const spellID = section.SpellID;
+							contents += elementIcons(section.IconFlags) + "<b><a href=\"https://" + builds[selectedBuild].link + "wowhead.com/spell=" + spellID + "\" data-wowhead=\"spell-" + spellID + "\">" + cacheData.spellname[spellID] + "</a></b> " + sanityText(cacheData.spell[spellID], spellID, 22025.363 * (statModsXtuningID[mapXcontentTuning[instanceXmapID[bossXinstance[encounterID]]]] || 1)) + overviewParsed + "</li>";
 						} else {
-							contents += elementIcons(section[14]) + "<b>" + section[1] + "</b> " + overviewParsed + "</li>";
+							contents += elementIcons(section.IconFlags) + "<b>" + section.Title_lang + "</b> " + overviewParsed + "</li>";
 						}
-						prevParent = section[5];
+						prevParent = section.ParentSectionID;
 					});
 					contents += "</ul>";
 					elem.innerHTML += "\
@@ -643,114 +507,6 @@ function load() {
 		}
 	}
 	document.getElementById("loading").style.display = "none";
-}
-
-const initCache = () => {
-	const store = indexedDB.open(latestBuild, 2);
-	store.onupgradeneeded = () => {
-		if(store.result.objectStoreNames.contains(latestBuild)) {
-			store.result.deleteObjectStore(latestBuild);
-		}
-		store.result.createObjectStore(latestBuild);
-	};
-	store.onsuccess = () => {
-		cacheStore = store.result;
-		const request = cacheStore.transaction(latestBuild).objectStore(latestBuild).openCursor();
-		request.onsuccess = async (event) => {
-			let cursor = event.target.result;
-			if(cursor) { // Getting results
-				try {
-					cache[cursor.primaryKey] = JSON.parse(cursor.value);
-				} catch(_) {} // eslint-disable-line no-empty
-				cursor.continue();
-			} else { // Finished
-				if(Object.keys(cache).length === 0) {
-					await new Promise((resolve) => {
-						const spellHeaderSpellID = reqHeadersResponse.spelleffect.indexOf("SpellID"),
-							spellHeaderEffectIndex = reqHeadersResponse.spelleffect.indexOf("EffectIndex"),
-							spellHeaderEffect = reqHeadersResponse.spelleffect.indexOf("Effect"),
-							spellHeaderEffectAmplitude = reqHeadersResponse.spelleffect.indexOf("EffectAmplitude"),
-							spellHeaderEffectAuraPeriod = reqHeadersResponse.spelleffect.indexOf("EffectAuraPeriod"),
-							spellHeaderEffectChainAmplitude = reqHeadersResponse.spelleffect.indexOf("EffectChainAmplitude"),
-							spellHeaderEffectChainTargets = reqHeadersResponse.spelleffect.indexOf("EffectChainTargets"),
-							spellHeaderEffectPointsPerResource = reqHeadersResponse.spelleffect.indexOf("EffectPointsPerResource"),
-							spellHeaderEffectBasePointsF = reqHeadersResponse.spelleffect.indexOf("EffectBasePointsF"),
-							spellHeaderEffectMiscValue0 = reqHeadersResponse.spelleffect.indexOf("EffectMiscValue[0]"),
-							spellHeaderEffectRadiusIndex0 = reqHeadersResponse.spelleffect.indexOf("EffectRadiusIndex[0]"),
-							spellHeaderEffectRadiusIndex1 = reqHeadersResponse.spelleffect.indexOf("EffectRadiusIndex[1]");
-						Papa.parse("https://wow.tools/dbc/api/export/?name=spelleffect&build=" + latestBuild, {
-							download: true,
-							delimiter: ",",
-							skipEmptyLines: true,
-							complete: (data) => {
-								data.data.shift();
-								data.data.map(data => newCache["spelleffect-" + data[spellHeaderSpellID] + "-" + data[spellHeaderEffectIndex]] = {
-									Effect:					data[spellHeaderEffect],
-									EffectAmplitude:		data[spellHeaderEffectAmplitude],
-									EffectAuraPeriod:		data[spellHeaderEffectAuraPeriod],
-									EffectChainAmplitude:	data[spellHeaderEffectChainAmplitude],
-									EffectChainTargets:		data[spellHeaderEffectChainTargets],
-									EffectPointsPerResource:data[spellHeaderEffectPointsPerResource],
-									EffectBasePointsF:		data[spellHeaderEffectBasePointsF],
-									EffectMiscValue0:		data[spellHeaderEffectMiscValue0],
-									EffectRadiusIndex0:		data[spellHeaderEffectRadiusIndex0],
-									EffectRadiusIndex1:		data[spellHeaderEffectRadiusIndex1]
-								});
-								resolve();
-							}
-						});
-					});
-					await new Promise((resolve) => {
-						const spellHeaderSpellID = reqHeadersResponse.spellmisc.indexOf("SpellID"),
-							spellHeaderDurationIndex = reqHeadersResponse.spellmisc.indexOf("DurationIndex"),
-							spellHeaderRangeIndex = reqHeadersResponse.spellmisc.indexOf("RangeIndex");
-						Papa.parse("https://wow.tools/dbc/api/export/?name=spellmisc&build=" + latestBuild, {
-							download: true,
-							delimiter: ",",
-							skipEmptyLines: true,
-							complete: (data) => {
-								data.data.shift();
-								data.data.map(data => newCache["spellmisc-" + data[spellHeaderSpellID]] = {
-									DurationIndex:	data[spellHeaderDurationIndex],
-									RangeIndex:		data[spellHeaderRangeIndex]
-								});
-								resolve();
-							}
-						});
-					});
-					await new Promise((resolve) => {
-						const spellHeaderID = reqHeadersResponse.spell.indexOf("ID"),
-							spellHeaderDescription_lang = reqHeadersResponse.spell.indexOf("Description_lang");
-						Papa.parse("https://wow.tools/dbc/api/export/?name=spell&build=" + latestBuild, {
-							download: true,
-							delimiter: ",",
-							skipEmptyLines: true,
-							complete: (data) => {
-								data.data.shift();
-								data.data.map(data => newCache["spelldesc-" + data[spellHeaderID]] = data[spellHeaderDescription_lang]);
-								resolve();
-							}
-						});
-					});
-					await new Promise((resolve) => {
-						const spellHeaderID = reqHeadersResponse.spellname.indexOf("ID"),
-							spellHeaderName_lang = reqHeadersResponse.spellname.indexOf("Name_lang");
-						Papa.parse("https://wow.tools/dbc/api/export/?name=spellname&build=" + latestBuild, {
-							download: true,
-							delimiter: ",",
-							skipEmptyLines: true,
-							complete: (data) => {
-								data.data.shift();
-								data.data.map(data => newCache["spellname-" + data[spellHeaderID]] = data[spellHeaderName_lang]);
-								resolve();
-							}
-						});
-					});
-				}
-				load();
-			}
-		};
-	};
 }
 
 (() => {
@@ -806,33 +562,11 @@ const initCache = () => {
 		}
 	});
 
-	fetch("https://wow.tools/api.php?type=latestbuilds")
+	fetch("cache/" + selectedBuild + ".json")
 		.then(response => response.json())
-		.then(json => {
-			latestBuild = json[selectedBuild];
-			document.title = "Journal Viewer - " + latestBuild
-			Promise.all(reqHeaders.map(header => fetch("https://wow.tools/dbc/api/header/" + header + "/?build=" + latestBuild)))
-				.then(responses => Promise.all(responses.map(response => response.json())))
-				.then(headers => headers.map((header, index) => reqHeadersResponse[reqHeaders[index]] = header.headers))
-				//
-				.then(() => Promise.all(reqCSVs.map(header => fetch("https://wow.tools/dbc/api/export/?name=" + header + "&build=" + latestBuild))))
-				.then(responses => Promise.all(responses.map(response => response.text())))
-				.then(csvs => Promise.all(csvs.map((csv, index) => new Promise((resolve) => {
-					Papa.parse(csv, {
-						delimiter: ",",
-						skipEmptyLines: true,
-						complete: (data) => {
-							data.data.shift();
-							resolve(reqCSVResponse[reqCSVs[index]] = data.data);
-						}
-					});
-				}))))
-				//
-				.then(() => initCache());
-		});
+		.then(data => {
+			cacheData = data;
+			document.title = "Journal Viewer - " + data['build']
+		})
+		.then(() => load());
 })();
-
-const purgeCache = () => { // eslint-disable-line no-unused-vars
-	cacheStore.transaction(latestBuild, "readwrite").objectStore(latestBuild).clear();
-	console.warn("CACHE PURGED!");
-}
