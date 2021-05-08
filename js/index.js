@@ -50,7 +50,8 @@ const builds = {
 		2048:	"enrage",
 		4096:	"mythic",
 		8192:	"bleed"
-	};
+	},
+	errorText = "<span class='error'>&lt;error&gt;</span>";
 
 function setHash() {
 	let hash = "#";
@@ -111,12 +112,12 @@ function sanityText(text, overrideSpellID, spellMultiplier) {
 		section = section || 1;
 		if(!spellID) {
 			console.log("Null spellID", "SpellEffect", text);
-			return "<err>";
+			return errorText;
 		}
 		const data = getSpellEffect(spellID, section);
 		if(!data) {
 			console.log("Failed SpellEffect", text);
-			return "<err>";
+			return errorText;
 		}
 		if(data.Effect === 2) {
 			return Math.round(Math.abs(spellMultiplier * data.EffectBasePointsF / 100));
@@ -128,12 +129,12 @@ function sanityText(text, overrideSpellID, spellMultiplier) {
 		section = section || 1;
 		if(!spellID) {
 			console.log("Null spellID", "EffectAmplitude", text);
-			return "<err>";
+			return errorText;
 		}
 		const data = getSpellEffect(spellID, section);
 		if(!data) {
 			console.log("Failed EffectAmplitude", text);
-			return "<err>";
+			return errorText;
 		}
 		return data.EffectAmplitude;
 	});
@@ -142,23 +143,23 @@ function sanityText(text, overrideSpellID, spellMultiplier) {
 		section = section || 1;
 		if(!spellID) {
 			console.log("Null spellID", "AuraDamage", text);
-			return "<err>";
+			return errorText;
 		}
 		const data = getSpellEffect(spellID, section);
 		if(!data) {
 			console.log("Failed AuraDamage (SpellEffect)", text);
-			return "<err>";
+			return errorText;
 		}
 		const data2 = cacheData.spellmisc[spellID]
 		if(!data2) {
 			console.log("Failed AuraDamage2 (SpellMisc)", text);
-			return "<err>";
+			return errorText;
 		}
 		try {
 			return Math.round(Math.abs(spellMultiplier * data.EffectBasePointsF / 100) * ((cacheData.spellduration[data2.DurationIndex] / 1000) / (data.EffectAuraPeriod / 1000)));
 		} catch(_) {
 			console.log("Failed AuraDamage (SpellDuration)", text);
-			return "<err>";
+			return errorText;
 		}
 	});
 	text = text.replace(/\$(\d+)?([aA])(\d+)?/g, (_, spellID, type, section) => { // Radius variables
@@ -166,12 +167,12 @@ function sanityText(text, overrideSpellID, spellMultiplier) {
 		section = section || 1;
 		if(!spellID) {
 			console.log("Null spellID", "Radius", text);
-			return "<err>";
+			return errorText;
 		}
 		const data = getSpellEffect(spellID, section);
 		if(!data) {
 			console.log("Failed EffectRadiusIndex", text);
-			return "<err>";
+			return errorText;
 		}
 		let radiusIndex = data["EffectRadiusIndex" + type === "a" ? 0 : 1];
 		if(radiusIndex === 0) {
@@ -179,7 +180,7 @@ function sanityText(text, overrideSpellID, spellMultiplier) {
 		}
 		if(radiusIndex === 0) {
 			console.log("Failed EffectRadiusIndex (both radius indexes returned 0)", text);
-			return "<err>";
+			return errorText;
 		}
 		return cacheData.spellradius[radiusIndex];
 	});
@@ -188,12 +189,12 @@ function sanityText(text, overrideSpellID, spellMultiplier) {
 		section = section || 1;
 		if(!spellID) {
 			console.log("Null spellID", "Time", text);
-			return "<err>";
+			return errorText;
 		}
 		const data = getSpellEffect(spellID, section);
 		if(!data) {
 			console.log("Failed EffectAuraPeriod", text);
-			return "<err>";
+			return errorText;
 		}
 		return data.EffectAuraPeriod / 1000;
 	});
@@ -202,12 +203,12 @@ function sanityText(text, overrideSpellID, spellMultiplier) {
 		section = section || 1;
 		if(!spellID) {
 			console.log("Null spellID", "EffectChainTargets", text);
-			return "<err>";
+			return errorText;
 		}
 		const data = getSpellEffect(spellID, section);
 		if(!data) {
 			console.warn("Failed EffectChainTargets", text);
-			return "<err>";
+			return errorText;
 		}
 		return data.EffectChainTargets;
 	});
@@ -216,12 +217,12 @@ function sanityText(text, overrideSpellID, spellMultiplier) {
 		section = section || 1;
 		if(!spellID) {
 			console.log("Null spellID", "EffectChainAmplitude", text);
-			return "<err>";
+			return errorText;
 		}
 		const data = getSpellEffect(spellID, section);
 		if(!data) {
 			console.warn("Failed EffectChainAmplitude", text);
-			return "<err>";
+			return errorText;
 		}
 		return data.EffectChainAmplitude;
 	});
@@ -230,12 +231,12 @@ function sanityText(text, overrideSpellID, spellMultiplier) {
 		section = section || 1;
 		if(!spellID) {
 			console.log("Null spellID", "EffectPointsPerResource", text);
-			return "<err>";
+			return errorText;
 		}
 		const data = getSpellEffect(spellID, section);
 		if(!data) {
 			console.warn("Failed EffectPointsPerResource", text);
-			return "<err>";
+			return errorText;
 		}
 		return data.EffectPointsPerResource;
 	});
@@ -244,12 +245,12 @@ function sanityText(text, overrideSpellID, spellMultiplier) {
 		section = section || 1;
 		if(!spellID) {
 			console.log("Null spellID", "EffectMiscValue", text);
-			return "<err>";
+			return errorText;
 		}
 		const data = getSpellEffect(spellID, section);
 		if(!data) {
 			console.warn("Failed EffectMiscValue", text);
-			return "<err>";
+			return errorText;
 		}
 		return data.EffectMiscValue0;
 	});
@@ -257,12 +258,12 @@ function sanityText(text, overrideSpellID, spellMultiplier) {
 		spellID = spellID || overrideSpellID
 		if(!spellID) {
 			console.log("Null spellID", "Duration", text);
-			return "<err>";
+			return errorText;
 		}
 		const data = cacheData.spellmisc[spellID]
 		if(!data) {
 			console.log("Failed Duration", text);
-			return "<err>";
+			return errorText;
 		}
 		if(data.DurationIndex === 0) { // Special edge case
 			return "until cancelled";
@@ -271,32 +272,32 @@ function sanityText(text, overrideSpellID, spellMultiplier) {
 			return cacheData.spellduration[data.DurationIndex] / 1000 + " sec";
 		} catch(_) {
 			console.log("Failed Duration", text);
-			return "<err>";
+			return errorText;
 		}
 	});
 	text = text.replace(/\$(\d+)?([rR])(\d+)?/g, (_, spellID, type) => { // Range variables
 		spellID = spellID || overrideSpellID
 		if(!spellID) {
 			console.log("Null spellID", "Range", text);
-			return "<err>";
+			return errorText;
 		}
 		const data = cacheData.spellmisc[spellID]
 		if(!data) {
 			console.log("Failed Range", text);
-			return "<err>";
+			return errorText;
 		}
 		try {
 			return cacheData.spellrange[data["RangeIndex"]][type === "r" ? 1 : 0];
 		} catch(_) {
 			console.log("Failed Range", text);
-			return "<err>";
+			return errorText;
 		}
 	});
 	text = text.replace(/\$(\d+)?[iI](\d+)?/g, (_, spellID) => { // SpellTargetRestrictions variables
 		spellID = spellID || overrideSpellID
 		if(!spellID) {
 			console.log("Null spellID", "SpellTargetRestrictions", text);
-			return "<err>";
+			return errorText;
 		}
 		try {
 			let ret = "<err>";
@@ -308,19 +309,19 @@ function sanityText(text, overrideSpellID, spellMultiplier) {
 			return ret;
 		} catch(_) {
 			console.log("Failed SpellTargetRestrictions", text);
-			return "<err>";
+			return errorText;
 		}
 	});
 	text = text.replace(/\$(\d+)?[uU](\d+)?/g, (_, spellID) => { // SpellAuraOptions variables
 		spellID = spellID || overrideSpellID
 		if(!spellID) {
 			console.log("Null spellID", "SpellAuraOptions", text);
-			return "<err>";
+			return errorText;
 		}
 		const data = cacheData.spellauraoptions[spellID]
 		if(!data) {
 			console.log("Failed SpellAuraOptions", text);
-			return "<err>";
+			return errorText;
 		}
 		return data;
 	});

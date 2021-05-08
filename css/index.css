@@ -160,6 +160,11 @@ ul li {
 }
 
 /* Encounter Journal */
+.error {
+	color: #f00;
+	font-weight: bold;
+}
+
 .iconsprite::before {
 	width: 18px;
 	height: 18px;
