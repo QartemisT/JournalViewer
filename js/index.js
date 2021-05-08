@@ -286,7 +286,7 @@ function sanityText(text, overrideSpellID, spellMultiplier) {
 			return "<err>";
 		}
 		try {
-			return cacheData.spellrange[data["RangeIndex" + type === "R" ? 0 : 1]];
+			return cacheData.spellrange[data["RangeIndex"]][type === "r" ? 1 : 0];
 		} catch(_) {
 			console.log("Failed Range", text);
 			return "<err>";
