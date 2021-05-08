@@ -161,7 +161,7 @@ function sanityText(text, overrideSpellID, spellMultiplier) {
 			return "<err>";
 		}
 	});
-	text = text.replace(/\$(\d+)?([a|A])(\d+)?/g, (_, spellID, type, section) => { // Radius variables
+	text = text.replace(/\$(\d+)?([aA])(\d+)?/g, (_, spellID, type, section) => { // Radius variables
 		spellID = spellID || overrideSpellID;
 		section = section || 1;
 		if(!spellID) {
@@ -274,7 +274,25 @@ function sanityText(text, overrideSpellID, spellMultiplier) {
 			return "<err>";
 		}
 	});
-	text = text.replace(/\$(\d+)?[iI]/g, (_, spellID) => { // SpellTargetRestrictions variables
+	text = text.replace(/\$(\d+)?([rR])(\d+)?/g, (_, spellID, type) => { // Range variables
+		spellID = spellID || overrideSpellID
+		if(!spellID) {
+			console.log("Null spellID", "Range", text);
+			return "<err>";
+		}
+		const data = cacheData.spellmisc[spellID]
+		if(!data) {
+			console.log("Failed Range", text);
+			return "<err>";
+		}
+		try {
+			return cacheData.spellrange[data["RangeIndex"]][type === "r" ? 1 : 0];
+		} catch(_) {
+			console.log("Failed Range", text);
+			return "<err>";
+		}
+	});
+	text = text.replace(/\$(\d+)?[iI](\d+)?/g, (_, spellID) => { // SpellTargetRestrictions variables
 		spellID = spellID || overrideSpellID
 		if(!spellID) {
 			console.log("Null spellID", "SpellTargetRestrictions", text);
@@ -293,7 +311,7 @@ function sanityText(text, overrideSpellID, spellMultiplier) {
 			return "<err>";
 		}
 	});
-	text = text.replace(/\$(\d+)?[uU]/g, (_, spellID) => { // SpellAuraOptions variables
+	text = text.replace(/\$(\d+)?[uU](\d+)?/g, (_, spellID) => { // SpellAuraOptions variables
 		spellID = spellID || overrideSpellID
 		if(!spellID) {
 			console.log("Null spellID", "SpellAuraOptions", text);
