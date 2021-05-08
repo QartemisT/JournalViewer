@@ -252,7 +252,7 @@ function sanityText(text, overrideSpellID, spellMultiplier) {
 			console.warn("Failed EffectMiscValue", text);
 			return errorText;
 		}
-		return data.EffectMiscValue0;
+		return data["EffectMiscValue[0]"];
 	});
 	text = text.replace(/\$(\d+)?[dD](\d+)?/g, (_, spellID) => { // Duration variables
 		spellID = spellID || overrideSpellID
@@ -312,18 +312,44 @@ function sanityText(text, overrideSpellID, spellMultiplier) {
 			return errorText;
 		}
 	});
-	text = text.replace(/\$(\d+)?[uU](\d+)?/g, (_, spellID) => { // SpellAuraOptions variables
+	text = text.replace(/\$(\d+)?[uU](\d+)?/g, (_, spellID) => { // MaxStacks variables
 		spellID = spellID || overrideSpellID
 		if(!spellID) {
-			console.log("Null spellID", "SpellAuraOptions", text);
+			console.log("Null spellID", "MaxStacks", text);
 			return errorText;
 		}
 		const data = cacheData.spellauraoptions[spellID]
 		if(!data) {
-			console.log("Failed SpellAuraOptions", text);
+			console.log("Failed MaxStacks", text);
 			return errorText;
 		}
-		return data;
+		return data.CumulativeAura;
+	});
+	text = text.replace(/\$(\d+)?[hH](\d+)?/g, (_, spellID) => { // ProcChance variables
+		spellID = spellID || overrideSpellID
+		if(!spellID) {
+			console.log("Null spellID", "ProcChance", text);
+			return errorText;
+		}
+		const data = cacheData.spellauraoptions[spellID]
+		if(!data) {
+			console.log("Failed ProcChance", text);
+			return errorText;
+		}
+		return data.ProcChance;
+	});
+	text = text.replace(/\$(\d+)?[nN](\d+)?/g, (_, spellID) => { // ProcCharges variables
+		spellID = spellID || overrideSpellID
+		if(!spellID) {
+			console.log("Null spellID", "ProcCharges", text);
+			return errorText;
+		}
+		const data = cacheData.spellauraoptions[spellID]
+		if(!data) {
+			console.log("Failed ProcCharges", text);
+			return errorText;
+		}
+		return data.ProcCharges;
 	});
 	text = text.replace(/\${([^}]+)}/g, (repl, math) => { // Math
 		math = math.replace(" sec", ""); // e.g. "30 sec*20"
