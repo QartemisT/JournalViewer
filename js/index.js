@@ -274,7 +274,25 @@ function sanityText(text, overrideSpellID, spellMultiplier) {
 			return "<err>";
 		}
 	});
-	text = text.replace(/\$(\d+)?[iI]/g, (_, spellID) => { // SpellTargetRestrictions variables
+	text = text.replace(/\$(\d+)?[rR](\d+)?/g, (_, spellID) => { // Range variables
+		spellID = spellID || overrideSpellID
+		if(!spellID) {
+			console.log("Null spellID", "Range", text);
+			return "<err>";
+		}
+		const data = cacheData.spellmisc[spellID]
+		if(!data) {
+			console.log("Failed Range", text);
+			return "<err>";
+		}
+		try {
+			return cacheData.spellrange[data["RangeIndex" + type === "R" ? 0 : 1]];
+		} catch(_) {
+			console.log("Failed Range", text);
+			return "<err>";
+		}
+	});
+	text = text.replace(/\$(\d+)?[iI](\d+)?/g, (_, spellID) => { // SpellTargetRestrictions variables
 		spellID = spellID || overrideSpellID
 		if(!spellID) {
 			console.log("Null spellID", "SpellTargetRestrictions", text);
@@ -293,7 +311,7 @@ function sanityText(text, overrideSpellID, spellMultiplier) {
 			return "<err>";
 		}
 	});
-	text = text.replace(/\$(\d+)?[uU]/g, (_, spellID) => { // SpellAuraOptions variables
+	text = text.replace(/\$(\d+)?[uU](\d+)?/g, (_, spellID) => { // SpellAuraOptions variables
 		spellID = spellID || overrideSpellID
 		if(!spellID) {
 			console.log("Null spellID", "SpellAuraOptions", text);
