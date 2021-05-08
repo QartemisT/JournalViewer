@@ -161,7 +161,7 @@ ul li {
 
 /* Encounter Journal */
 .error {
-	color: red;
+	color: #ff0000;
 	font-weight: bold;
 }
 
