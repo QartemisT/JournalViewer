@@ -161,7 +161,7 @@ function sanityText(text, overrideSpellID, spellMultiplier) {
 			return "<err>";
 		}
 	});
-	text = text.replace(/\$(\d+)?([a|A])(\d+)?/g, (_, spellID, type, section) => { // Radius variables
+	text = text.replace(/\$(\d+)?([aA])(\d+)?/g, (_, spellID, type, section) => { // Radius variables
 		spellID = spellID || overrideSpellID;
 		section = section || 1;
 		if(!spellID) {
@@ -274,7 +274,7 @@ function sanityText(text, overrideSpellID, spellMultiplier) {
 			return "<err>";
 		}
 	});
-	text = text.replace(/\$(\d+)?[rR](\d+)?/g, (_, spellID) => { // Range variables
+	text = text.replace(/\$(\d+)?([rR])(\d+)?/g, (_, spellID, type) => { // Range variables
 		spellID = spellID || overrideSpellID
 		if(!spellID) {
 			console.log("Null spellID", "Range", text);
