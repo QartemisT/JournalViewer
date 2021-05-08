@@ -174,9 +174,9 @@ function sanityText(text, overrideSpellID, spellMultiplier) {
 			console.log("Failed EffectRadiusIndex", text);
 			return errorText;
 		}
-		let radiusIndex = data["EffectRadiusIndex" + type === "a" ? 0 : 1];
+		let radiusIndex = data["EffectRadiusIndex[" + (type === "a" ? 0 : 1) + "]"];
 		if(radiusIndex === 0) {
-			radiusIndex = data["EffectRadiusIndex" + (type === "a" ? 1 : 0)]
+			radiusIndex = data["EffectRadiusIndex[" + (type === "a" ? 1 : 0) + "]"];
 		}
 		if(radiusIndex === 0) {
 			console.log("Failed EffectRadiusIndex (both radius indexes returned 0)", text);
@@ -287,7 +287,7 @@ function sanityText(text, overrideSpellID, spellMultiplier) {
 			return errorText;
 		}
 		try {
-			return cacheData.spellrange[data["RangeIndex"]][type === "r" ? 1 : 0];
+			return cacheData.spellrange[data.RangeIndex][type === "r" ? 1 : 0];
 		} catch(_) {
 			console.log("Failed Range", text);
 			return errorText;
