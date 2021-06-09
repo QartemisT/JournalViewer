@@ -30,3 +30,12 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           exclude_assets: '.github,node_modules,.eslintcache,package.json,pnpm-lock.yaml'
           publish_dir: .
+
+      - name: Send Status to Discord
+        if: ${{ github.event_name == 'push' && success() }}
+        uses: Ilshidur/action-discord@0.3.0
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        with:
+          webhook_url: ${{ secrets.DISCORD_WEBHOOK }}
+          args: 'Journal update has gone live.'
