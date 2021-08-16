@@ -22,8 +22,9 @@ const builds = {
 	},
 	difficulties = {
 		"all": {},
-		"lfr": {
-			"7":	true
+		"LFR": {
+			"7":	true,
+			"17":	true
 		},
 		"normal": {
 			"1":	true,
