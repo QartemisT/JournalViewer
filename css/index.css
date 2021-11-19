@@ -262,6 +262,10 @@ ul li {
 	display: flex;
 }
 
+.tabed > span {
+	width: 100%;
+}
+
 .tabbed > label {
 	background-color: var(--tabbed-background-color);
 	color: var(--text-color);

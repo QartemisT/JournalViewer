@@ -406,7 +406,7 @@ function load() {
 			instanceXmapID[data.ID] = data.MapID;
 			document.querySelector("#instance-" + data.ID + " + label").innerHTML = data.Name_lang;
 			if(data.Description_lang) {
-				document.querySelector("#instance-" + data.ID + " + label + div").innerHTML += data.Description_lang;
+				document.querySelector("#instance-" + data.ID + " + label + div").innerHTML += "<span>" + data.Description_lang + "</span>";
 			}
 		});
 	// Bosses
