@@ -113,8 +113,22 @@ function sanityText(text, overrideSpellID, spellMultiplier) {
 		return sanityText(cacheData.spell[spellID], spellID, spellMultiplier);
 	});
 	text = text.replace(/\$\?((?:diff\d+\|?)+)\s?(\[[^\]]+\]|\[\])(\[[^\]]+\]|\[\])/gi, (_, diffs, matchT, matchF) => {
+		if(selectedDifficulty === "all") {
+			let diffz = "";
+			for(const diff of diffs.split("|")) {
+				for(difficulty of Object.keys(difficulties)) {
+					if(difficulties[difficulty][diff.replace(/diff/i, "").trim()]) {
+						diffz += difficulty + "/";
+						break;
+					}
+				}
+			}
+			diffz = diffz.substr(0, diffz.length - 1);
+			const matchFF = matchF.substr(1, matchF.length - 2);
+			return " <b>(" + diffz + ") </b>" + matchT.substr(1, matchT.length - 2) + (matchFF.trim() !== "" ? "<b> (Other) </b>" + matchF.substr(1, matchF.length - 2) : "");
+		}
 		for(const diff of diffs.split("|")) {
-			if(selectedDifficulty === "all" || difficulties[selectedDifficulty][diff.replace(/diff/i, "").trim()] || true) {
+			if(difficulties[selectedDifficulty][diff.replace(/diff/i, "").trim()]) {
 				return matchT.substr(1, matchT.length - 2);
 			}
 		}
