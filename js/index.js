@@ -116,7 +116,7 @@ function sanityText(text, overrideSpellID, spellMultiplier) {
 		if(selectedDifficulty === "all") {
 			let diffz = "";
 			for(const diff of diffs.split("|")) {
-				for(difficulty of Object.keys(difficulties)) {
+				for(const difficulty of Object.keys(difficulties)) {
 					if(difficulties[difficulty][diff.replace(/diff/i, "").trim()]) {
 						diffz += difficulty + "/";
 						break;
