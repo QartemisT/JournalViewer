@@ -93,7 +93,7 @@ function sanityText(text, overrideSpellID, spellMultiplier) {
 	if(!text) {
 		return "";
 	}
-	text = text.replace(/\$bullet;/g, "<br>&bull; "); // New line
+	text = text.replace(/\$bullet;/gi, "<br>&bull; "); // New line
 	text = text.replace(/\|cFF([a-z0-9]+)\|Hspell:([0-9]+)\s?\|h([^|]+)\|h\|r/gi, " <a style=\"color: #$1;\" href=\"https://" + builds[selectedBuild].link + "wowhead.com/spell=$2\" data-wowhead=\"spell-$2\">$3</a>"); // Spell tooltips
 	text = text.replace(/\$\[[0-9, ]+(?:[\s\n]+)?(.*?)\$]/g, "$1"); // Ignored difficulty text
 	text = text.replace(/\$\[!([0-9, ]+)(?:[\s\n]+)?(.*?)\$]/g, (_, diffs, txt) => {
@@ -104,12 +104,21 @@ function sanityText(text, overrideSpellID, spellMultiplier) {
 		}
 		return "";
 	});
-	text = text.replace(/\$@spellicon(\d+)/g, ""); // SpellIcon variable - remove it.
-	text = text.replace(/\$@spellname(\d+)/g, (_, spellID) => { // SpellName variable
+	text = text.replace(/\$@spellicon(\d+)/gi, ""); // SpellIcon variable - remove it.
+	text = text.replace(/\$@spelltooltip(\d+)/gi, ""); // SpellTooltip variable - remove it.
+	text = text.replace(/\$@spellname(\d+)/gi, (_, spellID) => { // SpellName variable
 		return "<a href=\"https://" + builds[selectedBuild].link + "wowhead.com/spell=" + spellID + "\" data-wowhead=\"spell-" + spellID + "\">" + cacheData.spellname[spellID] + "</a>";
 	});
-	text = text.replace(/\$@spelldesc(\d+)/g, (_, spellID) => { // SpellDesc variable
+	text = text.replace(/\$@spelldesc(\d+)/gi, (_, spellID) => { // SpellDesc variable
 		return sanityText(cacheData.spell[spellID], spellID, spellMultiplier);
+	});
+	text = text.replace(/\$\?((?:diff\d+\|?)+)\s?(\[[^\]]+\]|\[\])(\[[^\]]+\]|\[\])/gi, (_, diffs, matchT, matchF) => {
+		for(const diff of diffs.split("|")) {
+			if(selectedDifficulty === "all" || difficulties[selectedDifficulty][diff.replace(/diff/i, "").trim()] || true) {
+				return matchT.substr(1, matchT.length - 2);
+			}
+		}
+		return matchF.substr(1, matchF.length - 2);
 	});
 	text = text.replace(/\$(\d+)?[mMsSwW](\d+)?/g, (_, spellID, section) => { // SpellEffect variables
 		spellID = spellID || overrideSpellID;
