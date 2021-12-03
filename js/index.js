@@ -106,7 +106,7 @@ function sanityText(text, overrideSpellID, spellMultiplier) {
 	});
 	text = text.replace(/\$@spellicon(\d+)/gi, ""); // SpellIcon variable - remove it.
 	text = text.replace(/\$@spelltooltip(\d+)/gi, ""); // SpellTooltip variable - remove it.
-	text = text.replace(/\$@spellname(\d+)/gi, (_, spellID) => { // SpellName variable
+	text = text.replace(/\$@?spellname(\d+)/gi, (_, spellID) => { // SpellName variable
 		return "<a href=\"https://" + builds[selectedBuild].link + "wowhead.com/spell=" + spellID + "\" data-wowhead=\"spell-" + spellID + "\">" + cacheData.spellname[spellID] + "</a>";
 	});
 	text = text.replace(/\$@spelldesc(\d+)/gi, (_, spellID) => { // SpellDesc variable
