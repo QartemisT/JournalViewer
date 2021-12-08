@@ -1,8 +1,31 @@
-let cacheData,
+let
+    cacheData = {
+        // Just to silence "undefined" warnings
+        'conditionalcontenttuning': {'NormalTuning':null, 'ReplacementTuning':null},
+        'contenttuningxexpected': {'ContentTuningID':null, 'ExpectedStatModID':null},
+        'expectedstatmod': {'ID':null, 'CreatureSpellDamageMod':null},
+        'journalencounter': {'ID':null, 'Name_lang':null, 'Description_lang':null, 'JournalInstanceID':null, 'OrderIndex':null},
+        'journalencountersection': {'ID':null, 'BodyText_lang':null, 'Title_lang':null, 'Type':null, 'Flags':null, 'JournalEncounterID':null, 'OrderIndex':null, 'IconCreatureDisplayInfoID':null, 'SpellID':null, 'ParentSectionID':null, 'IconFlags':null},
+        'journalinstance': {'ID':null, 'Name_lang':null, 'Description_lang':null, 'OrderIndex':null, 'MapID':null},
+        'journalsectionxdifficulty': {'ID':null, 'DifficultyID':null, 'JournalEncounterSectionID':null},
+        'journaltier': {'ID':null, 'Name_lang':null},
+        'journaltierxinstance': {'JournalTierID':null, 'JournalInstanceID':null},
+        'mapdifficulty': {'DifficultyID':null, 'ContentTuningID':null, 'MapID':null},
+        'spell': {'ID':null, 'Description_lang':null},
+        'spellauraoptions': {'SpellID':null, 'CumulativeAura':null, 'ProcCharges':null, 'ProcChance':null},
+        'spellduration': {'ID':null, 'Duration':null},
+        'spelleffect': {'DifficultyID':null, 'SpellID':null, 'EffectIndex':null, 'Effect':null, 'EffectAmplitude':null, 'EffectAuraPeriod':null, 'EffectChainAmplitude':null, 'EffectChainTargets':null, 'EffectPointsPerResource':null, 'EffectBasePointsF':null, 'EffectMiscValue{0}':null, 'EffectRadiusIndex{0}':null, 'EffectRadiusIndex{1}':null},
+        'spellmisc': {'SpellID':null, 'DurationIndex':null, 'RangeIndex':null},
+        'spellname': {'ID':null, 'Name_lang':null},
+        'spellradius': {'ID':null, 'Radius':null},
+        'spellrange': {'ID':null, 'RangeMin{0}':null, 'RangeMax{0}':null},
+        'spelltargetrestrictions': {'DifficultyID':null, 'MaxTargets':null, 'SpellID':null},
+    },
 	selectedBuild = "wow_beta",
 	selectedDifficulty = "mythic",
 	selectedTab = "";
-const builds = {
+const
+    builds = {
 		"wow":		{
 			link: "",
 			name: "Live"
@@ -57,7 +80,7 @@ const builds = {
 	},
 	errorText = "<span class='error'>&lt;error&gt;</span>";
 
-function setHash() {
+const setHash = () => {
 	let hash = "#";
 	if(selectedBuild !== "wow_beta") {
 		hash += "build=" + selectedBuild;
@@ -81,15 +104,24 @@ function setHash() {
 	localStorage.hash = location.hash;
 }
 
-function getSpellEffect(spellID, section) {
-	const data = cacheData.spelleffect[spellID + "-" + (parseInt(section) - 1)];
-	if(data) {
-		return data;
-	}
-	return cacheData.spelleffect[spellID + "-0"];
+const getSpellEffect = (spellID, section) => {
+    let data, sectionID = parseInt(section) - 1;
+    const diffIter = Object.keys(difficulties[selectedDifficulty]);
+    diffIter.push("0");
+    for(let i = 0; i <= 1; i++) {
+        if(i === 1) { // 0 = normal sectionID, 1 = fallback to 0
+            sectionID = 0;
+        }
+        for(let difficultyID of diffIter) {
+            data = cacheData.spelleffect[spellID + "-" + sectionID + "-" + difficultyID];
+            if(data) {
+                return data;
+            }
+        }
+    }
 }
 
-function sanityText(text, overrideSpellID, spellMultiplier) {
+const sanityText = (text, overrideSpellID, spellMultiplier) => {
 	if(!text) {
 		return "";
 	}
@@ -112,7 +144,7 @@ function sanityText(text, overrideSpellID, spellMultiplier) {
 	text = text.replace(/\$?@?spelldesc(\d+)/gi, (_, spellID) => { // SpellDesc variable
 		return sanityText(cacheData.spell[spellID], spellID, spellMultiplier);
 	});
-	text = text.replace(/\$\?((?:diff\d+\|?)+)\s?(\[[^\]]+\]|\[\])(\[[^\]]+\]|\[\])/gi, (_, diffs, matchT, matchF) => {
+	text = text.replace(/\$\?((?:diff\d+\|?)+)\s?(\[[^\]]+]|\[])(\[[^\]]+]|\[])/gi, (_, diffs, matchT, matchF) => {
 		if(selectedDifficulty === "all") {
 			let diffz = "";
 			for(const diff of diffs.split("|")) {
@@ -207,7 +239,7 @@ function sanityText(text, overrideSpellID, spellMultiplier) {
 		}
 		if(radiusIndex === 0) {
 			console.log("Failed EffectRadiusIndex (both radius indexes returned 0)", text);
-			return errorText;
+			return 0; // Match WoWhead logic
 		}
 		return cacheData.spellradius[radiusIndex];
 	});
@@ -393,7 +425,7 @@ function sanityText(text, overrideSpellID, spellMultiplier) {
 	return text;
 }
 
-function elementIcons(bit) {
+const elementIcons = (bit) => {
 	bit = parseInt(bit);
 	if(bit === 0) {
 		return "<li>";
@@ -406,7 +438,7 @@ function elementIcons(bit) {
 	return ret;
 }
 
-function load() {
+const load = () => {
 	// Expansions
 	const expansionsElem = document.querySelector("#container div");
 	cacheData.journaltier.reverse().map((data, index) => {
