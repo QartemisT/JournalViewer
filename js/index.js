@@ -585,7 +585,7 @@ const load = () => {
 							return;
 						}
 						const spellMultiplier = 22025.363 * (statModsXtuningID[mapXcontentTuning[instanceXmapID[bossXinstance[encounterID]]]] || 1);
-						const overviewParsed = sanityText(section.BodyText_lang, null, spellMultiplier);
+						const overviewParsed = sanityText(section.BodyText_lang, section.SpellID, spellMultiplier);
 						if(storeType === "Overview") {
 							contents += elementIcons(section.IconFlags) + "<b>" + section.Title_lang + "</b> " + overviewParsed + "</li>";
 						} else if(section.SpellID !== 0) { // Ability: Spell
