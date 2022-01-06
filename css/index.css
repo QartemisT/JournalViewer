@@ -54,11 +54,13 @@ ul li {
 }
 
 /* Themes */
-#themeMode {
+#themeMode,
+#diffMode {
 	display: none;
 }
 
-#themeMode + label {
+#themeMode + label,
+#diffMode + label {
 	position: absolute;
 	left: 0;
 	cursor: pointer;
@@ -68,7 +70,14 @@ ul li {
 	border-radius: 100px;
 }
 
-#themeMode + label::after {
+#diffMode + label {
+	position: fixed;
+	bottom: 0;
+	left: calc(100% - 55px);
+}
+
+#themeMode + label::after,
+#diffMode + label::after {
 	content: "";
 	background: #fff;
 	width: 20px;
@@ -77,10 +86,11 @@ ul li {
 	position: absolute;
 	top: 5px;
 	left: 4px;
-	transition: cubic-bezier(0.68, -0.55, 0.27, 01.55) 320ms;
+	transition: cubic-bezier(0.68, -0.55, 0.27, 1.55) 320ms;
 }
 
-#themeMode:checked + label::after {
+#themeMode:checked + label::after,
+#diffMode:checked + label::after {
 	left: calc(100% - 5px);
 	transform: translateX(-100%);
 }

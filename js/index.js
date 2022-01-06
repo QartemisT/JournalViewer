@@ -99,6 +99,12 @@ const setHash = () => {
 		}
 		hash += "tab=" + selectedTab;
 	}
+	if(shouldDiff) {
+		if(hash !== "#") {
+			hash += "&";
+		}
+		hash += "diff=true";
+	}
 	if(hash === "#") {
 		return;
 	}
@@ -106,7 +112,7 @@ const setHash = () => {
 	localStorage.hash = location.hash;
 }
 
-const getSpellEffect = (spellID, section) => {
+const getSpellEffect = (cacheData, spellID, section) => {
 	let data, sectionID = parseInt(section) - 1;
 	const diffIter = Object.keys(difficulties[selectedDifficulty]);
 	diffIter.push("0");
@@ -177,7 +183,7 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 			console.log("Null spellID", "SpellEffect", text);
 			return errorText;
 		}
-		const data = getSpellEffect(spellID, section);
+		const data = getSpellEffect(cacheData, spellID, section);
 		if(!data) {
 			console.log("Failed SpellEffect", text);
 			return errorText;
@@ -195,7 +201,7 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 			console.log("Null spellID", "EffectAmplitude", text);
 			return errorText;
 		}
-		const data = getSpellEffect(spellID, section);
+		const data = getSpellEffect(cacheData, spellID, section);
 		if(!data) {
 			console.log("Failed EffectAmplitude", text);
 			return errorText;
@@ -210,7 +216,7 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 			console.log("Null spellID", "AuraDamage", text);
 			return errorText;
 		}
-		const data = getSpellEffect(spellID, section);
+		const data = getSpellEffect(cacheData, spellID, section);
 		if(!data) {
 			console.log("Failed AuraDamage (SpellEffect)", text);
 			return errorText;
@@ -235,7 +241,7 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 			console.log("Null spellID", "Radius", text);
 			return errorText;
 		}
-		const data = getSpellEffect(spellID, section);
+		const data = getSpellEffect(cacheData, spellID, section);
 		if(!data) {
 			console.log("Failed EffectRadiusIndex", text);
 			return errorText;
@@ -258,7 +264,7 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 			console.log("Null spellID", "Time", text);
 			return errorText;
 		}
-		const data = getSpellEffect(spellID, section);
+		const data = getSpellEffect(cacheData, spellID, section);
 		if(!data) {
 			console.log("Failed EffectAuraPeriod", text);
 			return errorText;
@@ -273,7 +279,7 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 			console.log("Null spellID", "EffectChainTargets", text);
 			return errorText;
 		}
-		const data = getSpellEffect(spellID, section);
+		const data = getSpellEffect(cacheData, spellID, section);
 		if(!data) {
 			console.warn("Failed EffectChainTargets", text);
 			return errorText;
@@ -288,7 +294,7 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 			console.log("Null spellID", "EffectChainAmplitude", text);
 			return errorText;
 		}
-		const data = getSpellEffect(spellID, section);
+		const data = getSpellEffect(cacheData, spellID, section);
 		if(!data) {
 			console.warn("Failed EffectChainAmplitude", text);
 			return errorText;
@@ -303,7 +309,7 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 			console.log("Null spellID", "EffectPointsPerResource", text);
 			return errorText;
 		}
-		const data = getSpellEffect(spellID, section);
+		const data = getSpellEffect(cacheData, spellID, section);
 		if(!data) {
 			console.warn("Failed EffectPointsPerResource", text);
 			return errorText;
@@ -318,7 +324,7 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 			console.log("Null spellID", "EffectMiscValue", text);
 			return errorText;
 		}
-		const data = getSpellEffect(spellID, section);
+		const data = getSpellEffect(cacheData, spellID, section);
 		if(!data) {
 			console.warn("Failed EffectMiscValue", text);
 			return errorText;
@@ -622,7 +628,8 @@ const load = () => {
 							const dmp = new diff_match_patch();
 							const dmp_diff = dmp.diff_main(diffOld, diffNew)
 							dmp.diff_cleanupSemantic(dmp_diff);
-							contents += dmp.diff_prettyHtml(dmp_diff) + "</li>";
+							contents += dmp.diff_prettyHtml(dmp_diff);
+							console.warn("We are doing diff logic.");
 						} else {
 							contents += diffNew;
 						}
@@ -638,7 +645,7 @@ const load = () => {
 						</div>";
 				});
 		});
-	Array.from(document.querySelectorAll("input:not([id=themeMode])")).map(element => {
+	Array.from(document.querySelectorAll("input:not([id=themeMode]):not([id=diffMode])")).map(element => {
 		element.onclick = (event) => {
 			const elem = event.target;
 			if(elem.checked && elem.getAttribute("id") !== selectedTab) {
@@ -694,7 +701,8 @@ const load = () => {
 	shouldDiff = hashData["diff"] === "true" || shouldDiff;
 
 	const versionDropdown = document.getElementById("version"),
-		difficultyDropdown = document.getElementById("difficulty");
+		difficultyDropdown = document.getElementById("difficulty"),
+		diffSwitch = document.getElementById("diffMode");
 
 	versionDropdown.onchange = () => {
 		selectedBuild = versionDropdown.value;
@@ -719,6 +727,13 @@ const load = () => {
 			difficultyDropdown.value = difficulty;
 		}
 	});
+
+	diffSwitch.checked = shouldDiff;
+	diffSwitch.onchange = () => {
+		shouldDiff = !shouldDiff;
+		setHash();
+		location.reload();
+	}
 
 	fetch("cache/" + selectedBuild + ".json")
 		.then(response => response.json())
