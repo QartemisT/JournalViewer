@@ -298,3 +298,13 @@ ul li {
 	box-shadow: none;
 	padding: 5px;
 }
+
+/* Diffs */
+.diff-removed {
+	background: #9b0d0d;
+	text-decoration: line-through;
+}
+
+.diff-added {
+	background: #368a23;
+}

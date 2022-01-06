@@ -21,9 +21,11 @@ let
 		'spellrange': {'ID':null, 'RangeMin{0}':null, 'RangeMax{0}':null},
 		'spelltargetrestrictions': {'DifficultyID':null, 'MaxTargets':null, 'SpellID':null},
 	},
+	cacheDataOld = cacheData,
 	selectedBuild = "wow_beta",
 	selectedDifficulty = "mythic",
-	selectedTab = "";
+	selectedTab = "",
+	shouldDiff = false;
 const
 	builds = {
 		"wow":		{
@@ -121,7 +123,7 @@ const getSpellEffect = (spellID, section) => {
 	}
 }
 
-const sanityText = (text, overrideSpellID, spellMultiplier) => {
+const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 	if(!text) {
 		return "";
 	}
@@ -143,7 +145,7 @@ const sanityText = (text, overrideSpellID, spellMultiplier) => {
 		return "<a href=\"https://" + builds[selectedBuild].link + "wowhead.com/spell=" + spellID + "\" data-wowhead=\"spell-" + spellID + "\">" + cacheData.spellname[spellID] + "</a>";
 	});
 	text = text.replace(/\$?@?spelldesc(\d+)/gi, (_, spellID) => { // SpellDesc variable
-		return sanityText(cacheData.spell[spellID], spellID, spellMultiplier);
+		return sanityText(cacheData, cacheData.spell[spellID], spellID, spellMultiplier);
 	});
 	text = text.replace(/\$\?((?:diff\d+\|?)+)\s?(\[[^\]]+]|\[])(\[[^\]]+]|\[])/gi, (_, diffs, matchT, matchF) => {
 		if(selectedDifficulty === "all") {
@@ -600,17 +602,31 @@ const load = () => {
 						if(!shouldParse) {
 							return;
 						}
+						// 22025.363 = ExpectedStat.CreatureSpellDamage
 						const spellMultiplier = 22025.363 * (statModsXtuningID[mapXcontentTuning[instanceXmapID[bossXinstance[encounterID]]]] || 1);
-						const overviewParsed = sanityText(section.BodyText_lang, section.SpellID, spellMultiplier);
+						let diffNew = sanityText(cacheData, section.BodyText_lang, section.SpellID, spellMultiplier), diffOld = 'Previous';
+						if(shouldDiff) {
+							diffOld = sanityText(cacheDataOld, section.BodyText_lang, section.SpellID, spellMultiplier);
+						}
 						if(storeType === "Overview") {
-							contents += elementIcons(section.IconFlags) + "<b>" + section.Title_lang + "</b> " + overviewParsed + "</li>";
+							contents += elementIcons(section.IconFlags) + "<b>" + section.Title_lang + "</b> ";
 						} else if(section.SpellID !== 0) { // Ability: Spell
 							const spellID = section.SpellID;
-							// 22025.363 = ExpectedStat.CreatureSpellDamage
-							contents += elementIcons(section.IconFlags) + "<b><a href=\"https://" + builds[selectedBuild].link + "wowhead.com/spell=" + spellID + "\" data-wowhead=\"spell-" + spellID + "\">" + cacheData.spellname[spellID] + "</a></b> " + sanityText(cacheData.spell[spellID], spellID, spellMultiplier) + overviewParsed + "</li>";
+							contents += elementIcons(section.IconFlags) + "<b><a href=\"https://" + builds[selectedBuild].link + "wowhead.com/spell=" + spellID + "\" data-wowhead=\"spell-" + spellID + "\">" + cacheData.spellname[spellID] + "</a></b> ";
+							diffNew = sanityText(cacheData, cacheData.spell[spellID], spellID, spellMultiplier) + diffNew;
+							diffOld = sanityText(cacheDataOld, cacheDataOld.spell[spellID], spellID, spellMultiplier) + diffOld;
 						} else {
-							contents += elementIcons(section.IconFlags) + "<b>" + section.Title_lang + "</b> " + overviewParsed + "</li>";
+							contents += elementIcons(section.IconFlags) + "<b>" + section.Title_lang + "</b> ";
 						}
+						if(shouldDiff) {
+							const dmp = new diff_match_patch();
+							const dmp_diff = dmp.diff_main(diffOld, diffNew)
+							dmp.diff_cleanupSemantic(dmp_diff);
+							contents += dmp.diff_prettyHtml(dmp_diff) + "</li>";
+						} else {
+							contents += diffNew;
+						}
+						contents += "</li>";
 						prevParent = section.ParentSectionID;
 					});
 					contents += "</ul>";
@@ -655,15 +671,15 @@ const load = () => {
 		lightCSS = lightCSSselector.sheet || lightCSSselector.styleSheet;
 	lightCSS.disabled = localStorage.lightMode !== "true";
 
-	if(location.hash === "" && localStorage.hash) {
-		location.hash = localStorage.hash;
-	}
-
 	const themeSwitch = document.getElementById("themeMode");
 	themeSwitch.checked = localStorage.lightMode !== "true";
 	themeSwitch.onchange = () => {
 		lightCSS.disabled = themeSwitch.checked;
 		localStorage.lightMode = !themeSwitch.checked;
+	}
+
+	if(location.hash === "" && localStorage.hash) {
+		location.hash = localStorage.hash;
 	}
 
 	const hashData = {};
@@ -675,6 +691,7 @@ const load = () => {
 	selectedBuild = hashData["build"] || selectedBuild;
 	selectedDifficulty = hashData["difficulty"] || selectedDifficulty;
 	selectedTab = hashData["tab"] || selectedTab;
+	shouldDiff = hashData["diff"] === "true" || shouldDiff;
 
 	const versionDropdown = document.getElementById("version"),
 		difficultyDropdown = document.getElementById("difficulty");
@@ -709,5 +726,14 @@ const load = () => {
 			cacheData = data;
 			document.title = "Journal Viewer - " + data['build']
 		})
-		.then(() => load());
+		.then(() => {
+			if(!shouldDiff) {
+				load();
+				return;
+			}
+			fetch("cache/" + selectedBuild + "_old.json")
+				.then(response => response.json())
+				.then(data => cacheDataOld = data)
+				.then(() => load());
+		});
 })();
