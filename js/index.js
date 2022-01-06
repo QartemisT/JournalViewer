@@ -411,7 +411,7 @@ const sanityText = (text, overrideSpellID, spellMultiplier) => {
 		return data.ProcCharges.toLocaleString();
 	});
 	text = text.replace(/\${([^}]+)}/g, (repl, math) => { // Math
-		math = math.replace(" sec", ""); // e.g. "30 sec*20"
+		math = math.replace(" sec", "").replace(",", ""); // e.g. "30 sec*20"
 		if(math.match(/^[\s\d().*/+-]+$/g)) { // Matches: Spaces, numbers, brackets, math operations
 			return eval(math).toLocaleString();
 		}
