@@ -112,7 +112,7 @@ const setHash = () => {
 	localStorage.hash = location.hash;
 }
 
-const getSpellEffect = (spellID, section) => {
+const getSpellEffect = (cacheData, spellID, section) => {
 	let data, sectionID = parseInt(section) - 1;
 	const diffIter = Object.keys(difficulties[selectedDifficulty]);
 	diffIter.push("0");
@@ -183,7 +183,7 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 			console.log("Null spellID", "SpellEffect", text);
 			return errorText;
 		}
-		const data = getSpellEffect(spellID, section);
+		const data = getSpellEffect(cacheData, spellID, section);
 		if(!data) {
 			console.log("Failed SpellEffect", text);
 			return errorText;
@@ -201,7 +201,7 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 			console.log("Null spellID", "EffectAmplitude", text);
 			return errorText;
 		}
-		const data = getSpellEffect(spellID, section);
+		const data = getSpellEffect(cacheData, spellID, section);
 		if(!data) {
 			console.log("Failed EffectAmplitude", text);
 			return errorText;
@@ -216,7 +216,7 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 			console.log("Null spellID", "AuraDamage", text);
 			return errorText;
 		}
-		const data = getSpellEffect(spellID, section);
+		const data = getSpellEffect(cacheData, spellID, section);
 		if(!data) {
 			console.log("Failed AuraDamage (SpellEffect)", text);
 			return errorText;
@@ -241,7 +241,7 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 			console.log("Null spellID", "Radius", text);
 			return errorText;
 		}
-		const data = getSpellEffect(spellID, section);
+		const data = getSpellEffect(cacheData, spellID, section);
 		if(!data) {
 			console.log("Failed EffectRadiusIndex", text);
 			return errorText;
@@ -264,7 +264,7 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 			console.log("Null spellID", "Time", text);
 			return errorText;
 		}
-		const data = getSpellEffect(spellID, section);
+		const data = getSpellEffect(cacheData, spellID, section);
 		if(!data) {
 			console.log("Failed EffectAuraPeriod", text);
 			return errorText;
@@ -279,7 +279,7 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 			console.log("Null spellID", "EffectChainTargets", text);
 			return errorText;
 		}
-		const data = getSpellEffect(spellID, section);
+		const data = getSpellEffect(cacheData, spellID, section);
 		if(!data) {
 			console.warn("Failed EffectChainTargets", text);
 			return errorText;
@@ -294,7 +294,7 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 			console.log("Null spellID", "EffectChainAmplitude", text);
 			return errorText;
 		}
-		const data = getSpellEffect(spellID, section);
+		const data = getSpellEffect(cacheData, spellID, section);
 		if(!data) {
 			console.warn("Failed EffectChainAmplitude", text);
 			return errorText;
@@ -309,7 +309,7 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 			console.log("Null spellID", "EffectPointsPerResource", text);
 			return errorText;
 		}
-		const data = getSpellEffect(spellID, section);
+		const data = getSpellEffect(cacheData, spellID, section);
 		if(!data) {
 			console.warn("Failed EffectPointsPerResource", text);
 			return errorText;
@@ -324,7 +324,7 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 			console.log("Null spellID", "EffectMiscValue", text);
 			return errorText;
 		}
-		const data = getSpellEffect(spellID, section);
+		const data = getSpellEffect(cacheData, spellID, section);
 		if(!data) {
 			console.warn("Failed EffectMiscValue", text);
 			return errorText;
