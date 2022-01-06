@@ -30,7 +30,8 @@
 		},
 		"globals": {
 			"Papa": true,
-			"sha1": true
+			"sha1": true,
+			"diff_match_patch": true
 		},
 		"extends": "eslint:recommended"
 	},
