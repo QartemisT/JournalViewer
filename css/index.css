@@ -60,7 +60,7 @@ ul li {
 }
 
 #themeMode + label,
-#diffMode + label{
+#diffMode + label {
 	position: absolute;
 	left: 0;
 	cursor: pointer;
