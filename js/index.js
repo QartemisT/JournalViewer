@@ -179,9 +179,9 @@ const sanityText = (text, overrideSpellID, spellMultiplier) => {
 			return errorText;
 		}
 		if(data.Effect === 2) {
-			return Math.round(Math.abs(spellMultiplier * data.EffectBasePointsF / 100));
+			return Math.round(Math.abs(spellMultiplier * data.EffectBasePointsF / 100)).toLocaleString();
 		}
-		return Math.abs(data.EffectBasePointsF);
+		return Math.abs(data.EffectBasePointsF).toLocaleString();
 	});
 	text = text.replace(/\$(\d+)?[eE](\d+)?/g, (_, spellID, section) => { // EffectAmplitude variables
 		spellID = spellID || overrideSpellID;
@@ -195,7 +195,7 @@ const sanityText = (text, overrideSpellID, spellMultiplier) => {
 			console.log("Failed EffectAmplitude", text);
 			return errorText;
 		}
-		return data.EffectAmplitude;
+		return data.EffectAmplitude.toLocaleString();
 	});
 	text = text.replace(/\$(\d+)?o(\d+)?/g, (_, spellID, section) => { // AuraDamage variable
 		spellID = spellID || overrideSpellID;
@@ -215,7 +215,7 @@ const sanityText = (text, overrideSpellID, spellMultiplier) => {
 			return errorText;
 		}
 		try {
-			return Math.round(Math.abs(spellMultiplier * data.EffectBasePointsF / 100) * ((cacheData.spellduration[data2.DurationIndex] / 1000) / (data.EffectAuraPeriod / 1000)));
+			return Math.round(Math.abs(spellMultiplier * data.EffectBasePointsF / 100) * ((cacheData.spellduration[data2.DurationIndex] / 1000) / (data.EffectAuraPeriod / 1000))).toLocaleString();
 		} catch(_) {
 			console.log("Failed AuraDamage (SpellDuration)", text);
 			return errorText;
@@ -241,7 +241,7 @@ const sanityText = (text, overrideSpellID, spellMultiplier) => {
 			console.log("Failed EffectRadiusIndex (both radius indexes returned 0)", text);
 			return 0; // Match WoWhead logic
 		}
-		return cacheData.spellradius[radiusIndex];
+		return cacheData.spellradius[radiusIndex].toLocaleString();
 	});
 	text = text.replace(/\$(\d+)?[tT](\d+)?/g, (_, spellID, section) => { // Time variables
 		spellID = spellID || overrideSpellID
@@ -255,7 +255,7 @@ const sanityText = (text, overrideSpellID, spellMultiplier) => {
 			console.log("Failed EffectAuraPeriod", text);
 			return errorText;
 		}
-		return data.EffectAuraPeriod / 1000;
+		return (data.EffectAuraPeriod / 1000).toLocaleString();
 	});
 	text = text.replace(/\$(\d+)?[xX](\d+)?/g, (_, spellID, section) => { // EffectChainTargets variables
 		spellID = spellID || overrideSpellID
@@ -269,7 +269,7 @@ const sanityText = (text, overrideSpellID, spellMultiplier) => {
 			console.warn("Failed EffectChainTargets", text);
 			return errorText;
 		}
-		return data.EffectChainTargets;
+		return data.EffectChainTargets.toLocaleString();
 	});
 	text = text.replace(/\$(\d+)?[fF](\d+)?/g, (_, spellID, section) => { // EffectChainAmplitude variables
 		spellID = spellID || overrideSpellID
@@ -283,7 +283,7 @@ const sanityText = (text, overrideSpellID, spellMultiplier) => {
 			console.warn("Failed EffectChainAmplitude", text);
 			return errorText;
 		}
-		return data.EffectChainAmplitude;
+		return data.EffectChainAmplitude.toLocaleString();
 	});
 	text = text.replace(/\$(\d+)?[bB](\d+)?/g, (_, spellID, section) => { // EffectPointsPerResource variables
 		spellID = spellID || overrideSpellID
@@ -297,7 +297,7 @@ const sanityText = (text, overrideSpellID, spellMultiplier) => {
 			console.warn("Failed EffectPointsPerResource", text);
 			return errorText;
 		}
-		return data.EffectPointsPerResource;
+		return data.EffectPointsPerResource.toLocaleString();
 	});
 	text = text.replace(/\$(\d+)?q(\d+)?/g, (_, spellID, section) => { // EffectMiscValue variables
 		spellID = spellID || overrideSpellID
@@ -311,7 +311,7 @@ const sanityText = (text, overrideSpellID, spellMultiplier) => {
 			console.warn("Failed EffectMiscValue", text);
 			return errorText;
 		}
-		return data["EffectMiscValue[0]"];
+		return data["EffectMiscValue[0]"].toLocaleString();
 	});
 	text = text.replace(/\$(\d+)?[dD](\d+)?/g, (_, spellID) => { // Duration variables
 		spellID = spellID || overrideSpellID
@@ -328,7 +328,7 @@ const sanityText = (text, overrideSpellID, spellMultiplier) => {
 			return "until cancelled";
 		}
 		try {
-			return cacheData.spellduration[data.DurationIndex] / 1000 + " sec";
+			return (cacheData.spellduration[data.DurationIndex] / 1000).toLocaleString() + " sec";
 		} catch(_) {
 			console.log("Failed Duration", text);
 			return errorText;
@@ -346,7 +346,7 @@ const sanityText = (text, overrideSpellID, spellMultiplier) => {
 			return errorText;
 		}
 		try {
-			return cacheData.spellrange[data.RangeIndex][type === "r" ? 1 : 0];
+			return cacheData.spellrange[data.RangeIndex][type === "r" ? 1 : 0].toLocaleString();
 		} catch(_) {
 			console.log("Failed Range", text);
 			return errorText;
@@ -365,7 +365,7 @@ const sanityText = (text, overrideSpellID, spellMultiplier) => {
 					ret = data.MaxTargets;
 				}
 			}
-			return ret;
+			return ret.toLocaleString();
 		} catch(_) {
 			console.log("Failed SpellTargetRestrictions", text);
 			return errorText;
@@ -382,7 +382,7 @@ const sanityText = (text, overrideSpellID, spellMultiplier) => {
 			console.log("Failed MaxStacks", text);
 			return errorText;
 		}
-		return data.CumulativeAura;
+		return data.CumulativeAura.toLocaleString();
 	});
 	text = text.replace(/\$(\d+)?[hH](\d+)?/g, (_, spellID) => { // ProcChance variables
 		spellID = spellID || overrideSpellID
@@ -395,7 +395,7 @@ const sanityText = (text, overrideSpellID, spellMultiplier) => {
 			console.log("Failed ProcChance", text);
 			return errorText;
 		}
-		return data.ProcChance;
+		return data.ProcChance.toLocaleString();
 	});
 	text = text.replace(/\$(\d+)?[nN](\d+)?/g, (_, spellID) => { // ProcCharges variables
 		spellID = spellID || overrideSpellID
@@ -408,16 +408,16 @@ const sanityText = (text, overrideSpellID, spellMultiplier) => {
 			console.log("Failed ProcCharges", text);
 			return errorText;
 		}
-		return data.ProcCharges;
+		return data.ProcCharges.toLocaleString();
 	});
 	text = text.replace(/\${([^}]+)}/g, (repl, math) => { // Math
 		math = math.replace(" sec", ""); // e.g. "30 sec*20"
 		if(math.match(/^[\s\d().*/+-]+$/g)) { // Matches: Spaces, numbers, brackets, math operations
-			return eval(math);
+			return eval(math).toLocaleString();
 		}
 		// Still needs variable support
 		console.error("Invalid math: ", math, text);
-		return repl;
+		return repl.toLocaleString();
 	});
 	text = text.replace(/\${(\d+)} \$[lL]([^:]+):([^;]+);/g, (_, amount, singular, plural) => { // Pluralization
 		return amount + " " + (parseInt(amount) < 2 ? singular : plural);
