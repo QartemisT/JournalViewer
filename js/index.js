@@ -125,6 +125,7 @@ const sanityText = (text, overrideSpellID, spellMultiplier) => {
 	if(!text) {
 		return "";
 	}
+	let prevSpellID;
 	text = text.replace(/\$bullet;/gi, "<br>&bull; "); // New line
 	text = text.replace(/\|cFF([a-z0-9]+)\|Hspell:([0-9]+)\s?\|h([^|]+)\|h\|r/gi, " <a style=\"color: #$1;\" href=\"https://" + builds[selectedBuild].link + "wowhead.com/spell=$2\" data-wowhead=\"spell-$2\">$3</a>"); // Spell tooltips
 	text = text.replace(/\$\[[0-9, ]+(?:[\s\n]+)?(.*?)\$]/g, "$1"); // Ignored difficulty text
@@ -167,8 +168,9 @@ const sanityText = (text, overrideSpellID, spellMultiplier) => {
 		return matchF.substr(1, matchF.length - 2);
 	});
 	text = text.replace(/\$(\d+)?[mMsSwW](\d+)?/g, (_, spellID, section) => { // SpellEffect variables
-		spellID = spellID || overrideSpellID;
+		spellID = spellID || overrideSpellID || prevSpellID;
 		section = section || 1;
+		prevSpellID = spellID;
 		if(!spellID) {
 			console.log("Null spellID", "SpellEffect", text);
 			return errorText;
@@ -184,8 +186,9 @@ const sanityText = (text, overrideSpellID, spellMultiplier) => {
 		return Math.abs(data.EffectBasePointsF).toLocaleString();
 	});
 	text = text.replace(/\$(\d+)?[eE](\d+)?/g, (_, spellID, section) => { // EffectAmplitude variables
-		spellID = spellID || overrideSpellID;
+		spellID = spellID || overrideSpellID || prevSpellID;
 		section = section || 1;
+		prevSpellID = spellID;
 		if(!spellID) {
 			console.log("Null spellID", "EffectAmplitude", text);
 			return errorText;
@@ -198,8 +201,9 @@ const sanityText = (text, overrideSpellID, spellMultiplier) => {
 		return data.EffectAmplitude.toLocaleString();
 	});
 	text = text.replace(/\$(\d+)?o(\d+)?/g, (_, spellID, section) => { // AuraDamage variable
-		spellID = spellID || overrideSpellID;
+		spellID = spellID || overrideSpellID || prevSpellID;
 		section = section || 1;
+		prevSpellID = spellID;
 		if(!spellID) {
 			console.log("Null spellID", "AuraDamage", text);
 			return errorText;
@@ -222,8 +226,9 @@ const sanityText = (text, overrideSpellID, spellMultiplier) => {
 		}
 	});
 	text = text.replace(/\$(\d+)?([aA])(\d+)?/g, (_, spellID, type, section) => { // Radius variables
-		spellID = spellID || overrideSpellID;
+		spellID = spellID || overrideSpellID || prevSpellID;
 		section = section || 1;
+		prevSpellID = spellID;
 		if(!spellID) {
 			console.log("Null spellID", "Radius", text);
 			return errorText;
@@ -244,8 +249,9 @@ const sanityText = (text, overrideSpellID, spellMultiplier) => {
 		return cacheData.spellradius[radiusIndex].toLocaleString();
 	});
 	text = text.replace(/\$(\d+)?[tT](\d+)?/g, (_, spellID, section) => { // Time variables
-		spellID = spellID || overrideSpellID
+		spellID = spellID || overrideSpellID || prevSpellID;
 		section = section || 1;
+		prevSpellID = spellID;
 		if(!spellID) {
 			console.log("Null spellID", "Time", text);
 			return errorText;
@@ -258,8 +264,9 @@ const sanityText = (text, overrideSpellID, spellMultiplier) => {
 		return (data.EffectAuraPeriod / 1000).toLocaleString();
 	});
 	text = text.replace(/\$(\d+)?[xX](\d+)?/g, (_, spellID, section) => { // EffectChainTargets variables
-		spellID = spellID || overrideSpellID
+		spellID = spellID || overrideSpellID || prevSpellID;
 		section = section || 1;
+		prevSpellID = spellID;
 		if(!spellID) {
 			console.log("Null spellID", "EffectChainTargets", text);
 			return errorText;
@@ -272,8 +279,9 @@ const sanityText = (text, overrideSpellID, spellMultiplier) => {
 		return data.EffectChainTargets.toLocaleString();
 	});
 	text = text.replace(/\$(\d+)?[fF](\d+)?/g, (_, spellID, section) => { // EffectChainAmplitude variables
-		spellID = spellID || overrideSpellID
+		spellID = spellID || overrideSpellID || prevSpellID;
 		section = section || 1;
+		prevSpellID = spellID;
 		if(!spellID) {
 			console.log("Null spellID", "EffectChainAmplitude", text);
 			return errorText;
@@ -286,8 +294,9 @@ const sanityText = (text, overrideSpellID, spellMultiplier) => {
 		return data.EffectChainAmplitude.toLocaleString();
 	});
 	text = text.replace(/\$(\d+)?[bB](\d+)?/g, (_, spellID, section) => { // EffectPointsPerResource variables
-		spellID = spellID || overrideSpellID
+		spellID = spellID || overrideSpellID || prevSpellID;
 		section = section || 1;
+		prevSpellID = spellID;
 		if(!spellID) {
 			console.log("Null spellID", "EffectPointsPerResource", text);
 			return errorText;
@@ -300,8 +309,9 @@ const sanityText = (text, overrideSpellID, spellMultiplier) => {
 		return data.EffectPointsPerResource.toLocaleString();
 	});
 	text = text.replace(/\$(\d+)?q(\d+)?/g, (_, spellID, section) => { // EffectMiscValue variables
-		spellID = spellID || overrideSpellID
+		spellID = spellID || overrideSpellID || prevSpellID;
 		section = section || 1;
+		prevSpellID = spellID;
 		if(!spellID) {
 			console.log("Null spellID", "EffectMiscValue", text);
 			return errorText;
@@ -314,7 +324,8 @@ const sanityText = (text, overrideSpellID, spellMultiplier) => {
 		return data["EffectMiscValue[0]"].toLocaleString();
 	});
 	text = text.replace(/\$(\d+)?[dD](\d+)?/g, (_, spellID) => { // Duration variables
-		spellID = spellID || overrideSpellID
+		spellID = spellID || overrideSpellID || prevSpellID;
+		prevSpellID = spellID;
 		if(!spellID) {
 			console.log("Null spellID", "Duration", text);
 			return errorText;
@@ -335,7 +346,8 @@ const sanityText = (text, overrideSpellID, spellMultiplier) => {
 		}
 	});
 	text = text.replace(/\$(\d+)?([rR])(\d+)?/g, (_, spellID, type) => { // Range variables
-		spellID = spellID || overrideSpellID
+		spellID = spellID || overrideSpellID || prevSpellID;
+		prevSpellID = spellID;
 		if(!spellID) {
 			console.log("Null spellID", "Range", text);
 			return errorText;
@@ -353,7 +365,8 @@ const sanityText = (text, overrideSpellID, spellMultiplier) => {
 		}
 	});
 	text = text.replace(/\$(\d+)?[iI](\d+)?/g, (_, spellID) => { // SpellTargetRestrictions variables
-		spellID = parseInt(spellID) || overrideSpellID
+		spellID = parseInt(spellID) || overrideSpellID || prevSpellID;
+		prevSpellID = spellID;
 		if(!spellID) {
 			console.log("Null spellID", "SpellTargetRestrictions", text);
 			return errorText;
@@ -372,7 +385,8 @@ const sanityText = (text, overrideSpellID, spellMultiplier) => {
 		}
 	});
 	text = text.replace(/\$(\d+)?[uU](\d+)?/g, (_, spellID) => { // MaxStacks variables
-		spellID = spellID || overrideSpellID
+		spellID = spellID || overrideSpellID || prevSpellID;
+		prevSpellID = spellID;
 		if(!spellID) {
 			console.log("Null spellID", "MaxStacks", text);
 			return errorText;
@@ -385,7 +399,8 @@ const sanityText = (text, overrideSpellID, spellMultiplier) => {
 		return data.CumulativeAura.toLocaleString();
 	});
 	text = text.replace(/\$(\d+)?[hH](\d+)?/g, (_, spellID) => { // ProcChance variables
-		spellID = spellID || overrideSpellID
+		spellID = spellID || overrideSpellID || prevSpellID;
+		prevSpellID = spellID;
 		if(!spellID) {
 			console.log("Null spellID", "ProcChance", text);
 			return errorText;
@@ -398,7 +413,8 @@ const sanityText = (text, overrideSpellID, spellMultiplier) => {
 		return data.ProcChance.toLocaleString();
 	});
 	text = text.replace(/\$(\d+)?[nN](\d+)?/g, (_, spellID) => { // ProcCharges variables
-		spellID = spellID || overrideSpellID
+		spellID = spellID || overrideSpellID || prevSpellID;
+		prevSpellID = spellID;
 		if(!spellID) {
 			console.log("Null spellID", "ProcCharges", text);
 			return errorText;
