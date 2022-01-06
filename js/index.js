@@ -353,7 +353,7 @@ const sanityText = (text, overrideSpellID, spellMultiplier) => {
 		}
 	});
 	text = text.replace(/\$(\d+)?[iI](\d+)?/g, (_, spellID) => { // SpellTargetRestrictions variables
-		spellID = spellID || overrideSpellID
+		spellID = parseInt(spellID) || overrideSpellID
 		if(!spellID) {
 			console.log("Null spellID", "SpellTargetRestrictions", text);
 			return errorText;
@@ -584,13 +584,14 @@ const load = () => {
 						if(!shouldParse) {
 							return;
 						}
-						const overviewParsed = sanityText(section.BodyText_lang);
+						const spellMultiplier = 22025.363 * (statModsXtuningID[mapXcontentTuning[instanceXmapID[bossXinstance[encounterID]]]] || 1);
+						const overviewParsed = sanityText(section.BodyText_lang, null, spellMultiplier);
 						if(storeType === "Overview") {
 							contents += elementIcons(section.IconFlags) + "<b>" + section.Title_lang + "</b> " + overviewParsed + "</li>";
 						} else if(section.SpellID !== 0) { // Ability: Spell
 							const spellID = section.SpellID;
 							// 22025.363 = ExpectedStat.CreatureSpellDamage
-							contents += elementIcons(section.IconFlags) + "<b><a href=\"https://" + builds[selectedBuild].link + "wowhead.com/spell=" + spellID + "\" data-wowhead=\"spell-" + spellID + "\">" + cacheData.spellname[spellID] + "</a></b> " + sanityText(cacheData.spell[spellID], spellID, 22025.363 * (statModsXtuningID[mapXcontentTuning[instanceXmapID[bossXinstance[encounterID]]]] || 1)) + overviewParsed + "</li>";
+							contents += elementIcons(section.IconFlags) + "<b><a href=\"https://" + builds[selectedBuild].link + "wowhead.com/spell=" + spellID + "\" data-wowhead=\"spell-" + spellID + "\">" + cacheData.spellname[spellID] + "</a></b> " + sanityText(cacheData.spell[spellID], spellID, spellMultiplier) + overviewParsed + "</li>";
 						} else {
 							contents += elementIcons(section.IconFlags) + "<b>" + section.Title_lang + "</b> " + overviewParsed + "</li>";
 						}
