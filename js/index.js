@@ -636,7 +636,6 @@ const load = () => {
 							const dmp_diff = dmp.diff_main(diffOld, diffNew)
 							dmp.diff_cleanupSemantic(dmp_diff);
 							contents += dmp.diff_prettyHtml(dmp_diff);
-							console.warn("We are doing diff logic.");
 						} else {
 							contents += diffNew;
 						}
