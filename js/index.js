@@ -195,7 +195,7 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 			console.log("Failed SpellEffect", text);
 			return errorText;
 		}
-		if(data.Effect === 2 || data.Effect === 6) {
+		if(data.Effect === 2 || (data.Effect === 6 && data.EffectAura === 3)) {
 			return Math.round(Math.abs(spellMultiplier * data.EffectBasePointsF / 100)).toLocaleString();
 		}
 		return Math.abs(data.EffectBasePointsF).toLocaleString();
