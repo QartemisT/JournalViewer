@@ -632,10 +632,15 @@ const load = () => {
 							contents += elementIcons(section.IconFlags) + "<b>" + section.Title_lang + "</b> ";
 						}
 						if(shouldDiff) {
+							// noinspection JSPotentiallyInvalidConstructorUsage
 							const dmp = new diff_match_patch();
 							const dmp_diff = dmp.diff_main(diffOld, diffNew)
 							dmp.diff_cleanupSemantic(dmp_diff);
-							contents += dmp.diff_prettyHtml(dmp_diff);
+							if(dmp_diff.filter(entry => /<a href="[^"]+$/.test(entry[1])).length > 0) {
+								contents += '<del class="diff-removed">' + diffOld + "</del>" + '<ins class="diff-added">' + diffNew + "</ins>";
+							} else {
+								contents += dmp.diff_prettyHtml(dmp_diff);
+							}
 						} else {
 							contents += diffNew;
 						}
