@@ -39,3 +39,13 @@ jobs:
         with:
           webhook_url: ${{ secrets.DISCORD_WEBHOOK }}
           args: 'Journal update has gone live.'
+
+      # 3rd party hook
+      - name: Send Status to Discord
+        if: ${{ github.event_name == 'push' && success() && contains(github.event.head_commit.message, '(Version ') }}
+        uses: Ilshidur/action-discord@0.3.0
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK2 }}
+        with:
+          webhook_url: ${{ secrets.DISCORD_WEBHOOK2 }}
+          args: 'Journal update has gone live. Visit <https://qartemist.github.io/JournalViewer> for the latest version.'
