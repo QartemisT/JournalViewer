@@ -14,7 +14,7 @@ let
 		'spell': {'ID':null, 'Description_lang':null},
 		'spellauraoptions': {'SpellID':null, 'CumulativeAura':null, 'ProcCharges':null, 'ProcChance':null},
 		'spellduration': {'ID':null, 'Duration':null},
-		'spelleffect': {'DifficultyID':null, 'SpellID':null, 'EffectIndex':null, 'Effect':null, 'EffectAmplitude':null, 'EffectAuraPeriod':null, 'EffectChainAmplitude':null, 'EffectChainTargets':null, 'EffectPointsPerResource':null, 'EffectBasePointsF':null, 'EffectMiscValue{0}':null, 'EffectRadiusIndex{0}':null, 'EffectRadiusIndex{1}':null},
+		'spelleffect': {'DifficultyID':null, 'SpellID':null, 'EffectAura':null, 'EffectIndex':null, 'Effect':null, 'EffectAmplitude':null, 'EffectAuraPeriod':null, 'EffectChainAmplitude':null, 'EffectChainTargets':null, 'EffectPointsPerResource':null, 'EffectBasePointsF':null, 'EffectMiscValue{0}':null, 'EffectRadiusIndex{0}':null, 'EffectRadiusIndex{1}':null},
 		'spellmisc': {'SpellID':null, 'DurationIndex':null, 'RangeIndex':null},
 		'spellname': {'ID':null, 'Name_lang':null},
 		'spellradius': {'ID':null, 'Radius':null},
@@ -136,7 +136,7 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 	let prevSpellID;
 	text = text.replace(/\$bullet;/gi, "<br>&bull; "); // New line
 	text = text.replace(/\|cFF([a-z0-9]+)\|Hspell:([0-9]+)\s?\|h([^|]+)\|h\|r/gi, " <a style=\"color: #$1;\" href=\"https://" + builds[selectedBuild].link + "wowhead.com/spell=$2\" data-wowhead=\"spell-$2\">$3</a>"); // Spell tooltips
-	text = text.replace(/\$\[[0-9, ]+(?:[\s\n]+)?(.*?)\$\]/g, (_, diffs, txt) => { // Difficulty specific
+	text = text.replace(/\$\[[0-9, ]+(?:[\s\n]+)?(.*?)\$]/g, (_, diffs, txt) => { // Difficulty specific
 		for(const diff of diffs.split(",")) {
 			if(selectedDifficulty === "all" || difficulties[selectedDifficulty][diff.trim()]) {
 				return txt;
@@ -144,7 +144,7 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 		}
 		return "";
 	});
-	text = text.replace(/\$\[!([0-9, ]+)(?:[\s\n]+)?(.*?)\$\]/g, (_, diffs, txt) => { // Dificulty specific WARNING
+	text = text.replace(/\$\[!([0-9, ]+)(?:[\s\n]+)?(.*?)\$]/g, (_, diffs, txt) => { // Dificulty specific WARNING
 		for(const diff of diffs.split(",")) {
 			if(selectedDifficulty === "all" || difficulties[selectedDifficulty][diff.trim()]) {
 				return "<p class=\"iconsprite warning\">" + txt + "</p>";
@@ -443,9 +443,13 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 	});
 	text = text.replace(/\${([^}]+)}/g, (repl, math) => { // Math
 		math = math.replace(" sec", "").replace(",", ""); // e.g. "30 sec*20"
-		if(math.match(/^[\s\d().*/+-]+$/g)) { // Matches: Spaces, numbers, brackets, math operations
-			return eval(math).toLocaleString();
-		}
+        try {
+            if (math.match(/^[\s\d().*/+-]+$/g)) { // Matches: Spaces, numbers, brackets, math operations
+                return eval(math).toLocaleString();
+            }
+        } catch(_) {
+            // Do nothing
+        }
 		// Still needs variable support
 		console.error("Invalid math: ", math, text);
 		return repl.toLocaleString();
