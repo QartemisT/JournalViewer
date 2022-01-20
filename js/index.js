@@ -182,7 +182,7 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 		}
 		return matchF.substr(1, matchF.length - 2);
 	});
-	text = text.replace(/\$(\d+)?[mMsSwW](\d+)?/g, (_, spellID, section) => { // SpellEffect variables
+	text = text.replace(/\$(\d+)?[mMsSwW](\d+)?/g, (f, spellID, section) => { // SpellEffect variables
 		spellID = spellID || overrideSpellID || prevSpellID;
 		section = section || 1;
 		prevSpellID = spellID;
@@ -195,7 +195,7 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 			console.log("Failed SpellEffect", text);
 			return errorText;
 		}
-		if(data.Effect === 2 || (data.Effect === 6 && data.EffectAura === 3)) {
+		if(data.Effect === 2 || (data.Effect === 6 && (data.EffectAura === 3 || data.EffectAura === 301))) {
 			return Math.round(Math.abs(spellMultiplier * data.EffectBasePointsF / 100)).toLocaleString();
 		}
 		return Math.abs(data.EffectBasePointsF).toLocaleString();
