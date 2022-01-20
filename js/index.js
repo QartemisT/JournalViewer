@@ -447,7 +447,9 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
             if (math.match(/^[\s\d().*/+-]+$/g)) { // Matches: Spaces, numbers, brackets, math operations
                 return eval(math).toLocaleString();
             }
-        } catch(_) {}
+        } catch(_) {
+            // Do nothing
+        }
 		// Still needs variable support
 		console.error("Invalid math: ", math, text);
 		return repl.toLocaleString();
