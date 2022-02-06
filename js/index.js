@@ -133,7 +133,7 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 	if(!text) {
 		return "";
 	}
-	let prevSpellID;
+	let prevSpellID, lastVar;
 	text = text.replace(/\$bullet;/gi, "<br>&bull; "); // New line
 	text = text.replace(/\|cFF([a-z0-9]+)\|Hspell:([0-9]+)\s?\|h([^|]+)\|h\|r/gi, " <a style=\"color: #$1;\" href=\"https://" + builds[selectedBuild].link + "wowhead.com/spell=$2\" data-wowhead=\"spell-$2\">$3</a>"); // Spell tooltips
 	text = text.replace(/\$\[[0-9, ]+(?:[\s\n\r]+)?(.*?)\$]/g, (_, diffs, txt) => { // Difficulty specific
@@ -196,9 +196,11 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 			return errorText;
 		}
 		if(data.Effect === 2 || (data.Effect === 6 && (data.EffectAura === 3 || data.EffectAura === 301))) {
-			return Math.round(Math.abs(spellMultiplier * data.EffectBasePointsF / 100)).toLocaleString();
+			lastVar = Math.round(Math.abs(spellMultiplier * data.EffectBasePointsF / 100)).toLocaleString()
+			return lastVar;
 		}
-		return Math.abs(data.EffectBasePointsF).toLocaleString();
+		lastVar = Math.abs(data.EffectBasePointsF).toLocaleString()
+		return lastVar;
 	});
 	text = text.replace(/\$(\d+)?[eE](\d+)?/g, (_, spellID, section) => { // EffectAmplitude variables
 		spellID = spellID || overrideSpellID || prevSpellID;
@@ -457,6 +459,9 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 	text = text.replace(/\${(\d+)} \$[lL]([^:]+):([^;]+);/g, (_, amount, singular, plural) => { // Pluralization
 		return amount + " " + (parseInt(amount) < 2 ? singular : plural);
 	});
+	text = text.replace(/\|4([^:]+):([^;]+);/g, (_, singular, plural) => { // Previous variable pluralization
+		return parseInt(lastVar) < 2 ? singular : plural;
+	});
 	return text;
 }
 
@@ -587,15 +592,30 @@ const load = () => {
 					let contents = "<ul>",
 						prevParent = 0,
 						prevIndent = 0,
-						siblings = [];
+						siblings = [],
+						parents = [];
 					Object.values(sectionStore[encounterID]).map(section => {
+						parents[section.ID] = section.ParentSectionID;
 						if(section.ParentSectionID === 0) {
 							siblings[section.ID] = 0;
 						} else {
 							siblings[section.ID] = siblings[section.ParentSectionID] + 1;
 						}
 						let shouldParse = false;
-						const diffs = sectionsXDifficulty[section.ID] || sectionsXDifficulty[section.ParentSectionID];
+						let diffs = sectionsXDifficulty[section.ID];
+						if(!diffs) {
+							let sectionID = section.ID;
+							while(true) {
+								if(!parents[sectionID]) {
+									break;
+								}
+								sectionID = parents[sectionID];
+								if(sectionsXDifficulty[sectionID]) {
+									diffs = sectionsXDifficulty[sectionID];
+									break;
+								}
+							}
+						}
 						if(diffs) {
 							for(const diff of diffs) {
 								if(selectedDifficulty === "all" || difficulties[selectedDifficulty][diff]) {
