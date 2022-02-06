@@ -605,10 +605,7 @@ const load = () => {
 						let diffs = sectionsXDifficulty[section.ID];
 						if(!diffs) {
 							let sectionID = section.ID;
-							while(true) {
-								if(!parents[sectionID]) {
-									break;
-								}
+							while(parents[sectionID]) {
 								sectionID = parents[sectionID];
 								if(sectionsXDifficulty[sectionID]) {
 									diffs = sectionsXDifficulty[sectionID];
