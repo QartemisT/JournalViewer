@@ -594,19 +594,8 @@ const load = () => {
 						} else {
 							siblings[section.ID] = siblings[section.ParentSectionID] + 1;
 						}
-						if(prevParent !== section.ParentSectionID) {
-							if(siblings[section.ID] < prevIndent) {
-								for(let i = 0; i < prevIndent - siblings[section.ID]; i++) {
-									contents += "</ul>";
-								}
-							} else {
-								contents += "<ul>";
-							}
-						}
-						prevParent = section.ParentSectionID;
-						prevIndent = siblings[section.ID];
 						let shouldParse = false;
-						const diffs = sectionsXDifficulty[section.ID];
+						const diffs = sectionsXDifficulty[section.ID] || sectionsXDifficulty[section.ParentSectionID];
 						if(diffs) {
 							for(const diff of diffs) {
 								if(selectedDifficulty === "all" || difficulties[selectedDifficulty][diff]) {
@@ -619,6 +608,17 @@ const load = () => {
 						if(!shouldParse) {
 							return;
 						}
+						if(prevParent !== section.ParentSectionID) {
+							if(siblings[section.ID] < prevIndent) {
+								for(let i = 0; i < prevIndent - siblings[section.ID]; i++) {
+									contents += "</ul>";
+								}
+							} else {
+								contents += "<ul>";
+							}
+						}
+						prevParent = section.ParentSectionID;
+						prevIndent = siblings[section.ID];
 						// 22025.363 = ExpectedStat.CreatureSpellDamage
 						const spellMultiplier = 22025.363 * (statModsXtuningID[mapXcontentTuning[instanceXmapID[bossXinstance[encounterID]]]] || 1);
 						let diffNew = sanityText(cacheData, section.BodyText_lang, section.SpellID, spellMultiplier), diffOld = 'Previous';
