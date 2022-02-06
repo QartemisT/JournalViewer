@@ -462,6 +462,7 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 	text = text.replace(/\|4([^:]+):([^;]+);/g, (_, singular, plural) => { // Previous variable pluralization
 		return parseInt(lastVar) < 2 ? singular : plural;
 	});
+	text = text.replace(/\|5\s?/g, ""); // What the fuck is this?
 	return text;
 }
 
