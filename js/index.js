@@ -462,18 +462,9 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 	text = text.replace(/\|4([^:]+):([^;]+);/g, (_, singular, plural) => { // Previous variable pluralization
 		return parseInt(lastVar) < 2 ? singular : plural;
 	});
-	let test = false;
-	if(text.includes('|5')) {
-		test = true;
-		console.warn(text);
-	}
 	text = text.replace(/\|5\s?(<[^>]+>)?([a-zA-Z])/g, (_, link, nextLetter) => { // A vs AN
 		return (['a', 'e', 'i', 'o', 'u'].indexOf(nextLetter.toLowerCase()) !== -1 ? "an " : "a ") + link + nextLetter
 	});
-	if(test) {
-		console.warn(text);
-		test = false;
-	}
 	return text;
 }
 
