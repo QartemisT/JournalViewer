@@ -5,7 +5,7 @@ let
 		'contenttuningxexpected': {'ContentTuningID':null, 'ExpectedStatModID':null},
 		'expectedstatmod': {'ID':null, 'CreatureSpellDamageMod':null},
 		'journalencounter': {'ID':null, 'Name_lang':null, 'Description_lang':null, 'JournalInstanceID':null, 'OrderIndex':null},
-		'journalencountersection': {'ID':null, 'BodyText_lang':null, 'Title_lang':null, 'Type':null, 'Flags':null, 'JournalEncounterID':null, 'OrderIndex':null, 'IconCreatureDisplayInfoID':null, 'SpellID':null, 'ParentSectionID':null, 'IconFlags':null},
+		'journalencountersection': {'ID':null, 'BodyText_lang':null, 'Title_lang':null, 'Type':null, 'JournalEncounterID':null, 'OrderIndex':null, 'IconCreatureDisplayInfoID':null, 'SpellID':null, 'ParentSectionID':null, 'IconFlags':null},
 		'journalinstance': {'ID':null, 'Name_lang':null, 'Description_lang':null, 'OrderIndex':null, 'MapID':null},
 		'journalsectionxdifficulty': {'ID':null, 'DifficultyID':null, 'JournalEncounterSectionID':null},
 		'journaltier': {'ID':null, 'Name_lang':null},
@@ -572,7 +572,7 @@ const load = () => {
 	}
 	cacheData.journalencountersection
 		.map(data => {
-			if(data.Type === 3 && data.Flags !== 3) { // Overview
+			if(data.Type === 3 && ![22119, 22523].includes(data.ID)) { // Overview, Bugfix: Sire Denathrius' Private Collection
 				if(!store.Overview[data.JournalEncounterID]) {
 					store.Overview[data.JournalEncounterID] = [];
 				}
