@@ -625,6 +625,10 @@ const load = () => {
 						} else {
 							shouldParse = true;
 						}
+                        // Bugfix: "Fractal Shell" shouldn't render here (even though blizz said it should render in mythic?)
+                        if([24809].includes(section.ID) && selectedDifficulty === "mythic") {
+                            return;
+                        }
 						if(!shouldParse) {
 							return;
 						}
