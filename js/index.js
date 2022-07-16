@@ -135,8 +135,8 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 	}
 	let prevSpellID, lastVar;
 	text = text.replace(/\$bullet;/gi, "<br>&bull; "); // New line
-	text = text.replace(/\|cFF([a-z0-9]+)\|Hspell:([0-9]+)\s?\|h([^|]+)\|h\|r/gi, " <a style=\"color: #$1;\" href=\"https://" + builds[selectedBuild].link + "wowhead.com/spell=$2\" data-wowhead=\"spell-$2\">$3</a>"); // Spell tooltips
-	text = text.replace(/\$\[[0-9, ]+(?:[\s\n\r]+)?(.*?)\$]/g, (_, diffs, txt) => { // Difficulty specific
+	text = text.replace(/\|cFF([a-z\d]+)\|Hspell:(\d+)\s?\|h([^|]+)\|h\|r/gi, " <a style=\"color: #$1;\" href=\"https://" + builds[selectedBuild].link + "wowhead.com/spell=$2\" data-wowhead=\"spell-$2\">$3</a>"); // Spell tooltips
+	text = text.replace(/\$\[[\d, ]+(?:[\s\n\r]+)?(.*?)\$]/g, (_, diffs, txt) => { // Difficulty specific
 		for(const diff of diffs.split(",")) {
 			if(selectedDifficulty === "all" || difficulties[selectedDifficulty][diff.trim()]) {
 				return txt;
@@ -144,7 +144,7 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 		}
 		return "";
 	});
-	text = text.replace(/\$\[!([0-9, ]+)(?:[\s\n\r]+)?(.*?)\$]/g, (_, diffs, txt) => { // Dificulty specific WARNING
+	text = text.replace(/\$\[!([\d, ]+)(?:[\s\n\r]+)?(.*?)\$]/g, (_, diffs, txt) => { // Dificulty specific WARNING
 		for(const diff of diffs.split(",")) {
 			if(selectedDifficulty === "all" || difficulties[selectedDifficulty][diff.trim()]) {
 				return "<p class=\"iconsprite warning\">" + txt + "</p>";
@@ -171,16 +171,16 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 					}
 				}
 			}
-			diffz = diffz.substr(0, diffz.length - 1);
-			const matchFF = matchF.substr(1, matchF.length - 2);
-			return "<i> <b>(" + diffz + ") </b>" + matchT.substr(1, matchT.length - 2) + (matchFF.trim() !== "" ? "<b> (Other) </b>" + matchFF: "") + "</i>";
+			diffz = diffz.substring(0, diffz.length - 1);
+			const matchFF = matchF.substring(1, matchF.length - 2);
+			return "<i> <b>(" + diffz + ") </b>" + matchT.substring(1, matchT.length - 2) + (matchFF.trim() !== "" ? "<b> (Other) </b>" + matchFF: "") + "</i>";
 		}
 		for(const diff of diffs.split("|")) {
 			if(difficulties[selectedDifficulty][diff.replace(/diff/i, "").trim()]) {
-				return matchT.substr(1, matchT.length - 2);
+				return matchT.substring(1, matchT.length - 2);
 			}
 		}
-		return matchF.substr(1, matchF.length - 2);
+		return matchF.substring(1, matchF.length - 2);
 	});
 	text = text.replace(/\$(\d+)?[mMsSwW](\d+)?/g, (f, spellID, section) => { // SpellEffect variables
 		spellID = spellID || overrideSpellID || prevSpellID;
@@ -572,12 +572,18 @@ const load = () => {
 	}
 	cacheData.journalencountersection
 		.map(data => {
-			if(data.Type === 3 && ![22119, 22523].includes(data.ID)) { // Overview, Bugfix: Sire Denathrius' Private Collection
+			if(
+                data.Type === 3 && // Overview
+                ![
+                    22119, 22523,               // Bugfix: Sire Denathrius' Private Collection
+                    25040, 25061, 25064, 25068, // Bufix: Vault of the incarnates -> Kurog Grimtotem -> Altars
+                ].includes(data.ID)
+            ) {
 				if(!store.Overview[data.JournalEncounterID]) {
 					store.Overview[data.JournalEncounterID] = [];
 				}
 				store.Overview[data.JournalEncounterID][data.OrderIndex] = data;
-			} else if(data.IconCreatureDisplayInfoID === 0 || data.Type === 1 || data.Type === 2) { // Abilities: Header | Creature | spell
+			} else { // Abilities: Header | Creature | Spell
 				if(!store.Abilities[data.JournalEncounterID]) {
 					store.Abilities[data.JournalEncounterID] = [];
 				}
@@ -729,7 +735,7 @@ const load = () => {
 	}
 
 	const hashData = {};
-	for(const hashDat of location.hash.substr(1).split("&")) {
+	for(const hashDat of location.hash.substring(1).split("&")) {
 		const values = hashDat.split("=");
 		hashData[values[0]] = values[1];
 	}
