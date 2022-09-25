@@ -590,6 +590,8 @@ const load = () => {
 				store.Abilities[data.JournalEncounterID][data.OrderIndex] = data;
 			}
 		});
+    // ExpectedStat.CreatureSpellDamage - wow_beta (70) : wow (60)
+    const statMultiplier = selectedBuild === "wow_beta" ? 132505.89 : 22025.363;
 	Object.keys(store.Overview).concat(Object.keys(store.Abilities))
 		.filter((encounterID, index, self) => self.indexOf(encounterID) === index && document.querySelector("#boss-" + encounterID + " + label + div"))
 		.map(encounterID => {
@@ -649,8 +651,7 @@ const load = () => {
 						}
 						prevParent = section.ParentSectionID;
 						prevIndent = siblings[section.ID];
-						// 22025.363 = ExpectedStat.CreatureSpellDamage
-						const spellMultiplier = 22025.363 * (statModsXtuningID[mapXcontentTuning[instanceXmapID[bossXinstance[encounterID]]]] || 1);
+						const spellMultiplier = statMultiplier * (statModsXtuningID[mapXcontentTuning[instanceXmapID[bossXinstance[encounterID]]]] || 1);
 						let diffNew = sanityText(cacheData, section.BodyText_lang, section.SpellID, spellMultiplier), diffOld = 'Previous';
 						if(shouldDiff) {
 							diffOld = sanityText(cacheDataOld, section.BodyText_lang, section.SpellID, spellMultiplier);
