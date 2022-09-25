@@ -313,8 +313,10 @@ ul li {
 .diff-removed {
 	background: #9b0d0d;
 	text-decoration: line-through;
+	display: inline-block;
 }
 
 .diff-added {
 	background: #368a23;
+	display: inline-block;
 }
