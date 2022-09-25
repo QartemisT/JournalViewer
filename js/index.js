@@ -46,20 +46,20 @@ const
 		//}
 	},
 	difficulties = {
-		"all": {},
-		"LFR": {
+		"all":		{},
+		"LFR":		{
 			"7":	true,
 			"17":	true
 		},
-		"normal": {
+		"normal":	{
 			"1":	true,
 			"14":	true
 		},
-		"heroic": {
+		"heroic":	{
 			"2":	true,
 			"15":	true
 		},
-		"mythic": {
+		"mythic":	{
 			"16":	true,
 			"23":	true
 		}
@@ -84,28 +84,28 @@ const
 
 const setHash = () => {
 	let hash = "#";
-	if(selectedBuild !== "wow_beta") {
+	if (selectedBuild !== "wow_beta") {
 		hash += "build=" + selectedBuild;
 	}
-	if(selectedDifficulty !== "mythic") {
-		if(hash !== "#") {
+	if (selectedDifficulty !== "mythic") {
+		if (hash !== "#") {
 			hash += "&";
 		}
 		hash += "difficulty=" + selectedDifficulty;
 	}
-	if(selectedTab !== "") {
-		if(hash !== "#") {
+	if (selectedTab !== "") {
+		if (hash !== "#") {
 			hash += "&";
 		}
 		hash += "tab=" + selectedTab;
 	}
-	if(shouldDiff) {
-		if(hash !== "#") {
+	if (shouldDiff) {
+		if (hash !== "#") {
 			hash += "&";
 		}
 		hash += "diff=true";
 	}
-	if(hash === "#") {
+	if (hash === "#") {
 		return;
 	}
 	location.hash = hash;
@@ -116,13 +116,13 @@ const getSpellEffect = (cacheData, spellID, section) => {
 	let data, sectionID = parseInt(section) - 1;
 	const diffIter = Object.keys(difficulties[selectedDifficulty]);
 	diffIter.push("0");
-	for(let i = 0; i <= 1; i++) {
-		if(i === 1) { // 0 = normal sectionID, 1 = fallback to 0
+	for (let i = 0; i <= 1; i++) {
+		if (i === 1) { // 0 = normal sectionID, 1 = fallback to 0
 			sectionID = 0;
 		}
-		for(let difficultyID of diffIter) {
+		for (let difficultyID of diffIter) {
 			data = cacheData.spelleffect[spellID + "-" + sectionID + "-" + difficultyID];
-			if(data) {
+			if (data) {
 				return data;
 			}
 		}
@@ -130,23 +130,30 @@ const getSpellEffect = (cacheData, spellID, section) => {
 }
 
 const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
-	if(!text) {
+	if (!text) {
 		return "";
 	}
 	let prevSpellID, lastVar;
 	text = text.replace(/\$bullet;/gi, "<br>&bull; "); // New line
 	text = text.replace(/\|cFF([a-z\d]+)\|Hspell:(\d+)\s?\|h([^|]+)\|h\|r/gi, " <a style=\"color: #$1;\" href=\"https://" + builds[selectedBuild].link + "wowhead.com/spell=$2\" data-wowhead=\"spell-$2\">$3</a>"); // Spell tooltips
 	text = text.replace(/\$\[[\d, ]+(?:[\s\n\r]+)?(.*?)\$]/g, (_, diffs, txt) => { // Difficulty specific
-		for(const diff of diffs.split(",")) {
-			if(selectedDifficulty === "all" || difficulties[selectedDifficulty][diff.trim()]) {
+		for (const diff of diffs.split(",")) {
+			if (selectedDifficulty === "all" || difficulties[selectedDifficulty][diff.trim()]) {
 				return txt;
 			}
 		}
 		return "";
 	});
 	text = text.replace(/\$\[!([\d, ]+)(?:[\s\n\r]+)?(.*?)\$]/g, (_, diffs, txt) => { // Dificulty specific WARNING
-		for(const diff of diffs.split(",")) {
-			if(selectedDifficulty === "all" || difficulties[selectedDifficulty][diff.trim()]) {
+		for (const diff of diffs.split(",")) {
+			if (selectedDifficulty === "all") {
+				for (const difficulty of Object.keys(difficulties)) {
+					if (difficulties[difficulty][diff.trim()]) {
+						return "<p class=\"iconsprite warning\"><b>(" + difficulty + ") </b>" + txt + "</p>"
+					}
+				}
+			}
+			if (difficulties[selectedDifficulty][diff.trim()]) {
 				return "<p class=\"iconsprite warning\">" + txt + "</p>";
 			}
 		}
@@ -161,11 +168,11 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 		return sanityText(cacheData, cacheData.spell[spellID], spellID, spellMultiplier);
 	});
 	text = text.replace(/\$\?((?:diff\d+\|?)+)(?:[\s\n\r]+)?(\[[^\]]+]|\[])(\?((?:diff\d+\|?)+)(?:[\s\n\r]+)?(\[[^\]]+]|\[]))?(\[[^\]]+]|\[])/gi, (_1, diffs, matchT, _2, diffs2, matchT2, matchF) => {
-		if(selectedDifficulty === "all") {
+		if (selectedDifficulty === "all") {
 			let diffz = "";
-			for(const diff of diffs.split("|")) {
-				for(const difficulty of Object.keys(difficulties)) {
-					if(difficulties[difficulty][diff.replace(/diff/i, "").trim()]) {
+			for (const diff of diffs.split("|")) {
+				for (const difficulty of Object.keys(difficulties)) {
+					if (difficulties[difficulty][diff.replace(/diff/i, "").trim()]) {
 						diffz += difficulty + "/";
 						break;
 					}
@@ -173,7 +180,7 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 			}
 			diffz = diffz.substring(0, diffz.length - 1);
             let diffz2 = "";
-            if(diffs2 !== undefined) {
+            if (diffs2 !== undefined) {
                 for (const diff of diffs2.split("|")) {
                     for (const difficulty of Object.keys(difficulties)) {
                         if (difficulties[difficulty][diff.replace(/diff/i, "").trim()]) {
@@ -193,16 +200,15 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
             if (diffz2 !== "") {
                 out += " <b>(" + diffz2 + ") </b>" + matchT2.substring(1, matchT2.length - 2);
             }
-
             out += matchFF + "</i>";
 			return out;
 		}
-		for(const diff of diffs.split("|")) {
-			if(difficulties[selectedDifficulty][diff.replace(/diff/i, "").trim()]) {
+		for (const diff of diffs.split("|")) {
+			if (difficulties[selectedDifficulty][diff.replace(/diff/i, "").trim()]) {
 				return matchT.substring(1, matchT.length - 2);
 			}
 		}
-        if(diffs2 !== undefined) {
+        if (diffs2 !== undefined) {
             for (const diff of diffs2.split("|")) {
                 if (difficulties[selectedDifficulty][diff.replace(/diff/i, "").trim()]) {
                     return matchT2.substring(1, matchT2.length - 2);
@@ -215,16 +221,16 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 		spellID = spellID || overrideSpellID || prevSpellID;
 		section = section || 1;
 		prevSpellID = spellID;
-		if(!spellID) {
+		if (!spellID) {
 			console.log("Null spellID", "SpellEffect", text);
 			return errorText;
 		}
 		const data = getSpellEffect(cacheData, spellID, section);
-		if(!data) {
+		if (!data) {
 			console.log("Failed SpellEffect", text);
 			return errorText;
 		}
-		if(data.Effect === 2 || (data.Effect === 6 && (data.EffectAura === 3 || data.EffectAura === 301))) {
+		if (data.Effect === 2 || (data.Effect === 6 && (data.EffectAura === 3 || data.EffectAura === 301))) {
 			lastVar = Math.round(Math.abs(spellMultiplier * data.EffectBasePointsF / 100)).toLocaleString()
 			return lastVar;
 		}
@@ -235,12 +241,12 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 		spellID = spellID || overrideSpellID || prevSpellID;
 		section = section || 1;
 		prevSpellID = spellID;
-		if(!spellID) {
+		if (!spellID) {
 			console.log("Null spellID", "EffectAmplitude", text);
 			return errorText;
 		}
 		const data = getSpellEffect(cacheData, spellID, section);
-		if(!data) {
+		if (!data) {
 			console.log("Failed EffectAmplitude", text);
 			return errorText;
 		}
@@ -250,23 +256,23 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 		spellID = spellID || overrideSpellID || prevSpellID;
 		section = section || 1;
 		prevSpellID = spellID;
-		if(!spellID) {
+		if (!spellID) {
 			console.log("Null spellID", "AuraDamage", text);
 			return errorText;
 		}
 		const data = getSpellEffect(cacheData, spellID, section);
-		if(!data) {
+		if (!data) {
 			console.log("Failed AuraDamage (SpellEffect)", text);
 			return errorText;
 		}
 		const data2 = cacheData.spellmisc[spellID]
-		if(!data2) {
+		if (!data2) {
 			console.log("Failed AuraDamage2 (SpellMisc)", text);
 			return errorText;
 		}
 		try {
 			return Math.round(Math.abs(spellMultiplier * data.EffectBasePointsF / 100) * ((cacheData.spellduration[data2.DurationIndex] / 1000) / (data.EffectAuraPeriod / 1000))).toLocaleString();
-		} catch(_) {
+		} catch (_) {
 			console.log("Failed AuraDamage (SpellDuration)", text);
 			return errorText;
 		}
@@ -275,20 +281,20 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 		spellID = spellID || overrideSpellID || prevSpellID;
 		section = section || 1;
 		prevSpellID = spellID;
-		if(!spellID) {
+		if (!spellID) {
 			console.log("Null spellID", "Radius", text);
 			return errorText;
 		}
 		const data = getSpellEffect(cacheData, spellID, section);
-		if(!data) {
+		if (!data) {
 			console.log("Failed EffectRadiusIndex", text);
 			return errorText;
 		}
 		let radiusIndex = data["EffectRadiusIndex[" + (type === "a" ? 0 : 1) + "]"];
-		if(radiusIndex === 0) {
+		if (radiusIndex === 0) {
 			radiusIndex = data["EffectRadiusIndex[" + (type === "a" ? 1 : 0) + "]"];
 		}
-		if(radiusIndex === 0) {
+		if (radiusIndex === 0) {
 			console.log("Failed EffectRadiusIndex (both radius indexes returned 0)", text);
 			return 0; // Match WoWhead logic
 		}
@@ -298,12 +304,12 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 		spellID = spellID || overrideSpellID || prevSpellID;
 		section = section || 1;
 		prevSpellID = spellID;
-		if(!spellID) {
+		if (!spellID) {
 			console.log("Null spellID", "Time", text);
 			return errorText;
 		}
 		const data = getSpellEffect(cacheData, spellID, section);
-		if(!data) {
+		if (!data) {
 			console.log("Failed EffectAuraPeriod", text);
 			return errorText;
 		}
@@ -313,12 +319,12 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 		spellID = spellID || overrideSpellID || prevSpellID;
 		section = section || 1;
 		prevSpellID = spellID;
-		if(!spellID) {
+		if (!spellID) {
 			console.log("Null spellID", "EffectChainTargets", text);
 			return errorText;
 		}
 		const data = getSpellEffect(cacheData, spellID, section);
-		if(!data) {
+		if (!data) {
 			console.warn("Failed EffectChainTargets", text);
 			return errorText;
 		}
@@ -328,12 +334,12 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 		spellID = spellID || overrideSpellID || prevSpellID;
 		section = section || 1;
 		prevSpellID = spellID;
-		if(!spellID) {
+		if (!spellID) {
 			console.log("Null spellID", "EffectChainAmplitude", text);
 			return errorText;
 		}
 		const data = getSpellEffect(cacheData, spellID, section);
-		if(!data) {
+		if (!data) {
 			console.warn("Failed EffectChainAmplitude", text);
 			return errorText;
 		}
@@ -343,12 +349,12 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 		spellID = spellID || overrideSpellID || prevSpellID;
 		section = section || 1;
 		prevSpellID = spellID;
-		if(!spellID) {
+		if (!spellID) {
 			console.log("Null spellID", "EffectPointsPerResource", text);
 			return errorText;
 		}
 		const data = getSpellEffect(cacheData, spellID, section);
-		if(!data) {
+		if (!data) {
 			console.warn("Failed EffectPointsPerResource", text);
 			return errorText;
 		}
@@ -358,12 +364,12 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 		spellID = spellID || overrideSpellID || prevSpellID;
 		section = section || 1;
 		prevSpellID = spellID;
-		if(!spellID) {
+		if (!spellID) {
 			console.log("Null spellID", "EffectMiscValue", text);
 			return errorText;
 		}
 		const data = getSpellEffect(cacheData, spellID, section);
-		if(!data) {
+		if (!data) {
 			console.warn("Failed EffectMiscValue", text);
 			return errorText;
 		}
@@ -372,21 +378,21 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 	text = text.replace(/\$(\d+)?[dD](\d+)?/g, (_, spellID) => { // Duration variables
 		spellID = spellID || overrideSpellID || prevSpellID;
 		prevSpellID = spellID;
-		if(!spellID) {
+		if (!spellID) {
 			console.log("Null spellID", "Duration", text);
 			return errorText;
 		}
 		const data = cacheData.spellmisc[spellID]
-		if(!data) {
+		if (!data) {
 			console.log("Failed Duration", text);
 			return errorText;
 		}
-		if(data.DurationIndex === 0) { // Special edge case
+		if (data.DurationIndex === 0) { // Special edge case
 			return "until cancelled";
 		}
 		try {
 			return (cacheData.spellduration[data.DurationIndex] / 1000).toLocaleString() + " sec";
-		} catch(_) {
+		} catch (_) {
 			console.log("Failed Duration", text);
 			return errorText;
 		}
@@ -394,18 +400,18 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 	text = text.replace(/\$(\d+)?([rR])(\d+)?/g, (_, spellID, type) => { // Range variables
 		spellID = spellID || overrideSpellID || prevSpellID;
 		prevSpellID = spellID;
-		if(!spellID) {
+		if (!spellID) {
 			console.log("Null spellID", "Range", text);
 			return errorText;
 		}
 		const data = cacheData.spellmisc[spellID]
-		if(!data) {
+		if (!data) {
 			console.log("Failed Range", text);
 			return errorText;
 		}
 		try {
 			return cacheData.spellrange[data.RangeIndex][type === "r" ? 1 : 0].toLocaleString();
-		} catch(_) {
+		} catch (_) {
 			console.log("Failed Range", text);
 			return errorText;
 		}
@@ -413,19 +419,19 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 	text = text.replace(/\$(\d+)?[iI](\d+)?/g, (_, spellID) => { // SpellTargetRestrictions variables
 		spellID = parseInt(spellID) || overrideSpellID || prevSpellID;
 		prevSpellID = spellID;
-		if(!spellID) {
+		if (!spellID) {
 			console.log("Null spellID", "SpellTargetRestrictions", text);
 			return errorText;
 		}
 		try {
 			let ret = "<err>";
-			for(const data of cacheData.spelltargetrestrictions.filter(data => data.SpellID === spellID).sort((a, b) => a.DifficultyID - b.DifficultyID)) {
-				if(data.DifficultyID === 0 || selectedDifficulty === "all" || difficulties[selectedDifficulty][data.DifficultyID]) {
+			for (const data of cacheData.spelltargetrestrictions.filter(data => data.SpellID === spellID).sort((a, b) => a.DifficultyID - b.DifficultyID)) {
+				if (data.DifficultyID === 0 || selectedDifficulty === "all" || difficulties[selectedDifficulty][data.DifficultyID]) {
 					ret = data.MaxTargets;
 				}
 			}
 			return ret.toLocaleString();
-		} catch(_) {
+		} catch (_) {
 			console.log("Failed SpellTargetRestrictions", text);
 			return errorText;
 		}
@@ -433,12 +439,12 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 	text = text.replace(/\$(\d+)?[uU](\d+)?/g, (_, spellID) => { // MaxStacks variables
 		spellID = spellID || overrideSpellID || prevSpellID;
 		prevSpellID = spellID;
-		if(!spellID) {
+		if (!spellID) {
 			console.log("Null spellID", "MaxStacks", text);
 			return errorText;
 		}
 		const data = cacheData.spellauraoptions[spellID]
-		if(!data) {
+		if (!data) {
 			console.log("Failed MaxStacks", text);
 			return errorText;
 		}
@@ -447,12 +453,12 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 	text = text.replace(/\$(\d+)?[hH](\d+)?/g, (_, spellID) => { // ProcChance variables
 		spellID = spellID || overrideSpellID || prevSpellID;
 		prevSpellID = spellID;
-		if(!spellID) {
+		if (!spellID) {
 			console.log("Null spellID", "ProcChance", text);
 			return errorText;
 		}
 		const data = cacheData.spellauraoptions[spellID]
-		if(!data) {
+		if (!data) {
 			console.log("Failed ProcChance", text);
 			return errorText;
 		}
@@ -461,12 +467,12 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 	text = text.replace(/\$(\d+)?[nN](\d+)?/g, (_, spellID) => { // ProcCharges variables
 		spellID = spellID || overrideSpellID || prevSpellID;
 		prevSpellID = spellID;
-		if(!spellID) {
+		if (!spellID) {
 			console.log("Null spellID", "ProcCharges", text);
 			return errorText;
 		}
 		const data = cacheData.spellauraoptions[spellID]
-		if(!data) {
+		if (!data) {
 			console.log("Failed ProcCharges", text);
 			return errorText;
 		}
@@ -478,7 +484,7 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
             if (math.match(/^[\s\d().*/+-]+$/g)) { // Matches: Spaces, numbers, brackets, math operations
                 return eval(math).toLocaleString();
             }
-        } catch(_) {
+        } catch (_) {
             // Do nothing
         }
 		// Still needs variable support
@@ -499,7 +505,7 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 
 const elementIcons = (bit) => {
 	bit = parseInt(bit);
-	if(bit === 0) {
+	if (bit === 0) {
 		return "<li>";
 	}
 	let ret = "<li>";
@@ -531,7 +537,7 @@ const load = () => {
 		.map(data => {
 			instanceXmapID[data.ID] = data.MapID;
 			document.querySelector("#instance-" + data.ID + " + label").innerHTML = data.Name_lang;
-			if(data.Description_lang) {
+			if (data.Description_lang) {
 				document.querySelector("#instance-" + data.ID + " + label + div").innerHTML += "<span>" + data.Description_lang + "</span>";
 			}
 		});
@@ -540,7 +546,7 @@ const load = () => {
 		journalEncounter = cacheData.journalencounter.filter(data => data.JournalInstanceID !== 0);
 	journalEncounter.sort((a, b) => a.OrderIndex - b.OrderIndex);
 	journalEncounter.map(data => {
-		if(!bosses[data.JournalInstanceID]) {
+		if (!bosses[data.JournalInstanceID]) {
 			bosses[data.JournalInstanceID] = [];
 		}
 		bosses[data.JournalInstanceID].splice(data.OrderIndex, 0, data);
@@ -562,7 +568,7 @@ const load = () => {
 	const sectionsXDifficulty = {};
 	cacheData.journalsectionxdifficulty
 		.map(data => {
-			if(!sectionsXDifficulty[data.JournalEncounterSectionID]) {
+			if (!sectionsXDifficulty[data.JournalEncounterSectionID]) {
 				sectionsXDifficulty[data.JournalEncounterSectionID] = [];
 			}
 			sectionsXDifficulty[data.JournalEncounterSectionID].push(data.DifficultyID);
@@ -582,14 +588,14 @@ const load = () => {
 	Object.keys(mapXcontentTuning)
 		.map(mapID => {
 			const tuneValue = conditionalTuning[mapXcontentTuning[mapID]];
-			if(tuneValue) {
+			if (tuneValue) {
 				mapXcontentTuning[mapID] = tuneValue;
 			}
 		});
 	const statModsXtuningID = [];
 	Object.entries(cacheData.contenttuningxexpected)
 		.map(([k, v]) => {
-			if(!statModsXtuningID[k]) {
+			if (!statModsXtuningID[k]) {
 				statModsXtuningID[k] = 1;
 			}
 			v.map(data => statModsXtuningID[k] *= cacheData.expectedstatmod[data]);
@@ -601,7 +607,7 @@ const load = () => {
 	}
 	cacheData.journalencountersection
 		.map(data => {
-			if(
+			if (
                 (
                     data.Title_lang === "Overview" ||
                     data.Title_lang === "Tanks" ||
@@ -620,12 +626,12 @@ const load = () => {
                     ].includes(data.ID)
                 )
             ) {
-				if(!store.Overview[data.JournalEncounterID]) {
+				if (!store.Overview[data.JournalEncounterID]) {
 					store.Overview[data.JournalEncounterID] = [];
 				}
 				store.Overview[data.JournalEncounterID][data.OrderIndex] = data;
 			} else { // Abilities: Header | Creature | Spell
-				if(!store.Abilities[data.JournalEncounterID]) {
+				if (!store.Abilities[data.JournalEncounterID]) {
 					store.Abilities[data.JournalEncounterID] = [];
 				}
 				store.Abilities[data.JournalEncounterID][data.OrderIndex] = data;
@@ -648,26 +654,26 @@ const load = () => {
 						parents = [];
 					Object.values(sectionStore[encounterID]).map(section => {
 						parents[section.ID] = section.ParentSectionID;
-						if(section.ParentSectionID === 0) {
+						if (section.ParentSectionID === 0) {
 							siblings[section.ID] = 0;
 						} else {
 							siblings[section.ID] = siblings[section.ParentSectionID] + 1;
 						}
 						let shouldParse = false;
 						let diffs = sectionsXDifficulty[section.ID];
-						if(!diffs) {
+						if (!diffs) {
 							let sectionID = section.ID;
 							while(parents[sectionID]) {
 								sectionID = parents[sectionID];
-								if(sectionsXDifficulty[sectionID]) {
+								if (sectionsXDifficulty[sectionID]) {
 									diffs = sectionsXDifficulty[sectionID];
 									break;
 								}
 							}
 						}
-						if(diffs) {
-							for(const diff of diffs) {
-								if(selectedDifficulty === "all" || difficulties[selectedDifficulty][diff]) {
+						if (diffs) {
+							for (const diff of diffs) {
+								if (selectedDifficulty === "all" || difficulties[selectedDifficulty][diff]) {
 									shouldParse = true;
 								}
 							}
@@ -675,15 +681,15 @@ const load = () => {
 							shouldParse = true;
 						}
                         // Bugfix: "Fractal Shell" shouldn't render here (even though blizz said it should render in mythic?)
-                        if([24809].includes(section.ID) && selectedDifficulty === "mythic") {
+                        if ([24809].includes(section.ID) && selectedDifficulty === "mythic") {
                             return;
                         }
-						if(!shouldParse) {
+						if (!shouldParse) {
 							return;
 						}
-						if(prevParent !== section.ParentSectionID) {
-							if(siblings[section.ID] < prevIndent) {
-								for(let i = 0; i < prevIndent - siblings[section.ID]; i++) {
+						if (prevParent !== section.ParentSectionID) {
+							if (siblings[section.ID] < prevIndent) {
+								for (let i = 0; i < prevIndent - siblings[section.ID]; i++) {
 									contents += "</ul>";
 								}
 							} else {
@@ -694,12 +700,12 @@ const load = () => {
 						prevIndent = siblings[section.ID];
 						const spellMultiplier = statMultiplier * (statModsXtuningID[mapXcontentTuning[instanceXmapID[bossXinstance[encounterID]]]] || 1);
 						let diffNew = sanityText(cacheData, section.BodyText_lang, section.SpellID, spellMultiplier), diffOld = 'Previous';
-						if(shouldDiff) {
+						if (shouldDiff) {
 							diffOld = sanityText(cacheDataOld, section.BodyText_lang, section.SpellID, spellMultiplier);
 						}
-						if(storeType === "Overview") {
+						if (storeType === "Overview") {
 							contents += elementIcons(section.IconFlags) + "<b>" + section.Title_lang + "</b> ";
-						} else if(section.SpellID !== 0) { // Ability: Spell
+						} else if (section.SpellID !== 0) { // Ability: Spell
 							const spellID = section.SpellID;
 							contents += elementIcons(section.IconFlags) + "<b><a href=\"https://" + builds[selectedBuild].link + "wowhead.com/spell=" + spellID + "\" data-wowhead=\"spell-" + spellID + "\">" + cacheData.spellname[spellID] + "</a></b> ";
 							diffNew = sanityText(cacheData, cacheData.spell[spellID], spellID, spellMultiplier) + diffNew;
@@ -707,12 +713,12 @@ const load = () => {
 						} else {
 							contents += elementIcons(section.IconFlags) + "<b>" + section.Title_lang + "</b> ";
 						}
-						if(shouldDiff) {
+						if (shouldDiff) {
 							// noinspection JSPotentiallyInvalidConstructorUsage
 							const dmp = new diff_match_patch();
 							const dmp_diff = dmp.diff_main(diffOld, diffNew)
 							dmp.diff_cleanupSemantic(dmp_diff);
-							if(dmp_diff.filter(entry => /<a href="[^"]+$/.test(entry[1]) || /p class=/.test(entry[1])).length > 0) {
+							if (dmp_diff.filter(entry => /<a href="[^"]+$/.test(entry[1]) || /p class=/.test(entry[1])).length > 0) {
 								contents += '<del class="diff-removed">' + diffOld + "</del>" + '<ins class="diff-added">' + diffNew + "</ins>";
 							} else {
 								contents += dmp.diff_prettyHtml(dmp_diff);
@@ -735,23 +741,23 @@ const load = () => {
 	Array.from(document.querySelectorAll("input:not([id=themeMode]):not([id=diffMode])")).map(element => {
 		element.onclick = (event) => {
 			const elem = event.target;
-			if(elem.checked && elem.getAttribute("id") !== selectedTab) {
+			if (elem.checked && elem.getAttribute("id") !== selectedTab) {
 				selectedTab = elem.getAttribute("id");
 				setHash();
 			}
 		}
 	});
 	// Render the cached tab
-	if(selectedTab !== "") {
+	if (selectedTab !== "") {
 		let selector = selectedTab;
 		while(true) { // eslint-disable-line no-constant-condition
 			let target = document.querySelector("#" + selector);
-			if(!target) {
+			if (!target) {
 				break;
 			}
 			target.checked = true;
 			const name = target.getAttribute("name");
-			if(name === "expansion") { // Top level
+			if (name === "expansion") { // Top level
 				break;
 			}
 			selector = name;
@@ -772,12 +778,12 @@ const load = () => {
 		localStorage.lightMode = !themeSwitch.checked;
 	}
 
-	if(location.hash === "" && localStorage.hash) {
+	if (location.hash === "" && localStorage.hash) {
 		location.hash = localStorage.hash;
 	}
 
 	const hashData = {};
-	for(const hashDat of location.hash.substring(1).split("&")) {
+	for (const hashDat of location.hash.substring(1).split("&")) {
 		const values = hashDat.split("=");
 		hashData[values[0]] = values[1];
 	}
@@ -798,7 +804,7 @@ const load = () => {
 	}
 	Object.keys(builds).map(build => {
 		versionDropdown.options[versionDropdown.options.length] = new Option(builds[build].name, build);
-		if(selectedBuild === build) {
+		if (selectedBuild === build) {
 			versionDropdown.value = build;
 		}
 	});
@@ -810,7 +816,7 @@ const load = () => {
 	}
 	Object.keys(difficulties).map(difficulty => {
 		difficultyDropdown.options[difficultyDropdown.options.length] = new Option(difficulty.charAt(0).toUpperCase() + difficulty.slice(1), difficulty);
-		if(selectedDifficulty === difficulty) {
+		if (selectedDifficulty === difficulty) {
 			difficultyDropdown.value = difficulty;
 		}
 	});
@@ -829,7 +835,7 @@ const load = () => {
 			document.title = "Journal Viewer - " + data['build']
 		})
 		.then(() => {
-			if(!shouldDiff) {
+			if (!shouldDiff) {
 				load();
 				return;
 			}
