@@ -160,7 +160,7 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 	text = text.replace(/\$?@?spelldesc(\d+)/gi, (_, spellID) => { // SpellDesc variable
 		return sanityText(cacheData, cacheData.spell[spellID], spellID, spellMultiplier);
 	});
-	text = text.replace(/\$\?((?:diff\d+\|?)+)(?:[\s\n\r]+)?(\[[^\]]+]|\[])(\[[^\]]+]|\[])/gi, (_, diffs, matchT, matchF) => {
+	text = text.replace(/\$\?((?:diff\d+\|?)+)(?:[\s\n\r]+)?(\[[^\]]+]|\[])(\?((?:diff\d+\|?)+)(?:[\s\n\r]+)?(\[[^\]]+]|\[]))?(\[[^\]]+]|\[])/gi, (_1, diffs, matchT, _2, diffs2, matchT2, matchF) => {
 		if(selectedDifficulty === "all") {
 			let diffz = "";
 			for(const diff of diffs.split("|")) {
@@ -172,14 +172,43 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 				}
 			}
 			diffz = diffz.substring(0, diffz.length - 1);
-			const matchFF = matchF.substring(1, matchF.length - 2);
-			return "<i> <b>(" + diffz + ") </b>" + matchT.substring(1, matchT.length - 2) + (matchFF.trim() !== "" ? "<b> (Other) </b>" + matchFF: "") + "</i>";
+            let diffz2 = "";
+            if(diffs2 !== undefined) {
+                for (const diff of diffs2.split("|")) {
+                    for (const difficulty of Object.keys(difficulties)) {
+                        if (difficulties[difficulty][diff.replace(/diff/i, "").trim()]) {
+                            diffz2 += difficulty + "/";
+                            break;
+                        }
+                    }
+                }
+                diffz2 = diffz2.substring(0, diffz2.length - 1);
+            }
+			let matchFF = matchF.substring(1, matchF.length - 1).trim();
+            if (matchFF !== "" && matchFF !== ".") {
+                matchFF = "<b> (Other) </b>" + matchFF;
+            }
+            let out = "<i> ";
+            out += "<b>(" + diffz + ") </b>" + matchT.substring(1, matchT.length - 2);
+            if (diffz2 !== "") {
+                out += " <b>(" + diffz2 + ") </b>" + matchT2.substring(1, matchT2.length - 2);
+            }
+
+            out += matchFF + "</i>";
+			return out;
 		}
 		for(const diff of diffs.split("|")) {
 			if(difficulties[selectedDifficulty][diff.replace(/diff/i, "").trim()]) {
 				return matchT.substring(1, matchT.length - 2);
 			}
 		}
+        if(diffs2 !== undefined) {
+            for (const diff of diffs2.split("|")) {
+                if (difficulties[selectedDifficulty][diff.replace(/diff/i, "").trim()]) {
+                    return matchT2.substring(1, matchT2.length - 2);
+                }
+            }
+        }
 		return matchF.substring(1, matchF.length - 2);
 	});
 	text = text.replace(/\$(\d+)?[mMsSwW](\d+)?/g, (f, spellID, section) => { // SpellEffect variables
