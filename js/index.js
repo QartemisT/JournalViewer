@@ -602,11 +602,22 @@ const load = () => {
 	cacheData.journalencountersection
 		.map(data => {
 			if(
-                data.Type === 3 && // Overview
-                ![
-                    22119, 22523,               // Bugfix: Sire Denathrius' Private Collection
-                    25040, 25061, 25064, 25068, // Bufix: Vault of the incarnates -> Kurog Grimtotem -> Altars
-                ].includes(data.ID)
+                (
+                    data.Title_lang === "Overview" ||
+                    data.Title_lang === "Tanks" ||
+                    data.Title_lang === "Tank" ||
+                    data.Title_lang === "Damage Dealers" ||
+                    data.Title_lang === "Damage Dealer" ||
+                    data.Title_lang === "Healers" ||
+                    data.Title_lang === "Healer"
+                ) ||
+                (
+                    data.Type === 3 && // Overview
+                    ![
+                        22119, 22523,               // Bugfix: Sire Denathrius' Private Collection
+                        25040, 25061, 25064, 25068, // Bufix: Vault of the incarnates -> Kurog Grimtotem -> Altars
+                    ].includes(data.ID)
+                )
             ) {
 				if(!store.Overview[data.JournalEncounterID]) {
 					store.Overview[data.JournalEncounterID] = [];
