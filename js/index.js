@@ -615,7 +615,8 @@ const load = () => {
                     data.Type === 3 && // Overview
                     ![
                         22119, 22523,               // Bugfix: Sire Denathrius' Private Collection
-                        25040, 25061, 25064, 25068, // Bufix: Vault of the incarnates -> Kurog Grimtotem -> Altars
+                        25040, 25061, 25064, 25068, // Bugfix: Vault of the Incarnates -> Kurog Grimtotem -> Altars
+						25638,						// Bugfix: Vault of the Incarnates -> Raszageth the Storm-Eater -> Primality Forces
                     ].includes(data.ID)
                 )
             ) {
