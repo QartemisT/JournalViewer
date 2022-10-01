@@ -605,6 +605,11 @@ const load = () => {
 		Overview:	{},
 		Abilities:	{}
 	}
+	const oldStore = {};
+	cacheDataOld.journalencountersection
+		.map(data => {
+			oldStore[data.ID] = data;
+		});
 	cacheData.journalencountersection
 		.map(data => {
 			if (
@@ -699,9 +704,12 @@ const load = () => {
 						prevParent = section.ParentSectionID;
 						prevIndent = siblings[section.ID];
 						const spellMultiplier = statMultiplier * (statModsXtuningID[mapXcontentTuning[instanceXmapID[bossXinstance[encounterID]]]] || 1);
-						let diffNew = sanityText(cacheData, section.BodyText_lang, section.SpellID, spellMultiplier), diffOld = 'Previous';
+						let diffNew = sanityText(cacheData, section.BodyText_lang, section.SpellID, spellMultiplier), diffOld = '';
 						if (shouldDiff) {
-							diffOld = sanityText(cacheDataOld, section.BodyText_lang, section.SpellID, spellMultiplier);
+							const oldData = oldStore[section.ID];
+							if (oldData) {
+								diffOld = sanityText(cacheDataOld, oldData.BodyText_lang, oldData.SpellID, spellMultiplier);
+							}
 						}
 						if (storeType === "Overview") {
 							contents += elementIcons(section.IconFlags) + "<b>" + section.Title_lang + "</b> ";
