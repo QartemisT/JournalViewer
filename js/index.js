@@ -725,7 +725,7 @@ const load = () => {
 						} else {
 							contents += elementIcons(section.IconFlags) + "<b>" + section.Title_lang + "</b> ";
 						}
-						if (shouldDiff) {
+						if (shouldDiff && diffOld !== diffNew) {
 							// noinspection JSPotentiallyInvalidConstructorUsage
 							const dmp = new diff_match_patch();
 							const dmp_diff = dmp.diff_main(diffOld, diffNew)
