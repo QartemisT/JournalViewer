@@ -718,8 +718,8 @@ const load = () => {
 						} else if (section.SpellID !== 0) { // Ability: Spell
 							const spellID = section.SpellID;
 							contents += elementIcons(section.IconFlags) + "<b><a href=\"https://" + builds[selectedBuild].link + "wowhead.com/spell=" + spellID + "\" data-wowhead=\"spell-" + spellID + "\">" + cacheData.spellname[spellID] + "</a></b> ";
+							diffNew = sanityText(cacheData, cacheData.spell[spellID], spellID, spellMultiplier) + diffNew;
 							if(shouldDiff) {
-								diffNew = sanityText(cacheData, cacheData.spell[spellID], spellID, spellMultiplier) + diffNew;
 								diffOld = sanityText(cacheDataOld, cacheDataOld.spell[spellID], spellID, spellMultiplier) + diffOld;
 							}
 						} else {
