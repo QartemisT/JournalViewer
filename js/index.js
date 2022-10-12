@@ -730,7 +730,7 @@ const load = () => {
 							const dmp = new diff_match_patch();
 							const dmp_diff = dmp.diff_main(diffOld, diffNew)
 							dmp.diff_cleanupSemantic(dmp_diff);
-							if (dmp_diff.filter(entry => /<a href="[^"]+$/.test(entry[1]) || /p class=/.test(entry[1])).length > 0) {
+							if (dmp_diff.filter(entry => /<a( style="[^"]+")? href="[^"]+$/.test(entry[1]) || /p class=/.test(entry[1])).length > 0) {
 								contents += '<del class="diff-removed">' + diffOld + "</del>" + '<ins class="diff-added">' + diffNew + "</ins>";
 							} else {
 								contents += dmp.diff_prettyHtml(dmp_diff);
