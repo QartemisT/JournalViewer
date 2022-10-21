@@ -645,7 +645,7 @@ const load = () => {
 			}
 		});
     // ExpectedStat.CreatureSpellDamage - wow_beta (70) : wow (60)
-    const statMultiplier = selectedBuild !== "wow" ? 132505.89 : 22025.363;
+    const statMultiplier = selectedBuild !== "wow" ? 127552.2 : 22025.363;
 	Object.keys(store.Overview).concat(Object.keys(store.Abilities))
 		.filter((encounterID, index, self) => self.indexOf(encounterID) === index && document.querySelector("#boss-" + encounterID + " + label + div"))
 		.map(encounterID => {
