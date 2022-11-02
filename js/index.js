@@ -6,7 +6,7 @@ let
 		'expectedstatmod': {'ID':null, 'CreatureSpellDamageMod':null},
 		'journalencounter': {'ID':null, 'Name_lang':null, 'Description_lang':null, 'JournalInstanceID':null, 'OrderIndex':null},
 		'journalencountersection': {'ID':null, 'BodyText_lang':null, 'Title_lang':null, 'Type':null, 'JournalEncounterID':null, 'OrderIndex':null, 'IconCreatureDisplayInfoID':null, 'SpellID':null, 'ParentSectionID':null, 'IconFlags':null},
-		'journalinstance': {'ID':null, 'Name_lang':null, 'Description_lang':null, 'OrderIndex':null, 'MapID':null},
+		'journalinstance': {'ID':null, 'Name_lang':null, 'Description_lang':null, 'MapID':null},
 		'journalsectionxdifficulty': {'ID':null, 'DifficultyID':null, 'JournalEncounterSectionID':null},
 		'journaltier': {'ID':null, 'Name_lang':null},
 		'journaltierxinstance': {'JournalTierID':null, 'JournalInstanceID':null},
@@ -29,15 +29,15 @@ let
 const
 	builds = {
 		"wow":		{
-			link: "",
+			link: "wowhead.com",
 			name: "Live"
 		},
 		"wowt":		{
-			link: "ptr.",
+			link: "wowhead.com/ptr",
 			name: "PTR"
 		},
 		"wow_beta":	{
-			link: "shadowlands.",
+			link: "wowhead.com/beta",
 			name: "Beta"
 		},
 		//"wowdev":	{
@@ -135,7 +135,7 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 	}
 	let prevSpellID, lastVar;
 	text = text.replace(/\$bullet;/gi, "<br>&bull; "); // New line
-	text = text.replace(/\|cFF([a-z\d]+)\|Hspell:(\d+)\s?\|h([^|]+)\|h\|r/gi, " <a style=\"color: #$1;\" href=\"https://" + builds[selectedBuild].link + "wowhead.com/spell=$2\" data-wowhead=\"spell-$2\">$3</a>"); // Spell tooltips
+	text = text.replace(/\|cFF([a-z\d]+)\|Hspell:(\d+)\s?\|h([^|]+)\|h\|r/gi, " <a style=\"color: #$1;\" href=\"https://" + builds[selectedBuild].link + "/spell=$2\" data-wowhead=\"spell-$2\">$3</a>"); // Spell tooltips
 	text = text.replace(/\$\[[\d, ]+(?:[\s\n\r]+)?(.*?)\$]/g, (_, diffs, txt) => { // Difficulty specific
 		for (const diff of diffs.split(",")) {
 			if (selectedDifficulty === "all" || difficulties[selectedDifficulty][diff.trim()]) {
@@ -162,7 +162,7 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 	text = text.replace(/\$?@?spellicon(\d+)/gi, ""); // SpellIcon variable - remove it.
 	text = text.replace(/\$?@?spelltooltip(\d+)/gi, ""); // SpellTooltip variable - remove it.
 	text = text.replace(/\$?@?spellname(\d+)/gi, (_, spellID) => { // SpellName variable
-		return "<a href=\"https://" + builds[selectedBuild].link + "wowhead.com/spell=" + spellID + "\" data-wowhead=\"spell-" + spellID + "\">" + cacheData.spellname[spellID] + "</a>";
+		return "<a href=\"https://" + builds[selectedBuild].link + "/spell=" + spellID + "\" data-wowhead=\"spell-" + spellID + "\">" + cacheData.spellname[spellID] + "</a>";
 	});
 	text = text.replace(/\$?@?spelldesc(\d+)/gi, (_, spellID) => { // SpellDesc variable
 		return sanityText(cacheData, cacheData.spell[spellID], spellID, spellMultiplier);
@@ -645,7 +645,7 @@ const load = () => {
 			}
 		});
     // ExpectedStat.CreatureSpellDamage - wow_beta (70) : wow (60)
-    const statMultiplier = selectedBuild !== "wow" ? 127552.2 : 22025.363;
+    const statMultiplier = selectedBuild !== "wow" ? 166776.28 : 22025.363;
 	Object.keys(store.Overview).concat(Object.keys(store.Abilities))
 		.filter((encounterID, index, self) => self.indexOf(encounterID) === index && document.querySelector("#boss-" + encounterID + " + label + div"))
 		.map(encounterID => {
@@ -717,7 +717,7 @@ const load = () => {
 							contents += elementIcons(section.IconFlags) + "<b>" + section.Title_lang + "</b> ";
 						} else if (section.SpellID !== 0) { // Ability: Spell
 							const spellID = section.SpellID;
-							contents += elementIcons(section.IconFlags) + "<b><a href=\"https://" + builds[selectedBuild].link + "wowhead.com/spell=" + spellID + "\" data-wowhead=\"spell-" + spellID + "\">" + cacheData.spellname[spellID] + "</a></b> ";
+							contents += elementIcons(section.IconFlags) + "<b><a href=\"https://" + builds[selectedBuild].link + "/spell=" + spellID + "\" data-wowhead=\"spell-" + spellID + "\">" + cacheData.spellname[spellID] + "</a></b> ";
 							diffNew = sanityText(cacheData, cacheData.spell[spellID], spellID, spellMultiplier) + diffNew;
 							if(shouldDiff) {
 								diffOld = sanityText(cacheDataOld, cacheDataOld.spell[spellID], spellID, spellMultiplier) + diffOld;
