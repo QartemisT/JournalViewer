@@ -134,9 +134,9 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 		return "";
 	}
 	let prevSpellID, lastVar;
-	text = text.replace(/\$bullet;/gi, "<br>&bull; "); // New line
-	text = text.replace(/\|cFF([a-z\d]+)\|Hspell:(\d+)\s?\|h([^|]+)\|h\|r/gi, " <a style=\"color: #$1;\" href=\"https://" + builds[selectedBuild].link + "/spell=$2\" data-wowhead=\"spell-$2\">$3</a>"); // Spell tooltips
-	text = text.replace(/\$\[[\d, ]+(?:[\s\n\r]+)?(.*?)\$]/g, (_, diffs, txt) => { // Difficulty specific
+	text = text.replaceAll(/\$bullet;/gi, "<br>&bull; "); // New line
+	text = text.replaceAll(/\|cFF([a-z\d]+)\|Hspell:(\d+)\s?\|h([^|]+)\|h\|r/gi, " <a style=\"color: #$1;\" href=\"https://" + builds[selectedBuild].link + "/spell=$2\" data-wowhead=\"spell-$2\">$3</a>"); // Spell tooltips
+	text = text.replaceAll(/\$\[[\d, ]+(?:[\s\n\r]+)?(.*?)\$]/g, (_, diffs, txt) => { // Difficulty specific
 		for (const diff of diffs.split(",")) {
 			if (selectedDifficulty === "all" || difficulties[selectedDifficulty][diff.trim()]) {
 				return txt;
@@ -144,7 +144,7 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 		}
 		return "";
 	});
-	text = text.replace(/\$\[!([\d, ]+)(?:[\s\n\r]+)?(.*?)\$]/g, (_, diffs, txt) => { // Dificulty specific WARNING
+	text = text.replaceAll(/\$\[!([\d, ]+)(?:[\s\n\r]+)?(.*?)\$]/g, (_, diffs, txt) => { // Dificulty specific WARNING
 		for (const diff of diffs.split(",")) {
 			if (selectedDifficulty === "all") {
 				for (const difficulty of Object.keys(difficulties)) {
@@ -159,20 +159,20 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 		}
 		return "";
 	});
-	text = text.replace(/\$?@?spellicon(\d+)/gi, ""); // SpellIcon variable - remove it.
-	text = text.replace(/\$?@?spelltooltip(\d+)/gi, ""); // SpellTooltip variable - remove it.
-	text = text.replace(/\$?@?spellname(\d+)/gi, (_, spellID) => { // SpellName variable
+	text = text.replaceAll(/\$?@?spellicon(\d+)/gi, ""); // SpellIcon variable - remove it.
+	text = text.replaceAll(/\$?@?spelltooltip(\d+)/gi, ""); // SpellTooltip variable - remove it.
+	text = text.replaceAll(/\$?@?spellname(\d+)/gi, (_, spellID) => { // SpellName variable
 		return "<a href=\"https://" + builds[selectedBuild].link + "/spell=" + spellID + "\" data-wowhead=\"spell-" + spellID + "\">" + cacheData.spellname[spellID] + "</a>";
 	});
-	text = text.replace(/\$?@?spelldesc(\d+)/gi, (_, spellID) => { // SpellDesc variable
+	text = text.replaceAll(/\$?@?spelldesc(\d+)/gi, (_, spellID) => { // SpellDesc variable
 		return sanityText(cacheData, cacheData.spell[spellID], spellID, spellMultiplier);
 	});
-	text = text.replace(/\$\?((?:diff\d+\|?)+)(?:[\s\n\r]+)?(\[[^\]]+]|\[])(\?((?:diff\d+\|?)+)(?:[\s\n\r]+)?(\[[^\]]+]|\[]))?(\[[^\]]+]|\[])/gi, (_1, diffs, matchT, _2, diffs2, matchT2, matchF) => {
+	text = text.replaceAll(/\$\?((?:diff\d+\|?)+)(?:[\s\n\r]+)?(\[[^\]]+]|\[])(\?((?:diff\d+\|?)+)(?:[\s\n\r]+)?(\[[^\]]+]|\[]))?(\[[^\]]+]|\[])/gi, (_1, diffs, matchT, _2, diffs2, matchT2, matchF) => {
 		if (selectedDifficulty === "all") {
 			let diffz = "";
 			for (const diff of diffs.split("|")) {
 				for (const difficulty of Object.keys(difficulties)) {
-					if (difficulties[difficulty][diff.replace(/diff/i, "").trim()]) {
+					if (difficulties[difficulty][diff.replaceAll(/diff/i, "").trim()]) {
 						diffz += difficulty + "/";
 						break;
 					}
@@ -183,7 +183,7 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
             if (diffs2 !== undefined) {
                 for (const diff of diffs2.split("|")) {
                     for (const difficulty of Object.keys(difficulties)) {
-                        if (difficulties[difficulty][diff.replace(/diff/i, "").trim()]) {
+                        if (difficulties[difficulty][diff.replaceAll(/diff/i, "").trim()]) {
                             diffz2 += difficulty + "/";
                             break;
                         }
@@ -204,20 +204,20 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 			return out;
 		}
 		for (const diff of diffs.split("|")) {
-			if (difficulties[selectedDifficulty][diff.replace(/diff/i, "").trim()]) {
+			if (difficulties[selectedDifficulty][diff.replaceAll(/diff/ig, "").trim()]) {
 				return matchT.substring(1, matchT.length - 2);
 			}
 		}
         if (diffs2 !== undefined) {
             for (const diff of diffs2.split("|")) {
-                if (difficulties[selectedDifficulty][diff.replace(/diff/i, "").trim()]) {
+                if (difficulties[selectedDifficulty][diff.replaceAll(/diff/ig, "").trim()]) {
                     return matchT2.substring(1, matchT2.length - 2);
                 }
             }
         }
 		return matchF.substring(1, matchF.length - 2);
 	});
-	text = text.replace(/\$(\d+)?[mMsSwW](\d+)?/g, (f, spellID, section) => { // SpellEffect variables
+	text = text.replaceAll(/\$(\d+)?[mMsSwW](\d+)?/g, (f, spellID, section) => { // SpellEffect variables
 		spellID = spellID || overrideSpellID || prevSpellID;
 		section = section || 1;
 		prevSpellID = spellID;
@@ -237,7 +237,7 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 		lastVar = Math.abs(data.EffectBasePointsF).toLocaleString()
 		return lastVar;
 	});
-	text = text.replace(/\$(\d+)?[eE](\d+)?/g, (_, spellID, section) => { // EffectAmplitude variables
+	text = text.replaceAll(/\$(\d+)?[eE](\d+)?/g, (_, spellID, section) => { // EffectAmplitude variables
 		spellID = spellID || overrideSpellID || prevSpellID;
 		section = section || 1;
 		prevSpellID = spellID;
@@ -252,7 +252,7 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 		}
 		return data.EffectAmplitude.toLocaleString();
 	});
-	text = text.replace(/\$(\d+)?o(\d+)?/g, (_, spellID, section) => { // AuraDamage variable
+	text = text.replaceAll(/\$(\d+)?o(\d+)?/g, (_, spellID, section) => { // AuraDamage variable
 		spellID = spellID || overrideSpellID || prevSpellID;
 		section = section || 1;
 		prevSpellID = spellID;
@@ -277,7 +277,7 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 			return errorText;
 		}
 	});
-	text = text.replace(/\$(\d+)?([aA])(\d+)?/g, (_, spellID, type, section) => { // Radius variables
+	text = text.replaceAll(/\$(\d+)?([aA])(\d+)?/g, (_, spellID, type, section) => { // Radius variables
 		spellID = spellID || overrideSpellID || prevSpellID;
 		section = section || 1;
 		prevSpellID = spellID;
@@ -300,7 +300,7 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 		}
 		return cacheData.spellradius[radiusIndex].toLocaleString();
 	});
-	text = text.replace(/\$(\d+)?[tT](\d+)?/g, (_, spellID, section) => { // Time variables
+	text = text.replaceAll(/\$(\d+)?[tT](\d+)?/g, (_, spellID, section) => { // Time variables
 		spellID = spellID || overrideSpellID || prevSpellID;
 		section = section || 1;
 		prevSpellID = spellID;
@@ -315,7 +315,7 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 		}
 		return (data.EffectAuraPeriod / 1000).toLocaleString();
 	});
-	text = text.replace(/\$(\d+)?[xX](\d+)?/g, (_, spellID, section) => { // EffectChainTargets variables
+	text = text.replaceAll(/\$(\d+)?[xX](\d+)?/g, (_, spellID, section) => { // EffectChainTargets variables
 		spellID = spellID || overrideSpellID || prevSpellID;
 		section = section || 1;
 		prevSpellID = spellID;
@@ -330,7 +330,7 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 		}
 		return data.EffectChainTargets.toLocaleString();
 	});
-	text = text.replace(/\$(\d+)?[fF](\d+)?/g, (_, spellID, section) => { // EffectChainAmplitude variables
+	text = text.replaceAll(/\$(\d+)?[fF](\d+)?/g, (_, spellID, section) => { // EffectChainAmplitude variables
 		spellID = spellID || overrideSpellID || prevSpellID;
 		section = section || 1;
 		prevSpellID = spellID;
@@ -345,7 +345,7 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 		}
 		return data.EffectChainAmplitude.toLocaleString();
 	});
-	text = text.replace(/\$(\d+)?[bB](\d+)?/g, (_, spellID, section) => { // EffectPointsPerResource variables
+	text = text.replaceAll(/\$(\d+)?[bB](\d+)?/g, (_, spellID, section) => { // EffectPointsPerResource variables
 		spellID = spellID || overrideSpellID || prevSpellID;
 		section = section || 1;
 		prevSpellID = spellID;
@@ -360,7 +360,7 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 		}
 		return data.EffectPointsPerResource.toLocaleString();
 	});
-	text = text.replace(/\$(\d+)?q(\d+)?/g, (_, spellID, section) => { // EffectMiscValue variables
+	text = text.replaceAll(/\$(\d+)?q(\d+)?/g, (_, spellID, section) => { // EffectMiscValue variables
 		spellID = spellID || overrideSpellID || prevSpellID;
 		section = section || 1;
 		prevSpellID = spellID;
@@ -375,7 +375,7 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 		}
 		return data["EffectMiscValue[0]"].toLocaleString();
 	});
-	text = text.replace(/\$(\d+)?[dD](\d+)?/g, (_, spellID) => { // Duration variables
+	text = text.replaceAll(/\$(\d+)?[dD](\d+)?/g, (_, spellID) => { // Duration variables
 		spellID = spellID || overrideSpellID || prevSpellID;
 		prevSpellID = spellID;
 		if (!spellID) {
@@ -397,7 +397,7 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 			return errorText;
 		}
 	});
-	text = text.replace(/\$(\d+)?([rR])(\d+)?/g, (_, spellID, type) => { // Range variables
+	text = text.replaceAll(/\$(\d+)?([rR])(\d+)?/g, (_, spellID, type) => { // Range variables
 		spellID = spellID || overrideSpellID || prevSpellID;
 		prevSpellID = spellID;
 		if (!spellID) {
@@ -416,7 +416,7 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 			return errorText;
 		}
 	});
-	text = text.replace(/\$(\d+)?[iI](\d+)?/g, (_, spellID) => { // SpellTargetRestrictions variables
+	text = text.replaceAll(/\$(\d+)?[iI](\d+)?/g, (_, spellID) => { // SpellTargetRestrictions variables
 		spellID = parseInt(spellID) || overrideSpellID || prevSpellID;
 		prevSpellID = spellID;
 		if (!spellID) {
@@ -436,7 +436,7 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 			return errorText;
 		}
 	});
-	text = text.replace(/\$(\d+)?[uU](\d+)?/g, (_, spellID) => { // MaxStacks variables
+	text = text.replaceAll(/\$(\d+)?[uU](\d+)?/g, (_, spellID) => { // MaxStacks variables
 		spellID = spellID || overrideSpellID || prevSpellID;
 		prevSpellID = spellID;
 		if (!spellID) {
@@ -450,7 +450,7 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 		}
 		return data.CumulativeAura.toLocaleString();
 	});
-	text = text.replace(/\$(\d+)?[hH](\d+)?/g, (_, spellID) => { // ProcChance variables
+	text = text.replaceAll(/\$(\d+)?[hH](\d+)?/g, (_, spellID) => { // ProcChance variables
 		spellID = spellID || overrideSpellID || prevSpellID;
 		prevSpellID = spellID;
 		if (!spellID) {
@@ -464,7 +464,7 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 		}
 		return data.ProcChance.toLocaleString();
 	});
-	text = text.replace(/\$(\d+)?[nN](\d+)?/g, (_, spellID) => { // ProcCharges variables
+	text = text.replaceAll(/\$(\d+)?[nN](\d+)?/g, (_, spellID) => { // ProcCharges variables
 		spellID = spellID || overrideSpellID || prevSpellID;
 		prevSpellID = spellID;
 		if (!spellID) {
@@ -478,8 +478,8 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 		}
 		return data.ProcCharges.toLocaleString();
 	});
-	text = text.replace(/\${([^}]+)}/g, (repl, math) => { // Math
-		math = math.replace(" sec", "").replace(",", ""); // e.g. "30 sec*20"
+	text = text.replaceAll(/\${([^}]+)}/g, (repl, math) => { // Math
+		math = math.replaceAll(" sec", "").replaceAll(",", ""); // e.g. "30 sec*20"
         try {
             if (math.match(/^[\s\d().*/+-]+$/g)) { // Matches: Spaces, numbers, brackets, math operations
                 return eval(math).toLocaleString();
@@ -491,13 +491,13 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 		console.error("Invalid math: ", math, text);
 		return repl.toLocaleString();
 	});
-	text = text.replace(/\${(\d+)} \$[lL]([^:]+):([^;]+);/g, (_, amount, singular, plural) => { // Pluralization
+	text = text.replaceAll(/\${(\d+)} \$[lL]([^:]+):([^;]+);/g, (_, amount, singular, plural) => { // Pluralization
 		return amount + " " + (parseInt(amount) < 2 ? singular : plural);
 	});
-	text = text.replace(/\|4([^:]+):([^;]+);/g, (_, singular, plural) => { // Previous variable pluralization
+	text = text.replaceAll(/\|4([^:]+):([^;]+);/g, (_, singular, plural) => { // Previous variable pluralization
 		return parseInt(lastVar) < 2 ? singular : plural;
 	});
-	text = text.replace(/\|5\s?(<[^>]+>)?([a-zA-Z])/g, (_, link, nextLetter) => { // A vs AN
+	text = text.replaceAll(/\|5\s?(<[^>]+>)?([a-zA-Z])/g, (_, link, nextLetter) => { // A vs AN
 		return (['a', 'e', 'i', 'o', 'u'].indexOf(nextLetter.toLowerCase()) !== -1 ? "an " : "a ") + link + nextLetter
 	});
 	return text;
