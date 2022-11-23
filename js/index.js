@@ -134,8 +134,8 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 		return "";
 	}
 	let prevSpellID, lastVar;
-	text = text.replaceAll(/\$bullet;/gi, "<br>&bull; "); // New line
-	text = text.replaceAll(/\|cFF([a-z\d]+)\|Hspell:(\d+)\s?\|h([^|]+)\|h\|r/gi, " <a style=\"color: #$1;\" href=\"https://" + builds[selectedBuild].link + "/spell=$2\" data-wowhead=\"spell-$2\">$3</a>"); // Spell tooltips
+	text = text.replaceAll(/\$bullet;/ig, "<br>&bull; "); // New line
+	text = text.replaceAll(/\|cFF([a-z\d]+)\|Hspell:(\d+)\s?\|h([^|]+)\|h\|r/ig, " <a style=\"color: #$1;\" href=\"https://" + builds[selectedBuild].link + "/spell=$2\" data-wowhead=\"spell-$2\">$3</a>"); // Spell tooltips
 	text = text.replaceAll(/\$\[[\d, ]+(?:[\s\n\r]+)?(.*?)\$]/g, (_, diffs, txt) => { // Difficulty specific
 		for (const diff of diffs.split(",")) {
 			if (selectedDifficulty === "all" || difficulties[selectedDifficulty][diff.trim()]) {
@@ -159,20 +159,20 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 		}
 		return "";
 	});
-	text = text.replaceAll(/\$?@?spellicon(\d+)/gi, ""); // SpellIcon variable - remove it.
-	text = text.replaceAll(/\$?@?spelltooltip(\d+)/gi, ""); // SpellTooltip variable - remove it.
-	text = text.replaceAll(/\$?@?spellname(\d+)/gi, (_, spellID) => { // SpellName variable
+	text = text.replaceAll(/\$?@?spellicon(\d+)/ig, ""); // SpellIcon variable - remove it.
+	text = text.replaceAll(/\$?@?spelltooltip(\d+)/ig, ""); // SpellTooltip variable - remove it.
+	text = text.replaceAll(/\$?@?spellname(\d+)/ig, (_, spellID) => { // SpellName variable
 		return "<a href=\"https://" + builds[selectedBuild].link + "/spell=" + spellID + "\" data-wowhead=\"spell-" + spellID + "\">" + cacheData.spellname[spellID] + "</a>";
 	});
-	text = text.replaceAll(/\$?@?spelldesc(\d+)/gi, (_, spellID) => { // SpellDesc variable
+	text = text.replaceAll(/\$?@?spelldesc(\d+)/ig, (_, spellID) => { // SpellDesc variable
 		return sanityText(cacheData, cacheData.spell[spellID], spellID, spellMultiplier);
 	});
-	text = text.replaceAll(/\$\?((?:diff\d+\|?)+)(?:[\s\n\r]+)?(\[[^\]]+]|\[])(\?((?:diff\d+\|?)+)(?:[\s\n\r]+)?(\[[^\]]+]|\[]))?(\[[^\]]+]|\[])/gi, (_1, diffs, matchT, _2, diffs2, matchT2, matchF) => {
+	text = text.replaceAll(/\$\?((?:diff\d+\|?)+)(?:[\s\n\r]+)?(\[[^\]]+]|\[])(\?((?:diff\d+\|?)+)(?:[\s\n\r]+)?(\[[^\]]+]|\[]))?(\[[^\]]+]|\[])/ig, (_1, diffs, matchT, _2, diffs2, matchT2, matchF) => {
 		if (selectedDifficulty === "all") {
 			let diffz = "";
 			for (const diff of diffs.split("|")) {
 				for (const difficulty of Object.keys(difficulties)) {
-					if (difficulties[difficulty][diff.replaceAll(/diff/i, "").trim()]) {
+					if (difficulties[difficulty][diff.replaceAll(/diff/ig, "").trim()]) {
 						diffz += difficulty + "/";
 						break;
 					}
@@ -183,7 +183,7 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
             if (diffs2 !== undefined) {
                 for (const diff of diffs2.split("|")) {
                     for (const difficulty of Object.keys(difficulties)) {
-                        if (difficulties[difficulty][diff.replaceAll(/diff/i, "").trim()]) {
+                        if (difficulties[difficulty][diff.replaceAll(/diff/ig, "").trim()]) {
                             diffz2 += difficulty + "/";
                             break;
                         }
