@@ -1,25 +1,25 @@
 let
 	cacheData = {
 		// Just to silence "undefined" warnings
-		'conditionalcontenttuning': {'NormalTuning':null, 'ReplacementTuning':null},
-		'contenttuningxexpected': {'ContentTuningID':null, 'ExpectedStatModID':null},
-		'expectedstatmod': {'ID':null, 'CreatureSpellDamageMod':null},
-		'journalencounter': {'ID':null, 'Name_lang':null, 'Description_lang':null, 'JournalInstanceID':null, 'OrderIndex':null},
-		'journalencountersection': {'ID':null, 'BodyText_lang':null, 'Title_lang':null, 'Type':null, 'JournalEncounterID':null, 'OrderIndex':null, 'IconCreatureDisplayInfoID':null, 'SpellID':null, 'ParentSectionID':null, 'IconFlags':null},
-		'journalinstance': {'ID':null, 'Name_lang':null, 'Description_lang':null, 'MapID':null},
-		'journalsectionxdifficulty': {'ID':null, 'DifficultyID':null, 'JournalEncounterSectionID':null},
-		'journaltier': {'ID':null, 'Name_lang':null},
-		'journaltierxinstance': {'JournalTierID':null, 'JournalInstanceID':null},
-		'mapdifficulty': {'DifficultyID':null, 'ContentTuningID':null, 'MapID':null},
-		'spell': {'ID':null, 'Description_lang':null},
-		'spellauraoptions': {'SpellID':null, 'CumulativeAura':null, 'ProcCharges':null, 'ProcChance':null},
-		'spellduration': {'ID':null, 'Duration':null},
-		'spelleffect': {'DifficultyID':null, 'SpellID':null, 'EffectAura':null, 'EffectIndex':null, 'Effect':null, 'EffectAmplitude':null, 'EffectAuraPeriod':null, 'EffectChainAmplitude':null, 'EffectChainTargets':null, 'EffectPointsPerResource':null, 'EffectBasePointsF':null, 'EffectMiscValue{0}':null, 'EffectRadiusIndex{0}':null, 'EffectRadiusIndex{1}':null},
-		'spellmisc': {'SpellID':null, 'DurationIndex':null, 'RangeIndex':null},
-		'spellname': {'ID':null, 'Name_lang':null},
-		'spellradius': {'ID':null, 'Radius':null},
-		'spellrange': {'ID':null, 'RangeMin{0}':null, 'RangeMax{0}':null},
-		'spelltargetrestrictions': {'DifficultyID':null, 'MaxTargets':null, 'SpellID':null},
+		"conditionalcontenttuning": {"NormalTuning":null, "ReplacementTuning":null},
+		"contenttuningxexpected": null,
+		"expectedstatmod": null,
+		"journalencounter": {"ID":null, "Name_lang":null, "Description_lang":null, "JournalInstanceID":null, "OrderIndex":null},
+		"journalencountersection": {"ID":null, "BodyText_lang":null, "Title_lang":null, "Type":null, "JournalEncounterID":null, "OrderIndex":null, "IconCreatureDisplayInfoID":null, "SpellID":null, "ParentSectionID":null, "IconFlags":null},
+		"journalinstance": {"ID":null, "Name_lang":null, "Description_lang":null, "MapID":null},
+		"journalsectionxdifficulty": {"ID":null, "DifficultyID":null, "JournalEncounterSectionID":null},
+		"journaltier": {"ID":null, "Name_lang":null},
+		"journaltierxinstance": {"JournalTierID":null, "JournalInstanceID":null},
+		"mapdifficulty": {"DifficultyID":null, "ContentTuningID":null, "MapID":null},
+		"spell": {"Description_lang":null, "AuraDescription_lang":null},
+		"spellauraoptions": {"CumulativeAura":null, "ProcCharges":null, "ProcChance":null},
+		"spellduration": null,
+		"spelleffect": {"DifficultyID":null, "EffectAura":null, "Effect":null, "EffectAmplitude":null, "EffectAuraPeriod":null, "EffectChainAmplitude":null, "EffectChainTargets":null, "EffectPointsPerResource":null, "EffectBasePointsF":null, "EffectMiscValue[0]":null, "EffectRadiusIndex[0]":null, "EffectRadiusIndex[1]":null},
+		"spellmisc": {"DurationIndex":null, "RangeIndex":null},
+		"spellname": null,
+		"spellradius": [null,null],
+		"spellrange": {"ID":null, "RangeMin{0}":null, "RangeMax{0}":null},
+		"spelltargetrestrictions": {"DifficultyID":null, "MaxTargets":null, "SpellID":null},
 	},
 	cacheDataOld = cacheData,
 	selectedBuild = "wow_beta",
@@ -80,7 +80,7 @@ const
 		4096:	"mythic",
 		8192:	"bleed"
 	},
-	errorText = "<span class='error'>&lt;error&gt;</span>";
+	errorText = "<span class=\"error\">&lt;error&gt;</span>";
 
 const setHash = () => {
 	let hash = "#";
@@ -161,15 +161,15 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 	});
 	text = text.replaceAll(/\$?@?spellicon(\d+)/ig, ""); // SpellIcon variable - remove it.
 	text = text.replaceAll(/\$?@?spelltooltip(\d+)/ig, ""); // SpellTooltip variable - remove it.
-	text = text.replaceAll(/\$?@?spellname(\d+)/ig, (_, spellID) => { // SpellName variable
-		return "<a href=\"https://" + builds[selectedBuild].link + "/spell=" + spellID + "\" data-wowhead=\"spell-" + spellID + "\">" + cacheData.spellname[spellID] + "</a>";
-	});
-	text = text.replaceAll(/\$?@?spelldesc(\d+)/ig, (_, spellID) => { // SpellDesc variable
-		return sanityText(cacheData, cacheData.spell[spellID], spellID, spellMultiplier);
-	});
-	text = text.replaceAll(/\$?@?spellaura(\d+)/ig, (_, spellID) => { // SpellAura variable
-		return sanityText(cacheData, cacheData.spell[spellID], spellID, spellMultiplier);
-	});
+	text = text.replaceAll(/\$?@?spellname(\d+)/ig, (_, spellID) => // SpellName variable
+		"<a href=\"https://" + builds[selectedBuild].link + "/spell=" + spellID + "\" data-wowhead=\"spell-" + spellID + "\">" + cacheData.spellname[spellID] + "</a>"
+	);
+	text = text.replaceAll(/\$?@?spelldesc(\d+)/ig, (_, spellID) => // SpellDesc variable
+		sanityText(cacheData, cacheData.spell[spellID].Description_lang, spellID, spellMultiplier)
+	);
+	text = text.replaceAll(/\$?@?spellaura(\d+)/ig, (_, spellID) => // SpellAura variable
+		sanityText(cacheData, cacheData.spell[spellID].AuraDescription_lang, spellID, spellMultiplier)
+	);
 	text = text.replaceAll(/\$\?((?:diff\d+\|?)+)(?:[\s\n\r]+)?(\[[^\]]+]|\[])(\?((?:diff\d+\|?)+)(?:[\s\n\r]+)?(\[[^\]]+]|\[]))?(\[[^\]]+]|\[])/ig, (_1, diffs, matchT, _2, diffs2, matchT2, matchF) => {
 		if (selectedDifficulty === "all") {
 			let diffz = "";
@@ -494,15 +494,15 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 		console.error("Invalid math: ", math, text);
 		return repl.toLocaleString();
 	});
-	text = text.replaceAll(/\${(\d+)} \$[lL]([^:]+):([^;]+);/g, (_, amount, singular, plural) => { // Pluralization
-		return amount + " " + (parseInt(amount) < 2 ? singular : plural);
-	});
-	text = text.replaceAll(/\|4([^:]+):([^;]+);/g, (_, singular, plural) => { // Previous variable pluralization
-		return parseInt(lastVar) < 2 ? singular : plural;
-	});
-	text = text.replaceAll(/\|5\s?(<[^>]+>)?([a-zA-Z])/g, (_, link, nextLetter) => { // A vs AN
-		return (['a', 'e', 'i', 'o', 'u'].indexOf(nextLetter.toLowerCase()) !== -1 ? "an " : "a ") + link + nextLetter
-	});
+	text = text.replaceAll(/\${(\d+)} \$[lL]([^:]+):([^;]+);/g, (_, amount, singular, plural) => // Pluralization
+		amount + " " + (parseInt(amount) < 2 ? singular : plural)
+	);
+	text = text.replaceAll(/\|4([^:]+):([^;]+);/g, (_, singular, plural) => // Previous variable pluralization
+		parseInt(lastVar) < 2 ? singular : plural
+	);
+	text = text.replaceAll(/\|5\s?(<[^>]+>)?([a-zA-Z])/g, (_, link, nextLetter) => // A vs AN
+		(["a", "e", "i", "o", "u"].indexOf(nextLetter.toLowerCase()) !== -1 ? "an " : "a ") + link + nextLetter
+	);
 	return text;
 }
 
@@ -709,7 +709,7 @@ const load = () => {
 						prevParent = section.ParentSectionID;
 						prevIndent = siblings[section.ID];
 						const spellMultiplier = statMultiplier * (statModsXtuningID[mapXcontentTuning[instanceXmapID[bossXinstance[encounterID]]]] || 1);
-						let diffNew = sanityText(cacheData, section.BodyText_lang, section.SpellID, spellMultiplier), diffOld = '';
+						let diffNew = sanityText(cacheData, section.BodyText_lang, section.SpellID, spellMultiplier), diffOld = "";
 						if (shouldDiff) {
 							const oldData = oldStore[section.ID];
 							if (oldData) {
@@ -721,7 +721,7 @@ const load = () => {
 						} else if (section.SpellID !== 0) { // Ability: Spell
 							const spellID = section.SpellID;
 							contents += elementIcons(section.IconFlags) + "<b><a href=\"https://" + builds[selectedBuild].link + "/spell=" + spellID + "\" data-wowhead=\"spell-" + spellID + "\">" + cacheData.spellname[spellID] + "</a></b> ";
-							diffNew = sanityText(cacheData, cacheData.spell[spellID], spellID, spellMultiplier) + diffNew;
+							diffNew = sanityText(cacheData, cacheData.spell[spellID]?.Description_lang, spellID, spellMultiplier) + diffNew;
 							if(shouldDiff) {
 								diffOld = sanityText(cacheDataOld, cacheDataOld.spell[spellID], spellID, spellMultiplier) + diffOld;
 							}
@@ -734,7 +734,7 @@ const load = () => {
 							const dmp_diff = dmp.diff_main(diffOld, diffNew)
 							dmp.diff_cleanupSemantic(dmp_diff);
 							if (dmp_diff.filter(entry => /<a( style="[^"]+")? href="[^"]+$/.test(entry[1]) || /p class=/.test(entry[1])).length > 0) {
-								contents += '<del class="diff-removed">' + diffOld + "</del>" + '<ins class="diff-added">' + diffNew + "</ins>";
+								contents += "<del class=\"diff-removed\">" + diffOld + "</del><ins class=\"diff-added\">" + diffNew + "</ins>";
 							} else {
 								contents += dmp.diff_prettyHtml(dmp_diff);
 							}
@@ -847,7 +847,7 @@ const load = () => {
 		.then(response => response.json())
 		.then(data => {
 			cacheData = data;
-			document.title = "Journal Viewer - " + data['build']
+			document.title = "Journal Viewer - " + data["build"]
 		})
 		.then(() => {
 			if (!shouldDiff) {
