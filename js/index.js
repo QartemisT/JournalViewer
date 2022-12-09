@@ -167,6 +167,9 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 	text = text.replaceAll(/\$?@?spelldesc(\d+)/ig, (_, spellID) => { // SpellDesc variable
 		return sanityText(cacheData, cacheData.spell[spellID], spellID, spellMultiplier);
 	});
+	text = text.replaceAll(/\$?@?spellaura(\d+)/ig, (_, spellID) => { // SpellAura variable
+		return sanityText(cacheData, cacheData.spell[spellID], spellID, spellMultiplier);
+	});
 	text = text.replaceAll(/\$\?((?:diff\d+\|?)+)(?:[\s\n\r]+)?(\[[^\]]+]|\[])(\?((?:diff\d+\|?)+)(?:[\s\n\r]+)?(\[[^\]]+]|\[]))?(\[[^\]]+]|\[])/ig, (_1, diffs, matchT, _2, diffs2, matchT2, matchF) => {
 		if (selectedDifficulty === "all") {
 			let diffz = "";
