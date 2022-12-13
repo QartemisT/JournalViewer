@@ -165,10 +165,10 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 		"<a href=\"https://" + builds[selectedBuild].link + "/spell=" + spellID + "\" data-wowhead=\"spell-" + spellID + "\">" + cacheData.spellname[spellID] + "</a>"
 	);
 	text = text.replaceAll(/\$?@?spelldesc(\d+)/ig, (_, spellID) => // SpellDesc variable
-		sanityText(cacheData, cacheData.spell[spellID].Description_lang, spellID, spellMultiplier)
+		sanityText(cacheData, cacheData.spell[spellID]?.Description_lang, spellID, spellMultiplier)
 	);
 	text = text.replaceAll(/\$?@?spellaura(\d+)/ig, (_, spellID) => // SpellAura variable
-		sanityText(cacheData, cacheData.spell[spellID].AuraDescription_lang, spellID, spellMultiplier)
+		sanityText(cacheData, cacheData.spell[spellID]?.AuraDescription_lang, spellID, spellMultiplier)
 	);
 	text = text.replaceAll(/\$\?((?:diff\d+\|?)+)(?:[\s\n\r]+)?(\[[^\]]+]|\[])(\?((?:diff\d+\|?)+)(?:[\s\n\r]+)?(\[[^\]]+]|\[]))?(\[[^\]]+]|\[])/ig, (_1, diffs, matchT, _2, diffs2, matchT2, matchF) => {
 		if (selectedDifficulty === "all") {
@@ -723,7 +723,7 @@ const load = () => {
 							contents += elementIcons(section.IconFlags) + "<b><a href=\"https://" + builds[selectedBuild].link + "/spell=" + spellID + "\" data-wowhead=\"spell-" + spellID + "\">" + cacheData.spellname[spellID] + "</a></b> ";
 							diffNew = sanityText(cacheData, cacheData.spell[spellID]?.Description_lang, spellID, spellMultiplier) + diffNew;
 							if(shouldDiff) {
-								diffOld = sanityText(cacheDataOld, cacheDataOld.spell[spellID], spellID, spellMultiplier) + diffOld;
+								diffOld = sanityText(cacheDataOld, cacheDataOld.spell[spellID]?.Description_lang, spellID, spellMultiplier) + diffOld;
 							}
 						} else {
 							contents += elementIcons(section.IconFlags) + "<b>" + section.Title_lang + "</b> ";
