@@ -647,8 +647,8 @@ const load = () => {
 				store.Abilities[data.JournalEncounterID][data.OrderIndex] = data;
 			}
 		});
-    // ExpectedStat.CreatureSpellDamage - wow_beta (70) : wow (60)
-    const statMultiplier = selectedBuild !== "wow" ? 166776.28 : 22025.363;
+    // ExpectedStat.CreatureSpellDamage - wow (70)
+    const statMultiplier = 166776.28;
 	Object.keys(store.Overview).concat(Object.keys(store.Abilities))
 		.filter((encounterID, index, self) => self.indexOf(encounterID) === index && document.querySelector("#boss-" + encounterID + " + label + div"))
 		.map(encounterID => {
