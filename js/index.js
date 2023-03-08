@@ -14,11 +14,11 @@ let
 		"spell": {"Description_lang":null, "AuraDescription_lang":null},
 		"spellauraoptions": {"CumulativeAura":null, "ProcCharges":null, "ProcChance":null},
 		"spellduration": null,
-		"spelleffect": {"DifficultyID":null, "EffectAura":null, "Effect":null, "EffectAmplitude":null, "EffectAuraPeriod":null, "EffectChainAmplitude":null, "EffectChainTargets":null, "EffectPointsPerResource":null, "EffectBasePointsF":null, "EffectMiscValue[0]":null, "EffectRadiusIndex[0]":null, "EffectRadiusIndex[1]":null},
+		"spelleffect": {"DifficultyID":null, "EffectAura":null, "Effect":null, "EffectAmplitude":null, "EffectAuraPeriod":null, "EffectChainAmplitude":null, "EffectChainTargets":null, "EffectPointsPerResource":null, "EffectBasePointsF":null, "EffectMiscValue_0":null, "EffectRadiusIndex_0":null, "EffectRadiusIndex_1":null},
 		"spellmisc": {"DurationIndex":null, "RangeIndex":null},
 		"spellname": null,
 		"spellradius": [null,null],
-		"spellrange": {"ID":null, "RangeMin{0}":null, "RangeMax{0}":null},
+		"spellrange": {"ID":null, "RangeMin_0":null, "RangeMax_0":null},
 		"spelltargetrestrictions": {"DifficultyID":null, "MaxTargets":null, "SpellID":null},
 	},
 	cacheDataOld = cacheData,
@@ -293,9 +293,9 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 			console.log("Failed EffectRadiusIndex", text);
 			return errorText;
 		}
-		let radiusIndex = data["EffectRadiusIndex[" + (type === "a" ? 0 : 1) + "]"];
+		let radiusIndex = data["EffectRadiusIndex_" + (type === "a" ? 0 : 1)];
 		if (radiusIndex === 0) {
-			radiusIndex = data["EffectRadiusIndex[" + (type === "a" ? 1 : 0) + "]"];
+			radiusIndex = data["EffectRadiusIndex_" + (type === "a" ? 1 : 0)];
 		}
 		if (radiusIndex === 0) {
 			console.log("Failed EffectRadiusIndex (both radius indexes returned 0)", text);
@@ -376,7 +376,7 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 			console.warn("Failed EffectMiscValue", text);
 			return errorText;
 		}
-		return data["EffectMiscValue[0]"].toLocaleString();
+		return data["EffectMiscValue_0"].toLocaleString();
 	});
 	text = text.replaceAll(/\$(\d+)?[dD](\d+)?/g, (_, spellID) => { // Duration variables
 		spellID = spellID || overrideSpellID || prevSpellID;
