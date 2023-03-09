@@ -530,18 +530,18 @@ const load = () => {
 	// Instances
 	cacheData.journaltierxinstance.map(data => {
 		document.querySelector("#expansion-" + data.JournalTierID + " + label + div").innerHTML += "\
-			<input id=\"instance-" + data.JournalInstanceID + "\" type=\"radio\" name=\"expansion-" + data.JournalTierID + "\">\
-			<label for=\"instance-" + data.JournalInstanceID + "\" title=\"Instance ID: " + data.JournalInstanceID + "\"></label>\
+			<input class=\"instance-" + data.JournalInstanceID + "\" id=\"instance-" + data.JournalTierID + "-" + data.JournalInstanceID + "\" type=\"radio\" name=\"expansion-" + data.JournalTierID + "\">\
+			<label for=\"instance-" + data.JournalTierID + "-" + data.JournalInstanceID + "\" title=\"Instance ID: " + data.JournalInstanceID + "\"></label>\
 			<div class=\"tabbed\"></div>";
 	});
 	const instanceXmapID = {};
 	cacheData.journalinstance
-		.filter(data => document.querySelector("#instance-" + data.ID + " + label"))
+		.filter(data => document.querySelector(".instance-" + data.ID + " + label"))
 		.map(data => {
 			instanceXmapID[data.ID] = data.MapID;
-			document.querySelector("#instance-" + data.ID + " + label").innerHTML = data.Name_lang;
+			[...document.querySelectorAll(".instance-" + data.ID + " + label")].map(elem => elem.innerHTML = data.Name_lang);
 			if (data.Description_lang) {
-				document.querySelector("#instance-" + data.ID + " + label + div").innerHTML += "<span>" + data.Description_lang + "</span>";
+				[...document.querySelectorAll(".instance-" + data.ID + " + label + div")].map(elem => elem.innerHTML += "<span>" + data.Description_lang + "</span>");
 			}
 		});
 	// Bosses
@@ -555,16 +555,20 @@ const load = () => {
 		bosses[data.JournalInstanceID].splice(data.OrderIndex, 0, data);
 	});
 	const bossXinstance = {};
+	let count = 0;
 	Object.keys(bosses).map(instanceID => {
-		const elem = document.querySelector("#instance-" + instanceID + " + label + div");
+		const elems = [...document.querySelectorAll(".instance-" + instanceID + " + label + div")];
 		Object.values(bosses[instanceID]).map(boss => {
 			bossXinstance[boss.ID] = instanceID;
-			elem.innerHTML += "\
-				<input id=\"boss-" + boss.ID + "\" type=\"radio\" name=\"instance-" + boss.JournalInstanceID + "\">\
-				<label for=\"boss-" + boss.ID + "\" title=\"Boss ID: " + boss.ID + "\">" + boss.Name_lang + "</label>\
-				<div class=\"tabbed\">\
-					<div>" + (boss.Description_lang || "") + "</div>\
-				</div>";
+			elems.map(elem => {
+				count += 1;
+				elem.innerHTML += "\
+					<input class=\"boss-" + boss.ID + "\" id=\"boss-" + count + "-" + boss.ID + "\" type=\"radio\" name=\"instance-" + boss.JournalInstanceID + "\">\
+					<label for=\"boss-" + count + "-" + boss.ID + "\" title=\"Boss ID: " + boss.ID + "\">" + boss.Name_lang + "</label>\
+					<div class=\"tabbed\">\
+						<div>" + (boss.Description_lang || "") + "</div>\
+					</div>"
+			});
 		});
 	});
 	// Sections x Difficulty
@@ -649,10 +653,11 @@ const load = () => {
 		});
     // ExpectedStat.CreatureSpellDamage - wow (70)
     const statMultiplier = 166776.28;
+	count = 0;
 	Object.keys(store.Overview).concat(Object.keys(store.Abilities))
-		.filter((encounterID, index, self) => self.indexOf(encounterID) === index && document.querySelector("#boss-" + encounterID + " + label + div"))
+		.filter((encounterID, index, self) => self.indexOf(encounterID) === index && document.querySelector(".boss-" + encounterID + " + label + div"))
 		.map(encounterID => {
-			const elem = document.querySelector("#boss-" + encounterID + " + label + div");
+			const elems = [...document.querySelectorAll(".boss-" + encounterID + " + label + div")];
 			Object.keys(store)
 				.filter(storeType => store[storeType][encounterID])
 				.map(storeType => {
@@ -745,12 +750,15 @@ const load = () => {
 						prevParent = section.ParentSectionID;
 					});
 					contents += "</ul>";
-					elem.innerHTML += "\
-						<input id=\"boss-" + encounterID + "-" + storeType + "\" type=\"radio\" name=\"boss-" + encounterID + "\">\
-						<label for=\"boss-" + encounterID + "-" + storeType + "\">" + storeType + "</label>\
-						<div>\
-							" + contents + "\
-						</div>";
+					elems.map(elem => {
+						count += 1;
+						elem.innerHTML += "\
+							<input id=\"boss-" + count + "-" + encounterID + "-" + storeType + "\" type=\"radio\" name=\"boss-" + encounterID + "\">\
+							<label for=\"boss-" + count + "-" + encounterID + "-" + storeType + "\">" + storeType + "</label>\
+							<div>\
+								" + contents + "\
+							</div>"
+					});
 				});
 		});
 	Array.from(document.querySelectorAll("input:not([id=themeMode]):not([id=diffMode])")).map(element => {
