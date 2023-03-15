@@ -9,7 +9,7 @@
 
 /* View */
 body {
-	font-family: "open sans", Arial, "helvetica neue", Helvetica, sans-serif;
+	font-family: 'open sans', Arial, 'helvetica neue', Helvetica, sans-serif;
 	font-size: 14px;
 	margin: 0;
 	padding: 0;
@@ -132,33 +132,6 @@ ul li {
 	box-shadow: var(--loading-color) 1.5em 0 0 0, var(--loading-color) 1.1em 1.1em 0 0, var(--loading-color) 0 1.5em 0 0, var(--loading-color) -1.1em 1.1em 0 0, var(--loading-color) -1.5em 0 0 0, var(--loading-color) -1.1em -1.1em 0 0, var(--loading-color) 0 -1.5em 0 0, var(--loading-color) 1.1em -1.1em 0 0;
 }
 
-@-webkit-keyframes spinner {
-	0% {
-		transform: rotate(0deg);
-	}
-
-	100% {
-		transform: rotate(360deg);
-	}
-}
-@-moz-keyframes spinner {
-	0% {
-		transform: rotate(0deg);
-	}
-
-	100% {
-		transform: rotate(360deg);
-	}
-}
-@-o-keyframes spinner {
-	0% {
-		transform: rotate(0deg);
-	}
-
-	100% {
-		transform: rotate(360deg);
-	}
-}
 @keyframes spinner {
 	0% {
 		transform: rotate(0deg);
