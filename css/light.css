@@ -2,7 +2,7 @@
 	--text-color: #67717d;
 	--background-color: #f5f6fa;
 	--link-color: #2959d3;
-	--loading-color: rgba(0, 0, 0, 0.75);
+	--loading-color: rgb(0 0 0 / 75%);
 	--tabbed-background-color: #f1f1f1;
 	--tabbed-checked-text-color: #000;
 	--tabbed-checked-background-color: #d8d8d8;
