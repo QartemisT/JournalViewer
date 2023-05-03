@@ -652,7 +652,7 @@ const load = () => {
 			}
 		});
     // ExpectedStat.CreatureSpellDamage - wow (70)
-    const statMultiplier = 166776.28;
+    const statMultiplier = 204796.953125;
 	count = 0;
 	Object.keys(store.Overview).concat(Object.keys(store.Abilities))
 		.filter((encounterID, index, self) => self.indexOf(encounterID) === index && document.querySelector(".boss-" + encounterID + " + label + div"))
