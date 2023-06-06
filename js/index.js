@@ -33,7 +33,7 @@ const
 			name: "Live"
 		},
 		"wowt":		{
-			link: "wowhead.com/ptr",
+			link: "wowhead.com/ptr-2",
 			name: "PTR"
 		},
 		"wow_beta":	{
