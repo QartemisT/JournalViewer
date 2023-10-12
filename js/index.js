@@ -639,7 +639,7 @@ const load = () => {
                         25040, 25061, 25064, 25068, // Bugfix: Vault of the Incarnates -> Kurog Grimtotem -> Altars
 						25638,						// Bugfix: Vault of the Incarnates -> Raszageth the Storm-Eater -> Primality Forces
 						27288, 27282, 27278,		// Bugfix: Amirdrassil, the Dream's Hope -> Torments
-						28164,						// Bugfix: Amirdrassil, the Dream's hope -> Gnarlroot -> Tainted Flora
+						28164, 28334, 28344,		// Bugfix: Amirdrassil, the Dream's hope -> Gnarlroot -> Tainted Flora
                     ].includes(data.ID)
                 )
             ) {
