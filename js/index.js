@@ -135,7 +135,7 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 	}
 	let prevSpellID, lastVar;
 	text = text.replaceAll(/\$bullet;/ig, "<br>&bull; "); // New line
-	text = text.replaceAll(/\|cFF([a-z\d]+)\|Hspell:(\d+)\s?\|h([^|]+)\|h\|r/ig, " <a style=\"color: #$1;\" href=\"https://" + builds[selectedBuild].link + "/spell=$2\" data-wowhead=\"spell-$2\">$3</a>"); // Spell tooltips
+	text = text.replaceAll(/\|cFF([a-z\d]+)\|Hspell:(\d+)[\s.]*\|h([^|]+)\|h\|r/ig, " <a style=\"color: #$1;\" href=\"https://" + builds[selectedBuild].link + "/spell=$2\" data-wowhead=\"spell-$2\">$3</a>"); // Spell tooltips
 	text = text.replaceAll(/\$\[[\d, ]+(?:[\s\n\r]+)?(.*?)\$]/g, (_, diffs, txt) => { // Difficulty specific
 		for (const diff of diffs.split(",")) {
 			if (selectedDifficulty === "all" || difficulties[selectedDifficulty][diff.trim()]) {
