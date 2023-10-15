@@ -561,9 +561,10 @@ const load = () => {
 		Object.values(bosses[instanceID]).map(boss => {
 			bossXinstance[boss.ID] = instanceID;
 			elems.map(elem => {
+				const name = elem.parentElement.querySelector(".instance-" + instanceID).id;
 				count += 1;
 				elem.innerHTML += "\
-					<input class=\"boss-" + boss.ID + "\" id=\"boss-" + count + "-" + boss.ID + "\" type=\"radio\" name=\"instance-" + boss.JournalInstanceID + "\">\
+					<input class=\"boss-" + boss.ID + "\" id=\"boss-" + count + "-" + boss.ID + "\" type=\"radio\" name=\"" + name + "\">\
 					<label for=\"boss-" + count + "-" + boss.ID + "\" title=\"Boss ID: " + boss.ID + "\">" + boss.Name_lang + "</label>\
 					<div class=\"tabbed\">\
 						<div>" + (boss.Description_lang || "") + "</div>\
@@ -640,6 +641,7 @@ const load = () => {
 						25638,						// Bugfix: Vault of the Incarnates -> Raszageth the Storm-Eater -> Primality Forces
 						27288, 27282, 27278,		// Bugfix: Amirdrassil, the Dream's Hope -> Torments
 						28164, 28334, 28344,		// Bugfix: Amirdrassil, the Dream's hope -> Gnarlroot -> Tainted Flora
+						28216,						// Bugfix: Throne of the Tides -> Lady Naz'jar -> Elite Guard
                     ].includes(data.ID)
                 )
             ) {
@@ -754,9 +756,10 @@ const load = () => {
 					});
 					contents += "</ul>";
 					elems.map(elem => {
+						const name = elem.parentElement.querySelector(".boss-" + encounterID).id;
 						count += 1;
 						elem.innerHTML += "\
-							<input id=\"boss-" + count + "-" + encounterID + "-" + storeType + "\" type=\"radio\" name=\"boss-" + encounterID + "\">\
+							<input id=\"boss-" + count + "-" + encounterID + "-" + storeType + "\" type=\"radio\" name=\"" + name + "\">\
 							<label for=\"boss-" + count + "-" + encounterID + "-" + storeType + "\">" + storeType + "</label>\
 							<div>\
 								" + contents + "\
