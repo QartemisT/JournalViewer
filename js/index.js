@@ -40,10 +40,6 @@ const
 			link: "wowhead.com/beta",
 			name: "Beta"
 		},
-		//"wowdev":	{
-		//	link: "",
-		//	name: "Alpha"
-		//}
 	},
 	difficulties = {
 		"all":		{},
@@ -170,7 +166,7 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 	text = text.replaceAll(/\$?@?spellaura(\d+)/ig, (_, spellID) => // SpellAura variable
 		sanityText(cacheData, cacheData.spell[spellID]?.AuraDescription_lang, spellID, spellMultiplier)
 	);
-	text = text.replaceAll(/\$\?((?:(?:\$\?)?diff\d+\|?)+)(?:[\s\n\r]+)?(\[[^\]]+]|\[])(\?((?:diff\d+\|?)+)(?:[\s\n\r]+)?(\[[^\]]+]|\[]))?(\[[^\]]+]|\[])/ig, (_1, diffs, matchT, _2, diffs2, matchT2, matchF) => {
+	text = text.replaceAll(/\$\?((?:(?:\$\?)?diff[\d|]+?)+)(?:[\s\n\r]+)?(\[[^\]]+]|\[])(\?((?:diff[\d|]+?)+)(?:[\s\n\r]+)?(\[[^\]]+]|\[]))?(\[[^\]]+]|\[])/ig, (_1, diffs, matchT, _2, diffs2, matchT2, matchF) => {
 		if (selectedDifficulty === "all") {
 			let diffz = "";
 			for (const diff of diffs.split("|")) {
@@ -642,6 +638,7 @@ const load = () => {
 						27288, 27282, 27278,		// Bugfix: Amirdrassil, the Dream's Hope -> Torments
 						28164, 28334, 28344,		// Bugfix: Amirdrassil, the Dream's hope -> Gnarlroot -> Tainted Flora
 						28216,						// Bugfix: Throne of the Tides -> Lady Naz'jar -> Elite Guard
+						28845,						// Bugfix: Nerub-ar Palace -> Ulgrax the Devourer -> Gnawing Frenzy
                     ].includes(data.ID)
                 )
             ) {
@@ -656,8 +653,11 @@ const load = () => {
 				store.Abilities[data.JournalEncounterID][data.OrderIndex] = data;
 			}
 		});
-    // ExpectedStat.CreatureSpellDamage - wow (70)
-    const statMultiplier = 204796.953125;
+    // ExpectedStat.CreatureSpellDamage - wow (70) / wow_beta (80)
+    let statMultiplier = 204796.953125;
+	if (selectedBuild === 'wow_beta') {
+		statMultiplier = 3296462.5;
+	}
 	count = 0;
 	Object.keys(store.Overview).concat(Object.keys(store.Abilities))
 		.filter((encounterID, index, self) => self.indexOf(encounterID) === index && document.querySelector(".boss-" + encounterID + " + label + div"))
