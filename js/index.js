@@ -360,7 +360,7 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 		}
 		return data.EffectPointsPerResource.toLocaleString();
 	});
-	text = text.replaceAll(/\$(\d+)?q(\d+)?/g, (_, spellID, section) => { // EffectMiscValue variables
+	text = text.replaceAll(/\$(\d+)?[qQ](\d+)?/g, (_, spellID, section) => { // EffectMiscValue variables
 		spellID = spellID || overrideSpellID || prevSpellID;
 		section = section || 1;
 		prevSpellID = spellID;
@@ -397,7 +397,7 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 			return errorText;
 		}
 	});
-	text = text.replaceAll(/\$(\d+)?c(\d+)?/g, (_, spellID) => { // SpellPower variables
+	text = text.replaceAll(/\$(\d+)?[cC](\d+)?/g, (_, spellID) => { // SpellPower variables
 		spellID = spellID || overrideSpellID || prevSpellID;
 		prevSpellID = spellID;
 		if (!spellID) {
@@ -492,6 +492,7 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 		}
 		return data.ProcCharges.toLocaleString();
 	});
+	text = text.replaceAll('$pri', '<stat>');
 	text = text.replaceAll(/\${([^}]+)}/g, (repl, math) => { // Math
 		math = math.replaceAll(" sec", "").replaceAll(",", ""); // e.g. "30 sec*20"
         try {
@@ -505,7 +506,7 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 		console.error("Invalid math: ", math, text);
 		return repl.toLocaleString();
 	});
-	text = text.replaceAll(/\${(\d+)} \$[lL]([^:]+):([^;]+);/g, (_, amount, singular, plural) => // Pluralization
+	text = text.replaceAll(/(\d+).*? \$[lL]([^:]+):([^;]+);/g, (_, amount, singular, plural) => // Pluralization
 		amount + " " + (parseInt(amount) < 2 ? singular : plural)
 	);
 	text = text.replaceAll(/\|4([^:]+):([^;]+);/g, (_, singular, plural) => // Previous variable pluralization
@@ -514,6 +515,10 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 	text = text.replaceAll(/\|5\s?(<[^>]+>)?([a-zA-Z])/g, (_, link, nextLetter) => // A vs AN
 		(["a", "e", "i", "o", "u"].indexOf(nextLetter.toLowerCase()) !== -1 ? "an " : "a ") + link + nextLetter
 	);
+	const unmatchedItems = [...text.matchAll(/\$(\d+)?[a-zA-Z](\d+)?/g)]
+	if (unmatchedItems.length > 0) {
+		console.warn('Unmatched items: ', overrideSpellID, unmatchedItems[0]);
+	}
 	return text;
 }
 
