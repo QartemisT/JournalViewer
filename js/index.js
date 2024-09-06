@@ -16,6 +16,7 @@ let
 		"spellduration": null,
 		"spelleffect": {"DifficultyID":null, "EffectAura":null, "Effect":null, "EffectAmplitude":null, "EffectAuraPeriod":null, "EffectChainAmplitude":null, "EffectChainTargets":null, "EffectPointsPerResource":null, "EffectBasePointsF":null, "EffectMiscValue_0":null, "EffectRadiusIndex_0":null, "EffectRadiusIndex_1":null},
 		"spellmisc": {"DurationIndex":null, "RangeIndex":null},
+		"spellpower": {"ManaCost":null},
 		"spellname": null,
 		"spellradius": [null,null],
 		"spellrange": {"ID":null, "RangeMin_0":null, "RangeMax_0":null},
@@ -395,6 +396,20 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 			console.log("Failed Duration", text);
 			return errorText;
 		}
+	});
+	text = text.replaceAll(/\$(\d+)?c(\d+)?/g, (_, spellID) => { // SpellPower variables
+		spellID = spellID || overrideSpellID || prevSpellID;
+		prevSpellID = spellID;
+		if (!spellID) {
+			console.log("Null spellID", "SpellPower", text);
+			return errorText;
+		}
+		const data = cacheData.spellpower[spellID]
+		if (!data) {
+			console.log("Failed SpellPower", text);
+			return errorText;
+		}
+		return data.ManaCost.toLocaleString();
 	});
 	text = text.replaceAll(/\$(\d+)?([rR])(\d+)?/g, (_, spellID, type) => { // Range variables
 		spellID = spellID || overrideSpellID || prevSpellID;
