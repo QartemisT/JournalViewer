@@ -404,7 +404,7 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 			console.log("Null spellID", "SpellPower", text);
 			return errorText;
 		}
-		const data = cacheData.spellpower[spellID]
+		const data = cacheData.spellpower?.[spellID];
 		if (!data) {
 			console.log("Failed SpellPower", text);
 			return errorText;
@@ -418,7 +418,7 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 			console.log("Null spellID", "Range", text);
 			return errorText;
 		}
-		const data = cacheData.spellmisc[spellID]
+		const data = cacheData.spellmisc[spellID];
 		if (!data) {
 			console.log("Failed Range", text);
 			return errorText;
