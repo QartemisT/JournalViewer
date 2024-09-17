@@ -675,7 +675,7 @@ const load = () => {
 		});
     // ExpectedStat.CreatureSpellDamage - wow (70) / wow_beta (80)
     let statMultiplier = 204796.953125;
-	if (selectedBuild === 'wow_beta') {
+	if (cacheData['build'].startsWith('11.')) {
 		statMultiplier = 3296462.5;
 	}
 	count = 0;
