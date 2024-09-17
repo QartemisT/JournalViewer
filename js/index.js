@@ -676,7 +676,7 @@ const load = () => {
     // ExpectedStat.CreatureSpellDamage - wow (70) / wow_beta (80)
     let statMultiplier = 204796.953125;
 	if (cacheData['build'].startsWith('11.')) {
-		statMultiplier = 3296462.5;
+		statMultiplier = 3485327;
 	}
 	count = 0;
 	Object.keys(store.Overview).concat(Object.keys(store.Abilities))
