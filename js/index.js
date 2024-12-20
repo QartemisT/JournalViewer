@@ -205,17 +205,17 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 		}
 		for (const diff of diffs.split("|")) {
 			if (difficulties[selectedDifficulty][diff.replaceAll(/diff/ig, "").trim()]) {
-				return matchT.substring(1, matchT.length - 2);
+				return matchT.substring(1, matchT.length - 1);
 			}
 		}
         if (diffs2 !== undefined) {
             for (const diff of diffs2.split("|")) {
                 if (difficulties[selectedDifficulty][diff.replaceAll(/diff/ig, "").trim()]) {
-                    return matchT2.substring(1, matchT2.length - 2);
+                    return matchT2.substring(1, matchT2.length - 1);
                 }
             }
         }
-		return matchF.substring(1, matchF.length - 2);
+		return matchF.substring(1, matchF.length - 1);
 	});
 	text = text.replaceAll(/\$(\d+)?[mMsSwW](\d+)?/g, (f, spellID, section) => { // SpellEffect variables
 		spellID = spellID || overrideSpellID || prevSpellID;
