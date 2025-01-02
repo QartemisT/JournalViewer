@@ -167,7 +167,10 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 	text = text.replaceAll(/\$?@?spellaura(\d+)/ig, (_, spellID) => // SpellAura variable
 		sanityText(cacheData, cacheData.spell[spellID]?.AuraDescription_lang, spellID, spellMultiplier)
 	);
-	text = text.replaceAll(/\$\?((?:(?:\$\?)?diff[\d|]+?)+)(?:[\s\n\r]+)?(\[[^\]]+]|\[])(?:[\s\n\r]+)?(\?((?:diff[\d|]+?)+)(?:[\s\n\r]+)?(\[[^\]]+]|\[]))?(\[[^\]]+]|\[])/ig, (_1, diffs, matchT, _2, diffs2, matchT2, matchF) => {
+	text = text.replaceAll(/\$\?((?:(?:\$\?)?diff[\d|]+?)+)(?:[\s\n\r]+)?(\[[^\]]+]|\[])(?:[\s\n\r]+)?(\?((?:diff[\d|]+?)+)(?:[\s\n\r]+)?(\[[^\]]+]|\[]))?(\[[^\]]+]|\[])?/ig, (_1, diffs, matchT, _2, diffs2, matchT2, matchF) => {
+		if (! matchF) {
+			matchF = "[]";
+		}
 		if (selectedDifficulty === "all") {
 			let diffz = "";
 			for (const diff of diffs.split("|")) {
