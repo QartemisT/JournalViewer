@@ -199,9 +199,9 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
                 matchFF = "<b> (Other) </b>" + matchFF;
             }
             let out = "<i> ";
-            out += "<b>(" + diffz + ") </b>" + matchT.substring(1, matchT.length - 2);
+            out += "<b>(" + diffz + ") </b>" + matchT.substring(1, matchT.length - 1);
             if (diffz2 !== "") {
-                out += " <b>(" + diffz2 + ") </b>" + matchT2.substring(1, matchT2.length - 2);
+                out += " <b>(" + diffz2 + ") </b>" + matchT2.substring(1, matchT2.length - 1);
             }
             out += matchFF + "</i>";
 			return out;
