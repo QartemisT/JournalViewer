@@ -496,11 +496,12 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 		return data.ProcCharges.toLocaleString();
 	});
 	text = text.replaceAll('$pri', '<stat>');
-	text = text.replaceAll(/\${([^}]+)}/g, (repl, math) => { // Math
+	text = text.replaceAll(/\${([^}]+)}(\.\d+)?/g, (repl, math, precision) => { // Math
 		math = math.replaceAll(" sec", "").replaceAll(",", ""); // e.g. "30 sec*20"
+		precision = precision?.replaceAll(".", "") ?? 2;
         try {
             if (math.match(/^[\s\d().*/+-]+$/g)) { // Matches: Spaces, numbers, brackets, math operations
-                return eval(math).toLocaleString();
+                return eval(math).toLocaleString(undefined, { maximumFractionDigits: precision });
             }
         } catch (_) {
             // Do nothing
