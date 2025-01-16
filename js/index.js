@@ -630,8 +630,10 @@ const load = () => {
 		});
 	// Sections
 	const store = {
-		Overview:	{},
-		Abilities:	{}
+		Overview:			{},
+		OverviewRemoved:	{},
+		Abilities:			{},
+		AbilitiesRemoved:	{},
 	}
 	const oldStore = {};
 	if(shouldDiff) {
@@ -640,7 +642,14 @@ const load = () => {
 				oldStore[data.ID] = data;
 			});
 	}
-	cacheData.journalencountersection
+	let JournalEncounterSection = cacheData.journalencountersection;
+	cacheDataOld.journalencountersection.map(e => {
+		if (JournalEncounterSection.filter(section => section.ID === e.ID).length < 1) {
+			e.isRemoved = true;
+			JournalEncounterSection.push(e);
+		}
+	});
+	JournalEncounterSection
 		.map(data => {
 			if (
                 (
@@ -666,15 +675,23 @@ const load = () => {
                     ].includes(data.ID)
                 )
             ) {
-				if (!store.Overview[data.JournalEncounterID]) {
-					store.Overview[data.JournalEncounterID] = [];
+				let storeType = "Overview";
+				if (data.isRemoved) {
+					storeType += "Removed";
 				}
-				store.Overview[data.JournalEncounterID][data.OrderIndex] = data;
+				if (! store[storeType][data.JournalEncounterID]) {
+					store[storeType][data.JournalEncounterID] = [];
+				}
+				store[storeType][data.JournalEncounterID][data.OrderIndex] = data;
 			} else { // Abilities: Header | Creature | Spell
-				if (!store.Abilities[data.JournalEncounterID]) {
-					store.Abilities[data.JournalEncounterID] = [];
+				let storeType = "Abilities";
+				if (data.isRemoved) {
+					storeType += "Removed";
 				}
-				store.Abilities[data.JournalEncounterID][data.OrderIndex] = data;
+				if (! store[storeType][data.JournalEncounterID]) {
+					store[storeType][data.JournalEncounterID] = [];
+				}
+				store[storeType][data.JournalEncounterID][data.OrderIndex] = data;
 			}
 		});
     // ExpectedStat.CreatureSpellDamage - wow (70) / wow_beta (80)
@@ -688,10 +705,10 @@ const load = () => {
 		.map(encounterID => {
 			const elems = [...document.querySelectorAll(".boss-" + encounterID + " + label + div")];
 			Object.keys(store)
-				.filter(storeType => store[storeType][encounterID])
+				.filter(storeType => store[storeType][encounterID] && (storeType === "Overview" || storeType === "Abilities"))
 				.map(storeType => {
-					const sectionStore = store[storeType];
-					let contents = "<ul>",
+					let sectionStore = store[storeType],
+						contents = "<ul>",
 						prevParent = 0,
 						prevIndent = 0,
 						siblings = [],
@@ -779,6 +796,44 @@ const load = () => {
 						prevParent = section.ParentSectionID;
 					});
 					contents += "</ul>";
+					if (shouldDiff) {
+						sectionStore = store[storeType + "Removed"];
+						let hasRemoved = false;
+						if (sectionStore[encounterID]?.length > 0) {
+							hasRemoved = true;
+							contents += "<h2>Removed Sections</h2><ul>";
+						}
+						Object.values(sectionStore[encounterID] ?? []).map(section => {
+							if (! section.isRemoved) {
+								return;
+							}
+							const spellMultiplier = statMultiplier * (statModsXtuningID[mapXcontentTuning[instanceXmapID[bossXinstance[encounterID]]]] || 1);
+							let diffOld = "";
+							if (storeType === "Overview") {
+								contents += elementIcons(section.IconFlags) + "<b>" + section.Title_lang + "</b> ";
+							} else if (section.SpellID !== 0) { // Ability: Spell
+								const spellID = section.SpellID;
+								contents += elementIcons(section.IconFlags) + "<b><a href=\"https://" + builds[selectedBuild].link + "/spell=" + spellID + "\" data-wowhead=\"spell-" + spellID + "\">" + cacheDataOld.spellname[spellID] + "</a></b> ";
+								diffOld = sanityText(cacheDataOld, cacheDataOld.spell[spellID]?.Description_lang, spellID, spellMultiplier) + diffOld;
+							} else {
+								contents += elementIcons(section.IconFlags) + "<b>" + section.Title_lang + "</b> ";
+							}
+							if (diffOld !== "") {
+								// noinspection JSPotentiallyInvalidConstructorUsage
+								const dmp = new diff_match_patch();
+								const dmp_diff = dmp.diff_main(diffOld, "")
+								dmp.diff_cleanupSemantic(dmp_diff);
+								if(dmp_diff.filter(entry => /<a( style="[^"]+")? href="[^"]+$/.test(entry[1]) || /p class=/.test(entry[1])).length > 0) {
+									contents += "<del class=\"diff-removed\">" + diffOld + "</del>";
+								} else {
+									contents += dmp.diff_prettyHtml(dmp_diff);
+								}
+							}
+						});
+						if (hasRemoved) {
+							contents += "</ul>";
+						}
+					}
 					elems.map(elem => {
 						const name = elem.parentElement.querySelector(".boss-" + encounterID).id;
 						count += 1;
