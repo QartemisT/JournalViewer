@@ -636,19 +636,19 @@ const load = () => {
 		AbilitiesRemoved:	{},
 	}
 	const oldStore = {};
+	let JournalEncounterSection = cacheData.journalencountersection;
 	if(shouldDiff) {
 		cacheDataOld.journalencountersection
 			.map(data => {
 				oldStore[data.ID] = data;
 			});
+		cacheDataOld.journalencountersection.map(e => {
+			if (JournalEncounterSection.filter(section => section.ID === e.ID).length < 1) {
+				e.isRemoved = true;
+				JournalEncounterSection.push(e);
+			}
+		});
 	}
-	let JournalEncounterSection = cacheData.journalencountersection;
-	cacheDataOld.journalencountersection.map(e => {
-		if (JournalEncounterSection.filter(section => section.ID === e.ID).length < 1) {
-			e.isRemoved = true;
-			JournalEncounterSection.push(e);
-		}
-	});
 	JournalEncounterSection
 		.map(data => {
 			if (
