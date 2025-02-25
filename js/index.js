@@ -167,13 +167,13 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 	text = text.replaceAll(/\$?@?spellaura(\d+)/ig, (_, spellID) => // SpellAura variable
 		sanityText(cacheData, cacheData.spell[spellID]?.AuraDescription_lang, spellID, spellMultiplier)
 	);
-	text = text.replaceAll(/\$\?((?:(?:\$\?)?\|?diff[\d|]+?)+)(?:[\s\n\r]+)?(\[[^\]]+]|\[])(?:[\s\n\r]+)?(\?((?:\|?diff[\d|]+?)+)(?:[\s\n\r]+)?(\[[^\]]+]|\[]))?(\[[^\]]+]|\[])?/ig, (_1, diffs, matchT, _2, diffs2, matchT2, matchF) => {
+	text = text.replaceAll(/\$\?((?:(?:\$\?)?\|?diff[\d|,]+?)+)(?:[\s\n\r]+)?(\[[^\]]+]|\[])(?:[\s\n\r]+)?(\?((?:\|?diff[\d|,]+?)+)(?:[\s\n\r]+)?(\[[^\]]+]|\[]))?(\[[^\]]+]|\[])?/ig, (_1, diffs, matchT, _2, diffs2, matchT2, matchF) => {
 		if (! matchF) {
 			matchF = "[]";
 		}
 		if (selectedDifficulty === "all") {
 			let diffz = "";
-			for (const diff of diffs.split("|")) {
+			for (const diff of diffs.split(/[|,]/)) {
 				for (const difficulty of Object.keys(difficulties)) {
 					if (difficulties[difficulty][diff.replaceAll(/diff/ig, "").trim()]) {
 						diffz += difficulty + "/";
@@ -184,7 +184,7 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 			diffz = diffz.substring(0, diffz.length - 1);
             let diffz2 = "";
             if (diffs2 !== undefined) {
-                for (const diff of diffs2.split("|")) {
+                for (const diff of diffs2.split(/[|,]/)) {
                     for (const difficulty of Object.keys(difficulties)) {
                         if (difficulties[difficulty][diff.replaceAll(/diff/ig, "").trim()]) {
                             diffz2 += difficulty + "/";
@@ -206,13 +206,13 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
             out += matchFF + "</i>";
 			return out;
 		}
-		for (const diff of diffs.split("|")) {
+		for (const diff of diffs.split(/[|,]/)) {
 			if (difficulties[selectedDifficulty][diff.replaceAll(/diff/ig, "").trim()]) {
 				return matchT.substring(1, matchT.length - 1);
 			}
 		}
         if (diffs2 !== undefined) {
-            for (const diff of diffs2.split("|")) {
+            for (const diff of diffs2.split(/[|,]/)) {
                 if (difficulties[selectedDifficulty][diff.replaceAll(/diff/ig, "").trim()]) {
                     return matchT2.substring(1, matchT2.length - 1);
                 }
@@ -781,16 +781,16 @@ const load = () => {
 							diffz = diffz.substring(0, diffz.length - 1) + "]</b> ";
 						}
 						if (storeType === "Overview") {
-							contents += diffz + elementIcons(section.IconFlags) + "<b>" + section.Title_lang + "</b> ";
+							contents += elementIcons(section.IconFlags) + diffz + "<b>" + section.Title_lang + "</b> ";
 						} else if (section.SpellID !== 0) { // Ability: Spell
 							const spellID = section.SpellID;
-							contents += diffz + elementIcons(section.IconFlags) + "<b><a href=\"https://" + builds[selectedBuild].link + "/spell=" + spellID + "\" data-wowhead=\"spell-" + spellID + "\">" + cacheData.spellname[spellID] + "</a></b> ";
+							contents += elementIcons(section.IconFlags) + diffz + "<b><a href=\"https://" + builds[selectedBuild].link + "/spell=" + spellID + "\" data-wowhead=\"spell-" + spellID + "\">" + cacheData.spellname[spellID] + "</a></b> ";
 							diffNew = sanityText(cacheData, cacheData.spell[spellID]?.Description_lang, spellID, spellMultiplier) + diffNew;
 							if(shouldDiff) {
 								diffOld = sanityText(cacheDataOld, cacheDataOld.spell[spellID]?.Description_lang, spellID, spellMultiplier) + diffOld;
 							}
 						} else {
-							contents += diffz + elementIcons(section.IconFlags) + "<b>" + section.Title_lang + "</b> ";
+							contents += elementIcons(section.IconFlags) + diffz + "<b>" + section.Title_lang + "</b> ";
 						}
 						if (shouldDiff && diffOld !== diffNew) {
 							// noinspection JSPotentiallyInvalidConstructorUsage
