@@ -167,7 +167,7 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 	text = text.replaceAll(/\$?@?spellaura(\d+)/ig, (_, spellID) => // SpellAura variable
 		sanityText(cacheData, cacheData.spell[spellID]?.AuraDescription_lang, spellID, spellMultiplier)
 	);
-	text = text.replaceAll(/\$\?((?:(?:\$\?)?diff[\d|]+?)+)(?:[\s\n\r]+)?(\[[^\]]+]|\[])(?:[\s\n\r]+)?(\?((?:diff[\d|]+?)+)(?:[\s\n\r]+)?(\[[^\]]+]|\[]))?(\[[^\]]+]|\[])?/ig, (_1, diffs, matchT, _2, diffs2, matchT2, matchF) => {
+	text = text.replaceAll(/\$\?((?:(?:\$\?)?\|?diff[\d|]+?)+)(?:[\s\n\r]+)?(\[[^\]]+]|\[])(?:[\s\n\r]+)?(\?((?:\|?diff[\d|]+?)+)(?:[\s\n\r]+)?(\[[^\]]+]|\[]))?(\[[^\]]+]|\[])?/ig, (_1, diffs, matchT, _2, diffs2, matchT2, matchF) => {
 		if (! matchF) {
 			matchF = "[]";
 		}
@@ -767,17 +767,30 @@ const load = () => {
 								diffOld = sanityText(cacheDataOld, oldData.BodyText_lang, oldData.SpellID, spellMultiplier);
 							}
 						}
+						let diffz = "";
+						if (selectedDifficulty === "all" && diffs) {
+							diffz += "<b>[";
+							for (const difficulty of Object.keys(difficulties)) {
+								for (const diff of diffs) {
+									if (difficulties[difficulty][diff]) {
+										diffz += difficulty + "/";
+										break;
+									}
+								}
+							}
+							diffz = diffz.substring(0, diffz.length - 1) + "]</b> ";
+						}
 						if (storeType === "Overview") {
-							contents += elementIcons(section.IconFlags) + "<b>" + section.Title_lang + "</b> ";
+							contents += diffz + elementIcons(section.IconFlags) + "<b>" + section.Title_lang + "</b> ";
 						} else if (section.SpellID !== 0) { // Ability: Spell
 							const spellID = section.SpellID;
-							contents += elementIcons(section.IconFlags) + "<b><a href=\"https://" + builds[selectedBuild].link + "/spell=" + spellID + "\" data-wowhead=\"spell-" + spellID + "\">" + cacheData.spellname[spellID] + "</a></b> ";
+							contents += diffz + elementIcons(section.IconFlags) + "<b><a href=\"https://" + builds[selectedBuild].link + "/spell=" + spellID + "\" data-wowhead=\"spell-" + spellID + "\">" + cacheData.spellname[spellID] + "</a></b> ";
 							diffNew = sanityText(cacheData, cacheData.spell[spellID]?.Description_lang, spellID, spellMultiplier) + diffNew;
 							if(shouldDiff) {
 								diffOld = sanityText(cacheDataOld, cacheDataOld.spell[spellID]?.Description_lang, spellID, spellMultiplier) + diffOld;
 							}
 						} else {
-							contents += elementIcons(section.IconFlags) + "<b>" + section.Title_lang + "</b> ";
+							contents += diffz + elementIcons(section.IconFlags) + "<b>" + section.Title_lang + "</b> ";
 						}
 						if (shouldDiff && diffOld !== diffNew) {
 							// noinspection JSPotentiallyInvalidConstructorUsage
