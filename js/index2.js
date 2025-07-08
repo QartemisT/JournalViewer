@@ -848,7 +848,13 @@ const loadInstance = () => {
 		});
 }
 
+const loadedInstances = [];
 const fetchInstance = async (instanceID) => {
+	if (loadedInstances.indexOf(instanceID) > -1) {
+		loadInstance();
+		return;
+	}
+
 	document.getElementById('loading').style.display = 'block';
 	instanceData = await fetchFromWago(`journal/instance/${instanceID}?version=${selectedBuild.version}&useHotfixes`);
 	if (shouldDiff) {
@@ -856,6 +862,7 @@ const fetchInstance = async (instanceID) => {
 	}
 	loadInstance();
 	document.getElementById('loading').style.display = 'none';
+	loadedInstances.push(instanceID);
 }
 
 (async () => {
