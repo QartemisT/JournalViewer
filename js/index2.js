@@ -815,7 +815,7 @@ const loadInstance = () => {
 								contents += `${elementIcons(section.IconFlags)}<b>${section.Title_lang}</b> `;
 							} else if (section.SpellID !== 0) { // Ability: Spell
 								const spellID = section.SpellID;
-								contents += `${elementIcons(section.IconFlags)}<b><a href="https://${wowheadPath[selectedBuild['product'] || 'wow']}/spell=${spellID}" data-wowhead="spell-${spellID}">${cacheDataOld.spellname[spellID]}</a></b> `;
+								contents += `${elementIcons(section.IconFlags)}<b><a href="https://${wowheadPath[selectedBuild['product'] || 'wow']}/spell=${spellID}" data-wowhead="spell-${spellID}">${instanceDataOld.spellname[spellID]}</a></b> `;
 								diffOld = sanityText(instanceDataOld, instanceDataOld.spell[spellID]?.Description_lang, spellID, spellMultiplier) + diffOld;
 							} else {
 								contents += `${elementIcons(section.IconFlags)}<b>${section.Title_lang}</b> `;
