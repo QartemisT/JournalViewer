@@ -22,6 +22,27 @@ a {
 	text-decoration: none;
 }
 
+.options {
+	position: absolute;
+	right: 0;
+	top: 0;
+	background: var(--tabbed-checked-background-color);
+	padding: 0 0 5px 5px;
+	border-bottom-left-radius: 5px;
+	color: var(--tabbed-checked-text-color);
+}
+
+.options > div {
+	display: flex;
+	align-items: center;
+	gap: 5px;
+}
+
+.options > div > span {
+	flex: 1;
+	font-weight: bold;
+}
+
 #difficulty {
 	position: absolute;
 	right: 0;
@@ -37,6 +58,14 @@ a {
 	position: absolute;
 	right: 0;
 	top: 36px;
+}
+
+.options #difficulty,
+.options #version,
+.options #version2 {
+	position: unset;
+	top: unset;
+	right: unset;
 }
 
 #container {
