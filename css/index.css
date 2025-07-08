@@ -33,6 +33,12 @@ a {
 	top: 18px;
 }
 
+#version2 {
+	position: absolute;
+	right: 0;
+	top: 36px;
+}
+
 #container {
 	width: 80%;
 	margin: 0 auto;
