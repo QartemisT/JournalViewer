@@ -37,6 +37,7 @@ a {
 	align-items: center;
 	gap: 5px;
 }
+
 .options > div > span {
 	flex: 1;
 	font-weight: bold;
