@@ -850,7 +850,7 @@ const loadInstance = () => {
 
 const fetchInstance = async (instanceID) => {
 	document.getElementById('loading').style.display = 'block';
-	instanceData = await fetchFromWago(`journal/instance/${instanceID}?version=${selectedBuild.version}`);
+	instanceData = await fetchFromWago(`journal/instance/${instanceID}?version=${selectedBuild.version}&useHotfixes`);
 	if (shouldDiff) {
 		instanceDataOld = await fetchFromWago(`journal/instance/${instanceID}?version=${selectedBuild2.version}`)
 	}
