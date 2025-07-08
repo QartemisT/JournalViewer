@@ -849,11 +849,13 @@ const loadInstance = () => {
 }
 
 const fetchInstance = async (instanceID) => {
+	document.getElementById('loading').style.display = 'block';
 	instanceData = await fetchFromWago(`journal/instance/${instanceID}?version=${selectedBuild.version}`);
 	if (shouldDiff) {
 		instanceDataOld = await fetchFromWago(`journal/instance/${instanceID}?version=${selectedBuild2.version}`)
 	}
 	loadInstance();
+	document.getElementById('loading').style.display = 'none';
 }
 
 (async () => {
@@ -930,7 +932,10 @@ const fetchInstance = async (instanceID) => {
 	}
 	selectedBuild = Object.values(apiBuilds)[0];
 	if (hashData['build']) {
-		selectedBuild = apiBuilds.filter(e => e.version === hashData['build'])[0];
+		const tmp = apiBuilds.filter(e => e.version === hashData['build'])[0];
+		if (tmp) {
+			selectedBuild = tmp;
+		}
 	}
 	if (hashData['build2']) {
 		selectedBuild2 = apiBuilds.filter(e => e.version === hashData['build2'])[0];
@@ -948,7 +953,7 @@ const fetchInstance = async (instanceID) => {
 		}
 	});
 
-	instances = await fetchFromWago('journal/instances');
+	instances = await fetchFromWago(`journal/instances?version=${selectedBuild.version}`);
 
 	await loadInstances();
 
