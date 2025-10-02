@@ -693,6 +693,9 @@ const loadInstance = () => {
 		.filter((encounterID, index, self) => self.indexOf(encounterID) === index && document.querySelector(`.boss-${encounterID} + label + div`))
 		.map(encounterID => {
 			const elems = [...document.querySelectorAll(`.boss-${encounterID} + label + div`)];
+			elems.map(elem => {
+				elem.innerHTML = '';
+			});
 			Object.keys(store)
 				.filter(storeType => store[storeType][encounterID] && (storeType === 'Overview' || storeType === 'Abilities'))
 				.map(storeType => {
