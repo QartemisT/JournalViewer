@@ -219,7 +219,7 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 		}
 		return matchF.substring(1, matchF.length - 1);
 	});
-	text = text.replaceAll(/\$(?!(?i:min|max))(\d+)?[mMsSwW](\d+)?/g, (f, spellID, section) => { // SpellEffect variables
+	text = text.replaceAll(/\$(?!([mM][iI][nN]|[mM][aA][xX]))(\d+)?[mMsSwW](\d+)?/g, (f, spellID, section) => { // SpellEffect variables
 		spellID = spellID || overrideSpellID || prevSpellID;
 		section = section || 1;
 		prevSpellID = spellID;
@@ -279,7 +279,7 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 			return errorText;
 		}
 	});
-	text = text.replaceAll(/\$(?!(?i:abs))(\d+)?([aA])(\d+)?/g, (_, spellID, type, section) => { // Radius variables
+	text = text.replaceAll(/\$(?!([aA][bB][sS]))(\d+)?([aA])(\d+)?/g, (_, spellID, type, section) => { // Radius variables
 		spellID = spellID || overrideSpellID || prevSpellID;
 		section = section || 1;
 		prevSpellID = spellID;
@@ -332,7 +332,7 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 		}
 		return data.EffectChainTargets.toLocaleString();
 	});
-	text = text.replaceAll(/\$(?!(?i:floor))(\d+)?[fF](\d+)?/g, (_, spellID, section) => { // EffectChainAmplitude variables
+	text = text.replaceAll(/\$(?!([fF][lL][oO][oO][rR]))(\d+)?[fF](\d+)?/g, (_, spellID, section) => { // EffectChainAmplitude variables
 		spellID = spellID || overrideSpellID || prevSpellID;
 		section = section || 1;
 		prevSpellID = spellID;
