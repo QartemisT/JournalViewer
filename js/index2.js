@@ -219,7 +219,7 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 		}
 		return matchF.substring(1, matchF.length - 1);
 	});
-	text = text.replaceAll(/\$(\d+)?[mMsSwW](\d+)?/g, (f, spellID, section) => { // SpellEffect variables
+	text = text.replaceAll(/\$(?!([mM][iI][nN]|[mM][aA][xX]))(\d+)?[mMsSwW](\d+)?/g, (f, spellID, section) => { // SpellEffect variables
 		spellID = spellID || overrideSpellID || prevSpellID;
 		section = section || 1;
 		prevSpellID = spellID;
@@ -279,7 +279,7 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 			return errorText;
 		}
 	});
-	text = text.replaceAll(/\$(\d+)?([aA])(\d+)?/g, (_, spellID, type, section) => { // Radius variables
+	text = text.replaceAll(/\$(?!([aA][bB][sS]))(\d+)?([aA])(\d+)?/g, (_, spellID, type, section) => { // Radius variables
 		spellID = spellID || overrideSpellID || prevSpellID;
 		section = section || 1;
 		prevSpellID = spellID;
@@ -332,7 +332,7 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 		}
 		return data.EffectChainTargets.toLocaleString();
 	});
-	text = text.replaceAll(/\$(\d+)?[fF](\d+)?/g, (_, spellID, section) => { // EffectChainAmplitude variables
+	text = text.replaceAll(/\$(?!([fF][lL][oO][oO][rR]))(\d+)?[fF](\d+)?/g, (_, spellID, section) => { // EffectChainAmplitude variables
 		spellID = spellID || overrideSpellID || prevSpellID;
 		section = section || 1;
 		prevSpellID = spellID;
@@ -496,10 +496,11 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 	});
 	text = text.replaceAll('$pri', '<stat>');
 	text = text.replaceAll(/\${([^}]+)}(\.\d+)?/g, (repl, math, precision) => { // Math
+		math = math.replaceAll(/\$(abs|min|max|floor)/gi, 'Math.$1');
 		math = math.replaceAll(' sec', '').replaceAll(',', ''); // e.g. "30 sec*20"
 		precision = precision?.replaceAll('.', '') ?? 2;
 		try {
-			if (math.match(/^[\s\d().*/+-]+$/g)) { // Matches: Spaces, numbers, brackets, math operations
+			if (math.match(/^([\s\d().*/+-]+|Math\.(?:abs|min|max|floor))*$/g)) { // Matches: Spaces, numbers, brackets, math operations
 				return eval(math).toLocaleString(undefined, { maximumFractionDigits: precision });
 			}
 		} catch (_) {
