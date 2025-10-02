@@ -908,7 +908,7 @@ const fetchInstance = async (instanceID) => {
 
 	const parseVersion = version => version.split('.').map(Number);
 	apiBuilds = await fetchFromWago('builds').then(data =>
-		[...data['wowxptr'], ...data['wowt'], ...data['wow']]
+		[...data['wowxptr'], ...data['wowt'], ...data['wow_beta'], ...data['wow']]
 			.filter((() => {
 				const seen = new Set();
 				return obj => {
