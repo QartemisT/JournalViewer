@@ -219,7 +219,7 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 		}
 		return matchF.substring(1, matchF.length - 1);
 	});
-	text = text.replaceAll(/\$(?!([mM][iI][nN]|[mM][aA][xX]))(\d+)?[mMsSwW](\d+)?/g, (f, spellID, section) => { // SpellEffect variables
+	text = text.replaceAll(/\$(?!([mM][iI][nN]|[mM][aA][xX]))(\d+)?[mMsSwW](\d+)?/g, (_, f, spellID, section) => { // SpellEffect variables
 		spellID = spellID || overrideSpellID || prevSpellID;
 		section = section || 1;
 		prevSpellID = spellID;
