@@ -1,6 +1,8 @@
 let
 	selectedBuild = undefined,
 	selectedBuild2 = undefined,
+	selectedBuildHash = undefined,
+	selectedBuild2Hash = undefined,
 	selectedDifficulty = 'mythic',
 	selectedTab = '',
 	shouldDiff = false;
@@ -81,13 +83,13 @@ const
 const setHash = () => {
 	let hash = '#';
 	if (selectedBuild) {
-		hash += 'build=' + selectedBuild.version;
+		hash += 'build=' + (selectedBuildHash || selectedBuild.version);
 	}
 	if (selectedBuild2) {
 		if (hash !== '#') {
 			hash += '&';
 		}
-		hash += 'build2=' + selectedBuild2.version;
+		hash += 'build2=' + (selectedBuild2Hash || selectedBuild2.version);
 	}
 	if (selectedDifficulty !== 'mythic') {
 		if (hash !== '#') {
@@ -166,7 +168,7 @@ const sanityText = (cacheData, text, overrideSpellID, spellMultiplier) => {
 	text = text.replaceAll(/\$?@?spellaura(\d+)/ig, (_, spellID) => // SpellAura variable
 		sanityText(cacheData, cacheData.spell[spellID]?.AuraDescription_lang, spellID, spellMultiplier)
 	);
-	text = text.replaceAll(/\$\?((?:(?:\$\?)?\|?diff[\d|,]+?)+)(?:[\s\n\r]+)?(\[[^\]]+]|\[])(?:[\s\n\r]+)?(\?((?:\|?diff[\d|,]+?)+)(?:[\s\n\r]+)?(\[[^\]]+]|\[]))?(\[[^\]]+]|\[])?/ig, (_1, diffs, matchT, _2, diffs2, matchT2, matchF) => {
+	text = text.replaceAll(/\$\?\s?((?:(?:\$\?)?\|?diff[\d|,\s]+?)+)(?:[\s\n\r]+)?(\[[^\]]+]|\[])(?:[\s\n\r]+)?(\?((?:\|?diff[\d|,\s]+?)+)(?:[\s\n\r]+)?(\[[^\]]+]|\[]))?(\[[^\]]+]|\[])?/ig, (_1, diffs, matchT, _2, diffs2, matchT2, matchF) => {
 		if (! matchF) {
 			matchF = '[]';
 		}
@@ -931,31 +933,46 @@ const fetchInstance = async (instanceID) => {
 				return buildB - buildA;
 			})
 	);
+	const resolveBuildOption = value => {
+		if (value === 'latest') {
+			return apiBuilds[0];
+		}
+		if (value === 'previous') {
+			return apiBuilds[1];
+		}
+		return apiBuilds.filter(e => e.version === value)[0];
+	};
 	versionDropdown.onchange = () => {
-		selectedBuild = apiBuilds.filter(e => e.version === versionDropdown.value)[0];
+		selectedBuild = resolveBuildOption(versionDropdown.value);
+		selectedBuildHash = versionDropdown.value === 'latest' ? versionDropdown.value : undefined;
 		setHash();
 		location.reload();
 	}
 	versionDropdown2.onchange = () => {
-		selectedBuild2 = apiBuilds.filter(e => e.version === versionDropdown2.value)[0];
+		selectedBuild2 = resolveBuildOption(versionDropdown2.value);
+		selectedBuild2Hash = versionDropdown2.value === 'previous' ? versionDropdown2.value : undefined;
 		setHash();
 		location.reload();
 	}
 	selectedBuild = Object.values(apiBuilds)[0];
 	if (hashData['build']) {
-		const tmp = apiBuilds.filter(e => e.version === hashData['build'])[0];
+		const tmp = resolveBuildOption(hashData['build']);
 		if (tmp) {
 			selectedBuild = tmp;
+			selectedBuildHash = hashData['build'] === 'latest' ? 'latest' : undefined;
 		}
 	}
 	if (hashData['build2']) {
-		selectedBuild2 = apiBuilds.filter(e => e.version === hashData['build2'])[0];
+		selectedBuild2 = resolveBuildOption(hashData['build2']);
+		selectedBuild2Hash = hashData['build2'] === 'previous' ? 'previous' : undefined;
 		shouldDiff = selectedBuild && selectedBuild2 && selectedBuild.version !== selectedBuild2.version;
 	}
 
+	versionDropdown.options[versionDropdown.options.length] = new Option('Latest', 'latest');
+	versionDropdown2.options[versionDropdown2.options.length] = new Option('Previous', 'previous');
 	Object.values(apiBuilds).map(build => {
 		versionDropdown.options[versionDropdown.options.length] = new Option(build.version, build.version);
-		versionDropdown2.options[versionDropdown.options.length] = new Option(build.version, build.version);
+		versionDropdown2.options[versionDropdown2.options.length] = new Option(build.version, build.version);
 		if (selectedBuild?.version === build.version) {
 			versionDropdown.value = build.version;
 		}
@@ -963,6 +980,12 @@ const fetchInstance = async (instanceID) => {
 			versionDropdown2.value = build.version;
 		}
 	});
+	if (selectedBuildHash) {
+		versionDropdown.value = selectedBuildHash;
+	}
+	if (selectedBuild2Hash) {
+		versionDropdown2.value = selectedBuild2Hash;
+	}
 
 	instances = await fetchFromWago(`journal/instances?version=${selectedBuild.version}`);
 
